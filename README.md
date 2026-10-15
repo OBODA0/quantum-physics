@@ -22,11 +22,25 @@ xenon lamp -> monochromator (lambda_exc) -> harmonic filter -> sample
 
 ## Sample database
 
-| key | dye | absorption | emission | quantum yield |
-| --- | --- | --- | --- | --- |
-| `cy3` | Cy3 | 550 nm | 570 nm | 0.04 |
-| `cy5` | Cy5 | 649 nm | 670 nm | 0.28 |
-| `methylene-blue` | Methylene blue | 664 nm | 686 nm | 0.04 |
+| key | dye | absorption | emission | quantum yield | molar extinction |
+| --- | --- | --- | --- | --- | --- |
+| `cy3` | Cy3 | 550 nm | 570 nm | 0.04 (free dye in PBS) | 150,000 |
+| `cy5` | Cy5 | 649 nm | 670 nm | 0.28 (aqueous) | 250,000 |
+| `methylene-blue` | Methylene blue | 664 nm | 685 nm | 0.02 (water) | 67,000 |
+
+The quantum yields are the honest ones for the stated solvent, and they matter:
+the same Cy3 chromophore is reported at 0.10-0.31 when it is conjugated or in a
+low-polarity environment, and methylene blue is 0.04 in ethanol but 0.02 in
+water. Always quote the number together with the solvent.
+
+Two databases are available:
+
+- `--database reference` (default): measured absorption and emission bands from
+  `data/reference_spectra.json` — digitized vendor/database/paper curves, so the
+  simulated spectrum has the real band shape, including the cyanine vibronic
+  shoulder.
+- `--database model`: Gaussian bands with the same centres, widths and quantum
+  yields (the compact model used in `plsim/samples.py`).
 
 ## Install and run
 
@@ -35,6 +49,7 @@ uv sync
 uv run python -m plsim --list-samples
 uv run python -m plsim --sample cy5 --lambda-exc 649 --range 600 780 --dlambda 0.5
 uv run python -m plsim --sample methylene-blue --lambda-exc 664 --range 550 800 --ideal
+uv run python -m plsim --sample cy5 --database model --lambda-exc 649 --range 600 780
 ```
 
 The figure is written to `out/` unless `--show` is given. `--ideal` removes the
@@ -64,12 +79,40 @@ stray excitation light, so only the PL spectrum is left.
 All powers and currents are in relative units: the model gives spectra and
 relative intensities, not absolute radiometric values.
 
+## Reference data and sources
+
+`data/reference_spectra.json` holds the measured reference pack for the three
+dyes: absorption and emission maxima, band FWHMs measured on the shipped curves,
+quantum yields with their solvent, molar extinction coefficients, Stokes shifts,
+notes and, for each dye, a digitized absorption and emission curve at 1 nm.
+`data/SOURCES.md` gives a source and a confidence for every number, plus the
+list of what could not be verified; `data/raw/` keeps the raw source data so
+every digitized curve can be re-derived.
+
+Where the sources disagree, the pack says so instead of hiding it. The main
+open points:
+
+- Cy3 and Cy5 curves come from FPbase, which does not state the provenance of
+  its dye records; the fully documented curves for the same chromophores are
+  PhotochemCAD records in methanol, kept in `data/raw/`.
+- No digitized Cy3/Cy5 curve in aqueous buffer was obtainable (vendor
+  SpectraViewer and several publishers block automated access), so the aqueous
+  numbers are vendor values.
+- Emission FWHM is instrument-limited: the PhotochemCAD emission curve was
+  recorded with a 4.25 nm bandwidth.
+- Methylene blue's widely quoted extinction coefficient of 95,000 had no
+  citable primary source and was left out.
+- Cy5 in methanol is reported at 0.4 by PhotochemCAD, while an integrating-sphere
+  measurement gives 0.17.
+
 ## Layout
 
 ```
 plsim/bands.py          Gaussian band shapes
 plsim/sources.py        xenon lamp, monochromator, harmonic filter
-plsim/samples.py        dye sample database
+plsim/samples.py        dye sample database (Gaussian model)
+plsim/reference.py      loader for the measured reference pack
+data/                   measured reference pack + sources + raw data
 plsim/detector.py       silicon photodiode
 plsim/spectrometer.py   the instrument, producing a PL scan
 plsim/plot.py           matplotlib rendering

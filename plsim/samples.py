@@ -1,8 +1,9 @@
-"""Sample database: organic dyes.
+"""Sample database: the dyes of the class task, as a Gaussian model.
 
-Band centres and quantum yields are typical literature values for the free dye
-in the given solvent, rounded. The band shapes are Gaussian approximations of
-the real, slightly asymmetric bands.
+Band centres and quantum yields are the sourced values from `data/SOURCES.md`,
+where each number carries its solvent and its spread. The band shapes are
+Gaussian approximations; `plsim/reference.py` loads the measured band shapes
+for the same three dyes.
 """
 
 from __future__ import annotations
@@ -19,12 +20,14 @@ class Dye:
     """A fluorescent sample: one absorption band and one emission band."""
 
     name: str
-    absorption: GaussianBand
-    emission: GaussianBand
+    absorption: object
+    emission: object
     quantum_yield: float
     peak_absorbance: float = 1.0
     solvent: str = "water"
+    extinction_coefficient: float | None = None
     note: str = ""
+    source: str = ""
 
     def absorbance(self, wavelength_nm):
         """Absorbance (optical density) of the sample at that wavelength."""
@@ -57,39 +60,63 @@ class Dye:
 SAMPLE_DATABASE = {
     "cy3": Dye(
         name="Cy3",
-        absorption=GaussianBand(center_nm=550.0, fwhm_nm=40.0),
-        emission=GaussianBand(center_nm=570.0, fwhm_nm=32.0),
+        absorption=GaussianBand(center_nm=550.0, fwhm_nm=45.0),
+        emission=GaussianBand(center_nm=570.0, fwhm_nm=28.6),
         quantum_yield=0.04,
-        solvent="PBS",
-        note="Cyanine dye: absorption maximum 550 nm, emission maximum 570 nm, quantum yield ~0.04.",
+        solvent="PBS, pH 7.4 (free dye)",
+        extinction_coefficient=150000.0,
+        note=(
+            "Absorption 550 nm / emission 570 nm (vendor values; the literature spreads 544-555 nm and "
+            "563-570 nm). Quantum yield 0.04 holds for the free dye in PBS; conjugates and sulfo-Cy3 are "
+            "reported at 0.10-0.31, so quote it together with the solvent."
+        ),
+        source="data/SOURCES.md",
     ),
     "cy5": Dye(
         name="Cy5",
-        absorption=GaussianBand(center_nm=649.0, fwhm_nm=40.0),
-        emission=GaussianBand(center_nm=670.0, fwhm_nm=32.0),
+        absorption=GaussianBand(center_nm=649.0, fwhm_nm=37.7),
+        emission=GaussianBand(center_nm=670.0, fwhm_nm=33.5),
         quantum_yield=0.28,
-        solvent="PBS",
-        note="Cyanine dye: absorption maximum 649 nm, emission maximum 670 nm, quantum yield ~0.2-0.3.",
+        solvent="water / PBS (free dye)",
+        extinction_coefficient=250000.0,
+        note=(
+            "Absorption 649 nm / emission 670 nm. Quantum yield 0.28 is the value cited for Cy5 in aqueous "
+            "solution; individual measurements span 0.19-0.30, and 0.4 in methanol is disputed by an "
+            "integrating-sphere measurement of 0.17."
+        ),
+        source="data/SOURCES.md",
     ),
     "methylene-blue": Dye(
         name="Methylene blue",
-        absorption=GaussianBand(center_nm=664.0, fwhm_nm=55.0),
-        emission=GaussianBand(center_nm=686.0, fwhm_nm=45.0),
-        quantum_yield=0.04,
+        absorption=GaussianBand(center_nm=664.0, fwhm_nm=55.9),
+        emission=GaussianBand(center_nm=685.0, fwhm_nm=48.7),
+        quantum_yield=0.02,
         solvent="water",
-        note="Thiazine dye: absorption maximum 664 nm, emission maximum 686 nm, quantum yield ~0.04.",
+        extinction_coefficient=67000.0,
+        note=(
+            "Absorption 664 nm / emission 685 nm. Quantum yield 0.02 in water, which is the value used when "
+            "methylene blue serves as a reference in photodynamic therapy; the classic ethanol value is 0.04. "
+            "The molar extinction coefficient depends on how the dimer is treated: 67,000-74,000 in dilute "
+            "water as measured, 107,800 for the deconvoluted monomer."
+        ),
+        source="data/SOURCES.md",
     ),
 }
 
 
-def get_sample(name):
-    """Look a dye up by name, ignoring case, spaces and dashes."""
+def normalise_key(name):
+    """Dye names are matched ignoring case, spaces and dashes."""
     key = name.strip().lower().replace("_", "-").replace(" ", "-")
-    if key == "mb":
-        key = "methylene-blue"
+    return "methylene-blue" if key == "mb" else key
+
+
+def get_sample(name, database=None):
+    """Look a dye up by name in the given database (the Gaussian model by default)."""
+    database = SAMPLE_DATABASE if database is None else database
+    key = normalise_key(name)
     try:
-        return SAMPLE_DATABASE[key]
+        return database[key]
     except KeyError:
         raise KeyError(
-            "unknown sample {!r}; available: {}".format(name, ", ".join(SAMPLE_DATABASE))
+            "unknown sample {!r}; available: {}".format(name, ", ".join(database))
         ) from None

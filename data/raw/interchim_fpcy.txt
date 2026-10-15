@@ -1,0 +1,2098 @@
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.1 
+ 
+CYanine Fluorophores 
+  
+● CYanine dyes key information (fluorescence) 
+CYanine2 dye 
+ 
+Cy2 derivates:  
+Max λ Abs.Em.: 490 / 510nm 
+EC: 150 000 M-1cm-1 
+QY: 0.12  
+ 
+See description and available derivatives 
+ 
+CYanine3 dye 
+ 
+Cy3 derivates:  
+Max λ Abs.Em.: 555 / 570nm 
+EC: 150 000 M-1cm-1 
+QY: 0.31 
+ 
+See description and available derivatives 
+ 
+Flow cytometry laser line: 532 or 555 nm 
+Microscopy laser line: 532 or 555 nm  
+DiSulfoCy3 derivates:  
+Max λ Abs.Em.: 548 / 563nm 
+EC: 162 000 M-1cm-1 
+QY: 0.15 
+CF260: 0.03 CF280: 0.06 
+ 
+MonoSulfoCy3 derivates:  
+Max λ Abs.Em.: 548 / 567nm 
+EC: 162 000 M-1cm-1 
+QY: 0.15 
+ 
+See available derivatives 
+ 
+CYanine3.5 dye 
+ 
+Cy3.5 derivates:  
+Max λ Abs.Em.: 591 / 604nm 
+EC: 116 000 M-1cm-1 
+QY: 0.35 
+ 
+See description and available derivatives 
+ 
+DiSulfoCy3.5 derivates:  
+Max λ Abs.Em.: 591 / 604bm 
+EC: 116 000 M-1cm-1 
+QY: 0.35 
+ 
+TetraSulfoCy3.5 derivates 
+Max λ Abs.Em.: 581 / 596nm 
+ 
+See available derivatives 
+CYanine5 dye 
+ 
+Cy5 derivates:   
+Maxλ Abs.Em.: 646 / 662nm 
+EC: 250 000 M-1cm-1 
+QY: 0.28 
+ 
+See description and available derivatives 
+ 
+ 
+DiSulfoCy5 derivates:  
+Maxλ Abs.Em.: 646 / 662nm 
+EC: 271 000 M-1cm-1 
+QY: 0.2 
+CF260: 0.13 CF280: 0.13 
+ 
+See available derivatives 
+CYanine5.5 dye 
+ 
+Cy5.5 derivates:  
+Max λ Abs.Em.: 673 / 707nm 
+EC: 209 000 M-1cm-1 
+QY: 0.2 
+ 
+See description and available derivatives 
+DiSulfoCy5.5 derivates:   
+Max λ Abs.Em.: 673 / 707 
+EC: 209 000 M-1cm-1 
+QY: 0.2 
+CF260: 0.11 CF280: 0.08 
+ 
+TetraSulfoCy5.5 derivates:  
+Max λ Abs.Em.: 678 / 701nm   
+ 
+See available derivatives 
+CYanine7 dye (cont.)  
+CYanine7.5 dye (cont.)  
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.2 
+ 
+ 
+CYanine7 dye 
+ 
+Cy7 derivates:   
+Max λ Abs.Em.: 750 / 773nm 
+EC: 199 000 M-1cm-1 
+QY: 0.3 
+ 
+See description and available derivatives 
+DiSulfoCy7 derivates:  
+Improved Cy5 (rigidified polymethine chain) 
+Max λ Abs.Em.: 750 / 773nm 
+EC: 240 600 M-1cm-1 
+CF260: 0.04 CF280: 0.04 
+ 
+SulfoCy7 derivates  
+See available derivatives 
+CYanine7.5 dye 
+ 
+Cy7.5 derivates:  
+Max λ Abs.Em.: 788 / 808nm 
+EC: 223-240 000 M-1cm-1 
+ 
+See description and available derivatives 
+ 
+ 
+ 
+● CYanine dyes fluorescence and applications 
+() 
+The popular family of cyanine dyes, Cy2, Cy3, Cy5, Cy7, are based on the partially saturated indole nitrogen 
+heterocyclic nucleus with two aromatic units being connected via a polyalkene bridge of varying carbon number. 
+These probes exhibit fluorescence excitation and emission profiles that  are similar to many of the traditional 
+dyes, such as fluorescein and tetramethylrhodamine, but with enhanced water solubility, photostability, and 
+higher quantum yields. Most of the cyanine dyes are more environmentally stable than their traditional 
+counterparts, rendering their fluorescence emission intensity less sensitive to pH and organic mounting media. In 
+a manner similar to the Al  exaF luors, the excitation wavelengths of the Cy series of synthetic dyes are tuned 
+specifically for use with common laser and arc-discharge sources, and the fluorescence emission can be detected 
+with traditional filter combinations. 
+ 
+Main fluorescent characteristics are displayed in above table.  
+ 
+The cyanine dyes generally have broader absorption spectral regions than mem bers of the Al   exaFl uor family, 
+making them somewhat more versatile in the choice of laser excitation sources for confocal microscopy. For 
+example, using the 547-nanometer spectral line from an argon-ion laser, Cy2 is about twice as efficient in 
+fluorescence emission as Al   exaFl uor 488. In an analogous manner, the 514-nanometer argon-ion laser line 
+excites Cy3 with a much higher efficiency than Al   exaFl  uor 546, a spectrally similar probe. Emission profiles of 
+the cyanine dyes are comparable in spectral width to the Al  exaFl uor series. 
+ 
+The Cy5 fluorophore is very efficiently excited by the 647-nanometer spectral line of the krypton-argon laser, 
+the 633-nanometer line of the red helium-neon laser, or the 650-nanometer line of the red diode laser, providing 
+versatility in laser choice. Because the emission spectral profile is significantly removed from traditional 
+fluorophores excited by ultraviolet and blue illumination, Cy5 is often utilized as a third fluorophore in triple 
+labeling experiments. However, similar to other probes with fluorescence emission in the far-red spectral region, 
+Cy5 is not visible to the human eye and can only be detected electronically (using a specialized CCD camera 
+system or photomultiplier). Therefore, the probe is seldom used in conventional widefield fluorescence 
+experiments. 
+ 
+CYanine dyes are available as several analogs and derivatives, as listed below. 
+ 
+● Mono and Bi-functionalized CYanine dyes  
+ Mono-reactive dyes are suitable for targeted, precise labeling of proteins and oligonucleotides 
+ BiFunctionalized  dyes are more suitable for general strong labeling, such as bis-NHS amine--reactive. 
+ 
+● Sulfonated CYanine dyes  
+• sulfonated derivatives of CYanine fluorochrome confers water-solubility. This mak the dye soluble in aqueous 
+buffer, but mosre remarkably, this confers hydrophilicity to the labeld molecule, improving solubility and 
+stability in solution, but also hydrodynamics (mobility, steric availability, bioactivity). 
+• An alternative approach is to use pegylated Cyanine derivates, which length-adjustable spacer also confers 
+water solubility but also flexibility between the dye and the conjugated molecule (se next paragraph)).  
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.3 
+ 
+ 
+● Pegylated Cyanine 
+A PEG (PolyEthyleneGlycol) spacer in included between the Cyanine dye and the functional group. It imparts 
+benefits starting with water solubility, but also flexibility and adjustable length of the spacer to reduce steric 
+hindrance. They so may improve the bioactivity of the conjugates. PEOn (PolyEthylOxy) compounds are 
+synthetic versions, so single component, while PEGx compounds are made from purified PEG (poly-disperse 
+spacer length with CV of <10%) 
+CYanine5-PEGs     MW 5000Da  MW 3400 MW 2000 
+ Cy5 PEGx Amine  (Cy5-PEG-NH2) 1L0970, 5mg  B0E2T1  AWJSB1 
+ Cy5 PEGx Acid (Cy5-PEG-COOH) 1L0980, 5mg  AWJSA0 AWJSA1 
+ Cy5 PEGx Hydroxyl  (Cy5-PEG-OH) 1L0990, 5mg 
+ Cy5 PEGx Thiol (Cy5-PEG-SH)   1B7350, 5mg 
+ Cy5 PEGx NHS (Cy5-PEG-  1I2240, 5mg  1I2230  1I2220 
+ Cy5 PEGx Maleimide (Cy5-PEG-MAL) 1L1000, 5mg 
+ Cy5 PEGx Biotin (Cy5-PEG-Biot)  1L1010, 5mg 
+Other MW: please inquire 1to 40KDa 
+Other CYanines: please inquire Cy3/5/5.5/7/7.5 
+i.e.  Cy3-PEGx-NHS MW2000Da (AWJS60), MW3400Da (B36M60) 
+ 
+● Functionalized CYanine dyes 
+CYanine fluorochrome derivatized by a variety of functional groups are used as agents for labeling molecules by 
+conventional conjugation techniques: for example, 
+COOH and Amine derivated are used in organic synthesis for many reactions, as EDC-mediated amidation of respectively, amines and 
+carboxyls. 
+NHS ester is used to label amine-containing molecules directly in aqueous solutions, while Maleimide derivates can be used to label 
+sulfhydryl-containing molecules. 
+Azide- and Alkyne-derivates (incl.DBCO, TCO) are used in click chemistry reactions to create oriented conjugates in bioorthogonal 
+conditions. 
+ 
+Functional group Cyanines 
+Technical sheet[] 
+Application overview 
+Carboxyl 
+NT-Carbox 
+FT-CY3CA0 in organic synthesis for many reactions 
+for labeling amine groups mediated by EDC 
+Amino 
+NT-Amine 
+FT-CY3AM0 derivatization of various targets by the reaction withelectrophilic groups,  
+in organic synthesis, and also for labeling carboxyl groups mediated by EDC 
+in aqueous solutions, or by enzymatical reactions involving transamination. 
+NHS 
+NT-NHSuccinmide 
+FT-BB7493 for labeling amino groups in mild aqueous conditions 
+TFP  amine reactive 
+STP  amine reactive 
+Maleimide 
+NT-Maleime 
+FT-JO6660 for labeling thiol groups 
+Hydrazide 
+NT-Hydrazine 
+FT-LQV050 reacts with carbonyl groups 
+Azide 
+NT-Azide_ 
+FT-HO7250 for labeling alkyne groups and other Click Chemistry partners (DBCO, 
+TCO)  
+Alkyne 
+NT-Alkyne 
+FT-1A6320 for labeling azide groups (Click Chemistry) 
+DBCO 
+NT-Alkyne/DBCO 
+FT-DQP790[] 
+FT-AWHFX0[] 
+FT-1Q7081[PEGx] 
+CycloAlkynes, for strain-promoted Click reactions 
+TCO 
+NT-Alkyne/TCO 
+ trans-CycloOctenes, for strain-promoted Click reactions 
+Tetrazine 
+NT-Tetrazine 
+FT-WXS720 reacts with strained alkenes (TCO) . 
+AminoOxy 
+NT-AminoOxy 
+(AWJSC1) For Oxime ligation (with aldehydes) 
+ 
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.4 
+ 
+● CYanine conjugates: ligands, proteins, haptens 
+• CYanine labeled compounds are available as well: please inquire for phalloidin, (strep)avidin, biotin, PEGs, 
+Dextrans, Lipids (PS,…) 
+ 
+● CYanine Labeling Kits 
+3Dye 2D DI GE (CY2/CY3/CY5) labeling kit (EV0870) 
+ 
+ 
+CYanine2 dye 
+() 
+● CYanine2 (Cy2)  An orange-to-red fluorescence-emitting dye. Can replace Fluoresceins.  
+Abs./Em.: 489 / 506nm EC: 150 000 QY: 0.12 
+Also known as Cy2. 
+Alternative superior dye is FluoProbes488 (Brighter, unrivalled photostability). 
+ 
+CYanine2 - NHS ester, minimal dye  #FP-LV2330, 5nM FP-LV2332, 25nM  
+ 
+ 
+CYanine3 dye 
+● CYanine3 : An orange-to-red fluorescence-emitting dye.  
+Abs./Em.: 555/567nm EC: 150 000 QY: 0.12 
+Also known as Cy3. 
+CYanine3 matches standard filter set for Tetramethylrhodamine (TRITC), Cy3®, Al  exaFl uor® 546, and Dy  
+Light® 549, Chromeo546 and Colorada550 Z. See alternative superior dye: FluoProbes547H. 
+Cyanine3 is one of the most broadly used fluorophores which can be detected by various fluoromet ers, imagers, 
+and microscopes. Due to inherently high extinction coefficient, this dye is also easily detected by naked eye on 
+gels, and in solution. Can replace TRITC, A555, AF546 and DL549&550 dyes, Chromeo546.  
+ 
+Cyanine3 is a popular fluorophore for microscopy, imaging, and other applications. The dye has a very high molar extinction coefficient and 
+has enhanced fluorescence upon binding to proteins. It makes it a very bright label for biomolecules.  
+ 
+Its pH insensitive orange-fluorescent dye that can be excited using the 532 nm or 555 nm laser line and visualized with TRITC 
+(tetramethylrhodamine) filter sets in Microscopy and in Flow cytometry. Cy3 give less background than TAMRA and most other commonly 
+used fluorescent dyes. 
+ 
+A sulfonated and water soluble analog, sulfo-Cyanine3, is available and recommended for the labeling of sensitive proteins in purely 
+aqueous environments. It possesses very high extinction coefficient and good quantum yield, outstanding photostability, and high 
+hydrophilicity due to the presence of two sulfo groups. It is negatively charged at physiological pH values. 
+ 
+ 
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.5 
+ 
+Product name 
+cat.number/qty§ 
+MW 
+g·mol-1 
+(+added MW) 
+λ 
+abs./em. 
+nm 
+mol. abs. 
+ 
+M-1cm-1 
+Comment, structure 
+ 
+ 
+CYanine3 –COOH 
+(M) FP-CY3CA0, 1mg  
+ FP-CY3CA1, 5mg 
+ FP-CY3CA4, 100mg 
+CAS: 1144107-76-5, 1361402-15-4, 
+1251915-29-3 [I-] 
+ 
+493.08 555/570 150 000 Soluble in organic solvents (DMF, 
+DMSO, dichloromethane, chloroform, 
+MeCN, alcohols).  
+Insoluble in water 
+ 
+ 
+CYanine3 –Amine 
+(M) FP-WZE090, 1mg 
+ FP-WZE092, 25mg 
+ FP-WZE094, 100mg 
+Also FP-CY3AM0   
+627.73 “ “ Moderate solubility in water, good in 
+polar organic solvents (DMF, 
+DMSO, alcohols)  
+ 
+ 
+CYanine3 – NHS, K salt 
+(M) FP-BB7493, 1mg 
+ FP-BB7495, 25mg 
+ FP-BB7497, 100mg 
+FP-1H4680, 10mM solution  
+in DMSO (5 / 1 0/ 25nmol)  ) 
+CAS: 1032678-38-8, 1032815-92-1 
+590.15 
+[+474.20] 
+“ “ Soluble in organic solvents (DMSO, 
+DMF, dichloromethane);  
+Low solubility in water 
+ 
+ 
+CYanine3 –Maleimide, K salt 
+(M) FP-OO2030, 1 mg 
+ FP-OO2032, 25 mg 
+ FP-OO2034, 100 mg 
+ 
+615.20 “ “   
+CYanine3 –Alkyne, K salt 
+(M) FP-1A6320, 1mg  
+ 
+530.14 “ “ Soluble in organic solvents (DMF, DMSO, 
+dichloromethane);  
+Insoluble in water  
+ 
+CYanine3 –DBCO, K salt 
+(M) FP-WXS880, 1mg  
+Solubility is good in DMF, DMSO, DCM, 
+alcohols  
+793.48 “ “ 
+ 
+ 
+CYanine3 –Azide, K salt 
+(M) FP-HO7250, 1mg 
+FP-EV0900, 10mM solution  
+in DMSO (5 / 1 0/ 25nmol)   
+ 
+575.19 
+ 
+“ “ Soluble in organic solvents (DMF, 
+DMSO, dichloromethane), insoluble in 
+water  
+ 
+ 
+CYanine3 –Azide, K salt 
+(M) FP-LQV020, 1mg 
+ 
+812.88 555/565  
+ 
+ 
+CYanine3 –Hydrazide, K salt 
+(M) FP-SJH870, 1mg  
+ 
+543.57 “ “ Moderate solubility in water, good in 
+polar organic solvents (DMF, DMSO, 
+alcohols)  
+ 
+ 
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.6 
+ 
+CYanine3 – Tetrazine, BF4 salt 
+(M) FP-AW2ND0, 1mg  
+ 
+727.64 
+[+611.4] 
+“ “  
+good solubility in DMF, DMSO, 
+DCM 
+ 
+ 
+ 
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.7 
+ 
+ 
+Sulfo-CYanine3 derivatives 
+Product name 
+cat.number/qty§ 
+MW 
+g·mol-1 
+(+added MW) 
+λ 
+abs./em. 
+nm 
+mol. abs. 
+ 
+M-1cm-1 
+Comment, structure 
+ 
+ 
+Mono-Sulfo-CYanine3– COOH 
+(M) FP-1I5880, 1mg 
+ FP-1I5881, 25mg 
+ FP-1I5883, 100mg 
+ 
+536.68 548 / 563 162 000 Purple solid 
+Good solubility in water, DMSO, DMF, 
+MetoH and Acetonitrile 
+Shows a big tolerance to pH value and 
+matchless photostability. 
+ 
+DiSulfo-CYanine3 – COOH,  
+Na salt 
+(M) FP-1E1700, 5mg  
+ FP-1E1701, 25mg 
+ FP-1E1703, 100mg 
+Also as K salt (FP-1E1704/6/8)  
+Also as TFA salt (FP-LQV170) 
+  
+638.17  
+(Na salt) 
+ 
+““ “ Soluble Good in water, DMF, 
+DMSO. Low in non-polar organic 
+solvents. 
+ 
+ 
+DiSulfo-CYanine3 – bis-COOH, 
+TFA salt  
+(M) FP-XEP720, 1mg  
+ 
+ 
+830.88 
+“ “ soluble in DMSO   
+DiSulfo-CYanine3 – Amine 
+(M) FP-0B8310, 1mg 
+ 
+714.94 “548/563 “ Good solubility in water, 
+alcohols, DMSO, DMF 
+ 
+ 
+Mono-Sulfo-CYanine3 – NHS 
+(M) FP-IO1890, 1mg 
+ 
+633.76 “ “ good solubility in water, DMSO, DMF, 
+EtOH, MeOH and Acetonitrile 
+ 
+ 
+DiSulfo-CYanine3 – NHS 
+(M) FP-1B7980, 1mg  
+Also as TFA salt (FP-LQU980) 
+ 
+735.80 “ “ Solubility very high in water, good 
+in polar organic solvents (DMF, 
+DMSO) 
+ 
+ 
+DiSulfo-CYanine3 – bis-NHS, 
+TEA salt 
+(M) FP-XEP730, 1mg  
+ 
+ 
+1012.20 
+“ “ soluble in DMSO   
+TriSulfo-CYanine3 NHS 
+ FP-1I1920,  1mg 
+The sulfopropyl group provides 
+increased fluorescence brightness, 
+improved photostability, and lower 
+nonspecific binding 
+ 
+1024.94 
+(822.96) 
+ 
+“555/580 “   
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.8 
+ 
+DiSulfo-CYanine3 – Maleimide, 
+K salt 
+(M) FP-SJI050, 1mg  
+ FP-SJI052, 25mg  
+  FP-SJI054, 100mg 
+ 
+776.96 “ “ soluble in water, DMSO, DMF 
+ 
+ 
+DiSulfo-CYanine3 – Maleimide, 
+TFA- salt 
+ FP-LQV010, 1mg 
+ 
+938.0 
+CF3CO2 salt 
+555/ 565 
+ 
+ 
+ 
+(bears 2 sulfo, ethyl) 
+ 
+Mono-Sulfo-CYanine3–Alkyne, 
+Na salt 
+(M) FP-1C4620, 1mg 
+ 
+573.75 550 / 567 96 800 
+QY: 0.15 
+ 
+Soluble in DMF, DMSO, MetOH, 
+EtOH and acetonitrile.  
+Poorly soluble in water 
+ 
+(bears 1 sulfo, 1 methyl) 
+ 
+DiSulfo-CYanine3 – Alkyne, Na 
+salt 
+(M) FP-1C4630, 1mg  
+Also as K salt (FP-0B8390)   
+ 
+675.79  
+(Na salt) 
+ 
+691.90  
+(K salt) 
+[+653.2] 
+548 / 567 
+ 
+ 
+ 
+ 
+162 000 
+QY: 0.15 
+ 
+ 
+ 
+Dark red solid 
+ 
+Good solubility in water, and polar 
+organic solvents (DMF, DMSO);  
+Insoluble in organic solvents 
+(DCM, Chloroform).  
+ 
+ 
+Di-Sulfo-CYanine3 – Alkyne, 
+TFA- salt 
+ FP-LQV030, 1mg 
+ 
+ 
+781.86 555 / 565  
+(bears 2 sulfo, 1 ethyl) 
+ 
+Tri-Sulfo-CYanine3-Alkyne 
+ FP-1C8831, 5mg 
+ 
+ 
+761.93 555/580 151 000 
+(bears 3 Sulfo, 1 butylSulfo 
+ 
+Mono-Sulfo-CYanine3 – Azide 
+(M) FP-1C4650, 1mg 
+ 
+618.8 “ “ Good solubility in water, DMSO, DMF, MeOH and Acetonitrile 
+ 
+ 
+DiSulfo-CYanine3 – Azide,  
+Na salt 
+ FP-KV5730, 1m 
+ FP-KV5731, 5mg  
+Also as K salt (FP-1C4660)   
+ 
+ 
+ 
+ 
+ 
+720.85 
+“ 
+ 
+ 
+ 
+ 
+“ Very soluble in water  
+DiSulfo-CYanine3 - Azide,  
+TFA salt 
+(M) FP-LQV020, 1mg 
+ 
+ 
+812.88 555 / 565    
+DiSulfo-CYanine3 – HydrAzide, 
+TFA salt 
+ FP-LQV050, 1mg 
+ 
+872.85 555 / 565 -   
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.9 
+ 
+DiSulfo-CYanine3 – Tetrazine 
+(M) FP-0B8300, 1mg  
+ 
+838.05 “ “ Soluble in in water, DMF, 
+DMSO 
+ 
+ 
+TriSulfo-CYanine3 – Tetrazine 
+(M) FP-AW2NI0, 1mg  
+ 
+894.05 550/570 150 000 Soluble in in water, DMF, 
+DMSO 
+ 
+ 
+ 
+ 
+ 
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.10 
+ 
+CYanine3.5 dye 
+● CYanine3.5 can replace SulfoRhodamine 101.  
+Abs./Em.: 591 / 604nm EC: 116 000 QY: 0.36 
+Also known as Cy3.5. 
+CYanine3.5 matches standard filter set for SR101(SulfoRhodamine101), TR. 
+See also alternative superior dye:FluoProbes594. 
+ 
+Product name 
+cat.number/qty§ 
+MW 
+g·mol-1 
+(+added MW) 
+λ 
+abs./em. 
+nm 
+mol. abs. 
+ 
+M-1cm-1 
+Comment, structure 
+ 
+ 
+CYanine3.5 –COOH 
+(M) FP-SJH880, 1mg  
+CAS: 1144107-78-9 
+ 
+593.20 591 /604 116 000 
+ 
+  
+ 
+ 
+CYanine3.5 – Amine 
+(M) Inquire  
+ 
+ “ “ 
+ 
+ 
+CYanine3.5 – NHS 
+(M) FP-FZ8730, 1mg  
+Inquire for 10mM solution  
+in DMSO (5 / 1 0/ 25nmol)   
+ 
+690.27 “ “ Dark purple powder 
+Soluble in organic solvents (DMF, 
+DMSO, dichloromethane), insoluble 
+in water 
+ 
+ 
+CYanine3.5 – Maleimide 
+(M) Inquire 
+ 
+ “ “ 
+ 
+ 
+CYanine3.5 – Alkyne 
+(M) FP-AXFCF1, 5mg 
+ 
+630.26 “ “ 
+   >63mg/mL in DMSO  
+ 
+CYanine3.5 – Azide 
+ FP-CY3AZ0, 1mg 
+FP-FZ8760, 10mM solution  
+in DMSO (5 / 1 0/ 25nmol)  
+717.38 
+[681.9] 
+“ “ soluble in organic solvents (DMF, 
+DMSO, dichloromethane), insoluble 
+in water 
+ 
+ 
+CYanine3.5 – Hydrazide 
+(M) inquire  
+ 
+ “ “ 
+ 
+ 
+ 
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.11 
+ 
+ 
+Sulfo-CYanine3.5 derivatives 
+ 
+Product name 
+cat.number/qty§ 
+MW 
+g·mol-1 
+(+added MW) 
+λ 
+abs./em. 
+nm 
+mol. abs. 
+ 
+M-1cm-1 
+Comment, structure 
+ 
+ 
+Tetra-Sulfo-CYanine3.5 –
+COOH, TFA salt  
+(M) FP-LQV340, 1mg 
+ 
+1161.15     
+Tetra-Sulfo-CYanine3.5 –
+Amine, TFA salt 
+(M) FP-LQV180, 1mg 
+ 
+ 
+1005.04     
+Tetra-Sulfo- CYanine3.5 – NHS, 
+TEA salt  
+(M) FP-LQV060 , 1mg 
+  
+1291.66     
+Tetra-Sulfo-CYanine3.5 – 
+Maleimide, TFA salt  
+ FP-LQV350, 1mg 
+ 
+1198.24 
+CF3CO2 salt 581 / 596  bears different substituents (4 sulfo, ethyl) 
+ 
+Tetra-Sulfo- CYanine3.5 – 
+Maleimide, TFA salt 
+(M) FP-LQV350) 
+  
+1198.24     
+ 
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.12 
+ 
+ 
+CYanine5 dye 
+ 
+● CYanine5 : A far-red fluorescence-emitting dye.  
+Excitation/emission maximum: 646 / 662nm EC: 250 000 QY: 0.12 
+Also known as Cy5. 
+CYanine3 matches standard fiter set for TMR, Cy5®, Al exa Fl uor® 647, and DyL  ight® 649&650, CF647, 
+C645A, PF647 and Colo rada645Z for all applications. See alternative superior dye: FluoProbes647H. 
+ 
+Cyanine5 is an extremely popular fluorophore. This dye emits in red region. It has an outstanding extinction 
+coefficient, and a good fluorescence quantum yield, and is therefore very bright. It is very photostable; its ability 
+to blink in the presence of thiols makes it a dye of choice for STORM super-resolution microscopy. The dye is 
+extensively used in qPCR. It forms a FRET pair with Cyanine3 as donor. 
+This dye is available as a sulfonated derivates for conferring hydrophilicity: Sulfo-Cyanine5 is a water soluble 
+fluorophore for the red part of the spectrum. Its extinction coefficient is among the highest for known dyes, and 
+its quantum yield is also good. The dye is very photostable. When thiols are present in the medium, sulfo -
+Cyanine5 blinks upon very intense laser irradiation - it is a dye of choice for STORM super-resolution 
+microscopy. 
+ 
+Cy5 is excited maximally at 650 nm to about 98% of maximum with a krypton/argon laser (647 nm line) or to 
+about 63% of maximum with a helium/neon laser (633 nm line). It fluoresce s maximally at 670 nm, that has a 
+lower autofluorescence of biological specimens than shorter wavelengths. Cy5 can  be used with a variety of 
+other fluorophores for multiple labeling due to a wide separation of its emission from that of shorter wavelength -
+emitting fluorophores. However, emission cannot be seen well by eye, and Cy5 cannot be excited optimally with 
+a mercury lamp. Therefore, this dye is not recommended for use with conventional epifluorescence microscopes. 
+It is most commonly visualized with a confocal microscope equipped with an appropriate laser for excitation and 
+a far-red detector. Cy5, as FP547H, is less expensive and equally bright alternative to Allophycocyanin 
+conjugates for flow cytometry.  
+CYanine5 fluorophore has become an incredibly popular label in life science research and diagnostics. 
+Fluorophore emission has maximum in red region, where many CCD detectors have maximum sensitivity, and 
+biological objects have low background. Dye color is very intense, therefore quantity as small as 1 nanomol can 
+be detected in gel electrophoresis by naked eye.  
+ 
+ 
+ 
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.13 
+ 
+Product name 
+cat.number/qty* 
+MW 
+(g·mol-1) 
++added MW 
+λ 
+abs./em. 
+(nm) 
+mol. abs. 
+ 
+(M-1cm-1) 
+Comment, structure 
+ 
+ 
+CYanine5 –COOH, Cl salt 
+(M) FP-OO2380, 1mg  
+ 
+519.2 646/662 250 000 soluble in organic solvents (DMF, 
+DMSO, dichloromethane), MeOH, 
+Alcohols, insoluble in water  
+ 
+CYanine5 –Amine, Cl salt 
+(M) FP-CY5AM0, 1mg 
+ 
+653.77 " " moderate solubility in water, 
+good in polar organic 
+solvents (DMF, DMSO, 
+alcohols)  
+ 
+ 
+CYanine5 – NHS, Cl salt 
+(M) FP-BB2070, 1mg 
+ FP-BB2074, 25mg 
+ FP-BB2077, 100mg 
+FP-SJH900, 10mM solution  
+in DMSO (5 / 1 0/ 25nmol)   
+ 
+616.19 “ “ Good solubility  in polar (DMSO, 
+DMF) and chlorinated (DCM, 
+chloroform) organic solvents, low 
+solubility in water  
+  
+ 
+ 
+CYanine5 –Maleimide, Cl salt 
+(M) FP-JO6660, 1mg 
+ FP-JO6662, 25mg 
+ FP-JO6664, 100mg 
+ 
+641.24 “ “ Soluble in organic solvents 
+(DMF, DMSO, 
+dichloromethane), insoluble in 
+water  
+ 
+ 
+CYanine5 –Alkyne, Cl salt 
+(M) FP-OO5590, 1mg  
+ 
+556.18 " " Good solubility in dichloromethane, 
+DMF, DMSO, alcohols; 
+Low solubility in water 
+ 
+ 
+CYanine5 –DBCO, Cl salt 
+(M) FP-AWHFX0, 1mg  
+ 
+929.03 
+[928.4] 
+" " Good isolubility in DMF, 
+DMSO, chlorinated organic 
+solvents  
+ 
+ 
+CYanine5 –Azide, Cl salt 
+(M) FP-CY5AZ0, 1mg 
+FP-EV0910, 10mM solution  
+in DMSO (5 / 1 0/ 25nmol)   
+(J) 
+ 
+ 
+601.22 
+[+565.8] 
+ 
+ 
+" "  
+Soluble in organic solvents 
+(DMSO, DMF, 
+dichloromethane); 
+Low solubility in water  
+  
+ 
+CYanine5 – HydrAzide 
+ FP-IO2490, 1mg 
+ 
+569.61 
+ 
+“ “ Dark blue powder / 
+Solution 
+Significant solubility in 
+water, good in polar 
+organic solvents  (DMF, 
+DMSO, alcohols)  
+ 
+ 
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.14 
+ 
+CYanine5 – Tetrazine, BF4 salt 
+(M) FP-AW2NE0, 1mg  
+ 
+811.84 
+[637.4] 
+“ “  
+good solubility in DMF, DMSO, 
+DCM 
+ 
+ 
+More:  CYanine5-PEG-Thiol (FP-1B7350) , CYanine5 Boc-hydrazide 
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.15 
+ 
+Sulfo-CYanine5 derivatives 
+Product name 
+cat.number/qty§ 
+MW 
+g·mol-1 
+(+added MW) 
+λ 
+abs./em. 
+nm 
+mol. abs. 
+ 
+M-1cm-1 
+Comment, structure 
+ 
+ 
+Mono-Sulfo-CYanine5 – COOH 
+(M) FP-1I5890, 1mg  
+ FP-1I5891, 5mg 
+ FP-1I5895, 100mg 
+ 
+562.72 “ “ Soluble in DMSO, DMF, methanol 
+ 
+ 
+DiSulfo-CYanine5 – COOH 
+(M) FP-KV5740, 1mg  
+ FP-KV5741, 5mg 
+Also as TFA salt (FP-LQV190) 
+MW: 770.83
+  
+664.76 646/662 271 000 CAS : 1121756-16-8, 1144162-
+77-5  
+Good solubility in water, DMF, 
+DMSO. Low in non-polar 
+organic solvents. 
+ 
+DiSulfo-CYanine5 – Amine  
+(M) FP-0B8450, 1mg 
+ FP-0B8451, 5mg 
+ FP-0B8455, 100mg 
+ 
+740.98 “ “ Good in water, DMF, DMSO, 
+alcohols 
+ 
+Mono-Sulfo-CYanine5 – NHS, 
+Na salt 
+(M) FP-1G2520, 1mg  
+ 
+659.75 “ “ Soluble in DMF, DMSO and water  
+Insoluble in organic solvents (DCM, 
+chloroform) 
+ 
+ 
+Di-Sulfo-CYanine5 – NHS, Na 
+salt 
+(M) FP-1A8470, 1mg  
+ 
+761.87 “ “ Soluble in DMF, DMSO and water  
+Insoluble in organic solvents (DCM, 
+chloroform) 
+ 
+ 
+Di-Sulfo-CYanine5 – NHS, K salt 
+(M) FP-IO0510, 1mg  
+ 
+777.95 “ “ very good solubility in water, 
+good in DMF and DMSO  
+ 
+ 
+DiSulfo-CYanine5 – NHS, TFA 
+salt 
+(M) FP-LQU990, 1mg 
+ 
+855.07 “ “ 
+ 
+ 
+Tri-Sulfo-CYanine5 – NHS, TFA 
+salt  
+ FP-1I1950, 1mg 
+ FP-1I1951, 5mg 
+ FP-1I1952, 25mg 
+ 
+1050.35 
+(triethylamm
+onium salt) 
+ 
+[+847.97 
+(protonated)] 
+649 / 670 250 000   
+DiSulfo-CYanine5 – NHS, K salt 
+(M) FP-XEQ670, 1mg 
+ 
+791.97 “ “   
+ DiSulfo-CYanine5 bisNHS  
+ FP-LQV120, 1mg  
+ 
+1038.23 “ "   
+ 
+ 
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.16 
+ 
+DiSulfo-CYanine5 – bisNHS,  
+K salt 
+(M) FP-XEQ680, 1mg 
+ 
+975.13 “ “ Good solubility in 
+DMF, DMSO, water 
+ 
+DiSulfo-CYanine5 – Maleimide 
+ (M) FP-1N8961, 1mg 
+ FP-1N8963, 25mg 
+ FP-1N8965, 100mg 
+ 
+803.02 649 / 665  Dark Blue powder. 
+soluble in water, DMSO, DMF 
+ 
+ 
+DiSulfo-CYanine5 – Maleimide, 
+TFA salt 
+(M) FP-LQV070, 1mg 
+ 
+892.87 649 / 665  
+(2 sulfo, 1 ethyl) 
+ 
+Tri-Sulfo-CYanine5 – Maleimide 
+ (M) FP-1H1940, 1mg 
+ FP-1H1942, 25mg 
+ FP-1H1944, 100mg 
+ 
+1074.50 
+(triethylammo
+nium salt) 
+[873.04  
+(protonated)] 
+ 
+649 / 670  
+bears 3 sulfo groups (2 sulfo + 1 buthyl-Sulfo) 
+EC : 250000 ; CF260: 0.05, CF280: 0.05 
+ 
+DiSulfo-CYanine5 – Alkyne 
+(M) FP-SJI060, 1mg  
+ 
+717.94 “ “ very high solubility in water, 
+DMSO, DMF  
+ 
+ 
+Mono-Sulfo-CYanine5 – Azide 
+(M) FP-1F1880, 1mg  
+ 
+644.83 “ “ Soluble in DMF, DMSO, methanol and 
+acetonitrile 
+ 
+ 
+DiSulfo-CYanine5 – Azide, K 
+salt 
+ FP-JV6320, 1mg 
+ FP-JV6321, 5mg 
+ FP-JV6323, 25mg 
+ 
+746.87 “ “ Very soluble in water and polar 
+organic solvent (DMF, DMSO),  
+Insoluble in organic solvents 
+(DCM, chloroform) 
+ 
+ 
+DiSulfo-CYanine5 – Azide, Na 
+salt 
+(M) FP-1C4670, 1mg 
+ 
+746.87  
+(Na salt) 
+646 / 664 271 000 
+QY: 0.28 
+ 
+Soluble in water and polar organic 
+solvent (DMF, DMSO), insoluble in 
+organic solvents (DCM, chloroform) 
+ 
+ 
+ 
+DiSulfo-CYanine5 – Azide ,  
+TFA salt 
+(M) FP-LQV080, 1mg 
+ 
+ 
+838.91 649 / 665    
+Sulfo-CYanine5 – HydrAzide, 
+TFA salt 
+ FP-LQV110, 1mg 
+ 
+898.89 
+[672.85 
+without salt] 
+“ “   
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.17 
+ 
+DiSulfo-CYanine5 – Tetrazine, 
+K salt 
+(M) FP-AW2NH0, 1mg  
+ 
+864.1 
+ 
+“ “  
+good solubility in water, DMF, 
+DMSO 
+ 
+ 
+TriSulfo-CYanine5 – Tetrazine, 
+BF4 salt 
+(M) FP-AS4K70, 1mg  
+ 
+919.27 “ “  
+good solubility in 
+water, DMSO, DMF 
+ 
+ 
+ 
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.18 
+ 
+ 
+CYanine5.5 dye 
+● CYanine5.5 : A near-infrared (IR) fluorescence-emitting dye.  
+Excitation/emission maximum: 673 / 707nm. EC: 209 000 QY: 0.12 
+Can replace near infrared fluorescent dyes.  
+ 
+See alternative superior dye: FluoProbes682. 
+ 
+ 
+ 
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.19 
+ 
+Product name 
+cat.number/qty§ 
+MW 
+g·mol-1 
+(+added MW) 
+λ 
+abs./em. 
+nm 
+mol. abs. 
+ 
+(M-1cm-1) 
+Comment, structure 
+ 
+ 
+CYanine5.5 –COOH, Cl salt 
+(M) FP-JV6830, 1mg  
+ FP-JV6831, 5mg 
+ FP-JV6835, 100mg 
+CAS: 1144107-80-1, 1256349-47-9 
+ 
+619.23 673/707 209 000 Dark Blue Powder 
+Soluble in organic solvents (DMSO, DMF, 
+dichloromethane),  
+low solubility in water 
+ 
+ 
+CYanine5.5 –Amine, Cl salt 
+(M) FP-WZE100, 1mg 
+ 
+753.88 “ “ Moderate solubility in water, good 
+in polar organic solvents (DMF, 
+DMSO, alcohols) 
+ 
+ 
+CYanine5.5 – NHS, Cl salt 
+(M) FP-FZ8750, 1mg  
+ 
+716.31 “ S Soluble in organic solvents (DMSO, 
+DMF, dichloromethane),  
+low solubility in water 
+ 
+ 
+CYanine5.5 –Maleimide, Cl salt 
+(M) FP-KV6770, 1mg 
+ FP-KV6771, 5mg 
+ 
+741.36 “ S Soluble in organic solvents (DMSO, 
+DMF, dichloromethane),  
+low solubility in water  
+ 
+ 
+CYanine5.5 –Alkyne, Cl salt 
+(M) FP-SJH910, 1mg  
+ 
+656.30 “ “ Good solubility in organic solvents 
+(DMF, DMSO, acetonitrile, DCM, 
+alcohols), low in water  
+ 
+CYanine5.5 –Azide, Cl salt 
+(M) FP-GO7260, 1mg 
+& FP-FZ8770, 100µl @10mM in DMSO 
+ 
+701.34 “ “ Soluble in organic solvents (DMSO, 
+DMF, dichloromethane),  
+low solubility in water  
+ 
+ 
+CYanine5.5 –Hydrazide, Cl salt 
+(M) FP-WZE110, 1mg  
+ 
+669.73 “ “ Moderate solubility in water, 
+good in polar organic solvents 
+(DMF, DMSO, alcohols) 
+ 
+ 
+CYanine5.5 – Tetrazine, BF4 salt 
+(M) FP-AW2NF0, 1mg  
+ 
+911.96 
+[737.4] 
+“ “  
+Good solubility in DMF, DMSO, 
+DCM 
+ 
+ 
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.20 
+ 
+Sulfo-CYanine5.5 derivatives 
+Product name 
+cat.number/qty§ 
+MW 
+g·mol-1 
+(+added MW) 
+λ 
+abs./em. 
+nm 
+mol. abs. 
+ 
+M-1cm-1 
+Comment, structure 
+ 
+ 
+Tetra-Sulfo-CYanine5.5 – 
+COOH, K salt 
+(M) FP-0B8440, 1mg  
+ 
+1017.31 673/691 
+ 
+195 000 
+CF260:0.09 
+CF280:0.11 
+Good solubility in water, DMF, 
+DMSO 
+ 
+ 
+Tetra-Sulfo-CYanine5.5 – 
+COOH, TFA salt 
+(M) FP-LQV220, 1mg  
+ 
+1031.08 678/701 “ Soluble in DMSO 
+ 
+ 
+(4 sulfo, 1 ethyl) 
+ 
+Tetra-Sulfo-CYanine5.5 – bis-
+COOH, TFA salt 
+(M) FP-LQV210, 1mg  
+ 
+1117.17 678/701 “ Soluble in DMSO 
+ 
+ 
+Tetra-Sulfo-CYanine5.5 – 
+Amine, K salt 
+(M) FP-0B8420, 1mg 
+ 
+1077.41 “ “ good solubility in 
+water, DMF, DMSO 
+ 
+(4 sulfo, 1 ethyl) 
+ 
+ 
+Tetra-Sulfo-CYanine5.5 – NHS, 
+TFA salt 
+ FP-LQV160, 1mg 
+ 
+1317.72 
+[+1014.12] 
+“ “   
+Tetra-Sulfo-CYanine5.5 – NHS, 
+K salt 
+ FP-XEQ690, 1mg 
+Also FP-0B8400 
+ 
+1128.40 678/701 “ Soluble in DMSO 
+ 
+ 
+(4 sulfo, 1 ethyl) 
+ 
+Tetra-Sulfo-CYanine5.5 – 
+bisNHS, TEA salt 
+(M) FP-LQV130, 1mg  
+  
+1500.86 678/701 “ Soluble in DMSO  
+Tetra-Sulfo-CYanine5.5 – 
+bisNHS, K salt 
+ FP-XEQ700, 1mg 
+ 
+1311.56 “ “ Soluble in DMSO  
+Tetra-Sulfo-CYanine5.5- 
+Maleimide, TFA salt 
+ FP-LQV280, 1mg 
+ 
+1153.20 “ “ Soluble in DMSO 
+ 
+ 
+ 
+(4 sulfo, 1 ethyl) 
+ 
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.21 
+ 
+Tetra-Sulfo-CYanine5.5 – 
+Alkyne, K salt 
+(M) FP-0B8410, 1mg  
+ 
+1054.36 “ “ Good solubility in water, DMF, 
+DMSO 
+ 
+ 
+Tetra-Sulfo-CYanine5.5 – 
+Alkyne, TFA salt 
+ FP-LQV320, 1mg 
+ 
+1068.14 “ “  Soluble in DMSO  
+ 
+ 
+ 
+(4 Sulfo, 1 Ethyl) 
+ 
+      
+Tetra-Sulfo-CYanine5.5 – Azide, 
+K salt 
+ FP-0B8430, 1mg 
+ 
+1099.41 
+[+984.2] 
+“ “ Good solubility in water, 
+DMF, DMSO 
+ 
+ 
+Tetra-Sulfo-CYanine5.5 – Azide, 
+TFA salt 
+ FP-LQV310, 1mg 
+ 
+1099.17 678/701 “  Soluble in DMSO  
+ 
+ 
+(4 sulfo, 1 ethyl) 
+ 
+      
+Tetra-Sulfo-CYanine5.5 – 
+HydrAzide, TFA salt 
+ FP-LQV300, 1mg 
+ 
+1159.13 “ “ Soluble in DMSO 
+ 
+ 
+(4 sulfo, 1 ethyl) 
+ 
+ 
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.22 
+ 
+CYanine7 dye 
+● CYanine7: A near-IR fluor that is invisible to the naked eye.  
+Excitation/emission maximum: 750 / 773nm  EC: 199 000 QY: 0.3 
+It is used in in vivo imaging applications.  
+CYanine 7 is also known as Cy7, Cyanine7 
+ 
+CYanine7 is available as an improved analog fluorophore, which structure features a rigidized design of central 
+polymethyne chain. This drives quantum yield improved by 20% compared with parent structure, and higher 
+photostability. This fluorescent dye has thus increased fluorescence brightness, and it is especially useful for NIR 
+imaging. 
+ 
+See alternative superior dye: FluoProbes752. 
+ 
+ 
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.23 
+ 
+Product name 
+cat.number/qty§ 
+MW 
+g·mol-1 
+(+added MW) 
+λ 
+abs./em. 
+nm 
+mol. abs. 
+ 
+M-1cm-1 
+Comment, structure 
+ 
+ 
+CYanine7 –COOH, Cl salt 
+(M) FP-1G6180, 1mg  
+CAS: 1628790-40-8  
+585.22 750/773 199 000 
+QY:0.3 
+CF260:0.022 
+CF280:0.029 
+soluble in organic solvents 
+(DMSO, DMF, dichloromethane), 
+low solubility in water 
+ 
+ 
+CYanine7 –Di-COOH, Cl salt 
+(M) FP-1G6180, 1mg  
+ 
+685.33 " " soluble in organic solvents 
+(DMSO, DMF, 
+dichloromethane), low solubility 
+in water 
+ 
+ 
+CYanine7 –Amine, Cl salt 
+(M) FP-SJH920, 1mg 
+CAS: 1650635-41-8, 1650559-73-1 [Cl-] 
+ 
+719.87 “ “ good solubility in DMSO, DMF, alcohols  
+CYanine7 – NHS, Cl salt 
+(M) FP-JV9770, 1mg  
+ FP-JV9772, 25mg  
+ FP-JV9774, 100mg  
+ 
+682.29  
+ 
+“ “ . 
+Soluble in organic solvents (DMSO, 
+DMF, dichloromethane),  
+low solubility in water  
+ 
+CYanine7 –Maleimide, Cl salt 
+(M) FP- SJH930, 1mg 
+ FP- SJH932, 25mg 
+ FP- SJH934, 100mg 
+ 
+707.35 “ “ soluble in organic solvents (DMSO, 
+DMF, dichloromethane), low 
+solubility in water 
+ 
+ 
+CYanine7 –Alkyne, Cl salt 
+(M) FP-WZE120, 1mg  
+ 
+622.28 
+[+586.4] 
+“ “ Solubility is good in DMSO, DMF, 
+alcohols 
+ 
+ 
+CYanine7 –DBCO, PF6 salt 
+(M) FP-AWHG00, 1mg  
+ 
+885.62 
+[+849.5] 
+“ “ Solubility is good in DMF, 
+DMSO, DCM  
+ 
+ 
+CYanine7 –Azide, Cl salt 
+(M) FP-1A6270, 1mg 
+& FP-1A6260, 100µl 10mM in DMSO 
+ 
+667.33 750 / 773 199 000 Green powder / solution 
+Soluble in organic solvents (DMSO, 
+DMF, dichloromethane), low 
+solubility in water 
+ 
+ 
+CYanine7 – Azide, TFA salt 
+ FP-LQV240, 1mg 
+ 
+ 
+864.95 749/776  
+ 
+ 
+CYanine7 –Hydrazide, Cl salt 
+(M) FP-WZE130, 1mg  
+ 
+635.70 
+[+544.8] 
+“ “ Moderate solubility in water, good in 
+polar organic solvents (DMF, DMSO, 
+alcohols) 
+ 
+ 
+CYanine7 – Tetrazine 
+(M) FP-AW2NG0, 1mg  
+good solubility in DMF, DMSO, DCM 
+877.94 
+[703.4] 
+“ “   
+ 
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.24 
+ 
+Sulfo-CYanine7 derivatives 
+Product name 
+cat.number/qty§ 
+MW 
+g·mol-1 
+(+added MW) 
+λ 
+abs./em. 
+nm 
+mol. abs. 
+ 
+M-1cm-1 
+Comment, structure 
+ 
+ 
+DiSulfo-CYanine7 –COOH 
+(M) FP-1G774, 1mg  
+Also as TFA salt (FP-LQV330) 
+MW:796.87  
+730.87  750/773 240 600 Soluble in water with organic 
+co-solvent (DMF, DMSO), 
+moderate in alcohols and 
+acetonitrile, 
+insoluble in organic solvents 
+(DCM, chloroform) 
+ 
+DiSulfo-CYanine7 –Amine 
+(M) FP-WZE180, 1mg 
+Also as TFA salt (FP-LQV260) 
+MW : 952.98 
+807.7 " " Solubility is good in water, 
+DMF, DMSO 
+ 
+ 
+DiSulfo-CYanine7 – NHS 
+(M) FP-1B000, 1mg  
+Also a Na salt (FP-) 
+827.93   Solubility is good in water, 
+DMF, DMSO 
+ 
+DiSulfo-CYanine7 – NHS TEA 
+salt 
+(M) FP-LQV140, 1mg  
+  
+881.11   
+ 
+ 
+DiSulfo-CY7 - NHS, K salt 
+ FP-XEQ710, 1mg 
+ 
+818.01  “ “ 
+ 
+ 
+DiSulfo-CY7 - bisNHS, K salt 
+ FP-XEQ720, 1mg 
+Also as TEA salt (FP-LQV140) 
+MW: 881.11 
+  “ “ 
+ 
+ 
+DiSulfo-CYanine7 – Maleimide 
+(M) FP-0B8290, 1mg 
+Also as TFA salt (FP-LQV230) 
+MW:  990.07
+  
+869.10 
+[+868.2] 
+ “ “ Good solubility in water, 
+DMF, DMSO. Low in non-
+polar organic solvents. 
+ 
+DiSulfo-CYanine7 – Alkyne 
+(M) FP-0B8280, 1mg  
+Also as TFA salt (FP-LQV250) 
+MW: 833.93 
+784.04 
+(+745.30) 
+" " Good solubility in DMF, DMSO, 
+significant in water. 
+Soluble in water with organic co-
+solvent (DMF, DMSO); 
+Insoluble in organic solvents 
+(DCM, chloroform) 
+ 
+Di-Sulfo-CYanine7 – Alkyne, 
+TFA salt 
+ FP-LQV250, 1mg 
+ 
+818.91 749 / 776  
+ 
+ (bears 2 Sulfo, 1 Ethyl) 
+ 
+DiSulfo-CYanine7 – Azide 
+ FP-1H8710, 1mg 
+Also as TFA salt (FP-LQV240) 
+MW: 864.93 
+812.97 
+* 
+750/773n
+m 
+“ Solubility is good in water, DMF, DMSO 
+0B8280 
+ 
+ 
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.25 
+ 
+DiSulfo-CYanine7 – Azide, TFA 
+salt 
+(M) FP-LQV240, 1mg 
+ 
+ 
+864.95 749 / 776  (bears 2 Sulfo, 1 
+Ethyl) 
+ 
+DiSulfo-CYanine7 – HydrAzide 
+ FP-LQV270 
+ 
+924.92   
+ 
+ 
+ 
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.26 
+ 
+ 
+CYanine7.5 dye 
+● CYanine7.5 is a near infrared red fluorophores used for in vivo imaging applications.  
+Abs./Em.: 788 / 808nm  EC: 230 000  
+Sulfo-Cyanine7.5 is a near infrared fluorescent dye for in vivo imaging. The dye is water soluble and 
+hydrophilic. Its absorption spectrum is very similar to indocyanine green (ICG), but its fluoresc ence quantum 
+yield is significantly higher. Therefore, it can be used efficiently as an in vivo NIR fluorophore 
+See alternative superior dye: FluoProbes800. 
+ 
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.27 
+ 
+Product name 
+cat.number/qty§ 
+MW 
+g·mol-1 
+(+added MW) 
+λ 
+abs./em. 
+nm 
+mol. abs. 
+ 
+M-1cm-1 
+Comment, structure 
+ 
+ 
+CYanine7.5 – COOH, Cl salt 
+(M) FP-1C4380, 1mg  
+CAS: 1686147-68-1, 1803099-44-6 [Cl-] 
+ 
+685.34 788/808 223 000 Soluble in organic solvents 
+(DMSO, DMF, 
+dichloromethane),  
+low solubility in water 
+ 
+ 
+Tetra-Sulfo-CYanine7.5–COOH 
+(M) FP-AWHGV0, 1mg  
+ 
+1083.41 778/797 222 000 
+CF260:0.09 
+CF280:0.09 
+ 
+Solubility is good in water, DMF, DMSO  
+ 
+Tetra-Sulfo-CYanine7.5–Di-
+COOH 
+(M) FP-AXFBZ0, 1mg  
+Solubility is good in water, DMF, DMSO  
+1183.51 " " 
+ 
+ 
+CYanine7.5  – Amine, Cl salt 
+(M) FP-1C4400, 1mg 
+ 
+819.99 " " Dark green powder 
+Good solubility in DMSO, DMF, 
+alcohols 
+ 
+ 
+CYanine7.5 – NHS, Cl salt 
+(M) FP-JO3060, 1mg  
+ 
+782.41 
+(+630.4) 
+" " Soluble in organic solvents 
+(DMSO, DMF, 
+dichloromethane),  
+low solubility in water 
+ 
+ 
+Tetra-Sulfo-CYanine7.5 – NHS, 
+K salt 
+(M) FP-AWHGX0, 1mg 
+  FP-AWHGX2, 10mg 
+ FP-AWHGX4, 50mg 
+Solubility is good in water 
+1180.47 
+(+650.2) 
+“ “ 
+ 
+ 
+ 
+CYanine7.5 – Maleimide, Cl salt 
+(M) FP-1C4390, 1mg 
+ FP-1C4392, 25mg 
+ FP-1C4394, 100mg 
+ 
+807.46 “ “ Soluble in organic solvents 
+(DMSO, DMF, 
+dichloromethane),  
+low solubility in water, DMF, 
+DMSO 
+ 
+CYanine7.5 – Alkyne, Cl salt 
+(M) FP-WZE140, 1mg  
+ 
+722.4 “ “ Soluble in organic solvents 
+(DMSO, DMF, 
+dichloromethane),  
+low solubility in water 
+ 
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.28 
+ 
+Tetra-Sulfo-CYanine7.5–Alkyne, 
+K salt 
+(M) FP-AS29QB0, 1mg  
+Solubility is good in water, DMF, DMSO  
+1120.46 
+(+1005.2) 
+778/797 222 000 
+CF260:0.09 
+CF280:0.09 
+ 
+ 
+CYanine7.5 – Azide, Cl salt 
+(M) FP-1A6300, 1mg 
+ FP-1A6302, 10mg 
+ 
+FP-1A6300, 100µL 10mM in DMSO 
+ 
+Soluble in organic solvents (DMSO, 
+DMF, dichloromethane), low solubility 
+in water  
+ 
+767.44 “ “ Soluble in organic solvents  
+(DMSO, DMF, dichloromethane),  
+low solubility in water 
+ 
+Tetra-Sulfo-CYanine7.5–Azide 
+(M) FP-AS29RA, 1mg  
+Solubility is good in water, DMF, DMSO  
+1165.51 
+(+1050.3) 
+" " 
+ 
+ 
+CYanine7.5 – Hydrazide, Cl salt 
+(M) FP-WZE150, 1mg  
+ 
+735.82 
+[644.4] 
+“ “  
+moderate solubility in water, 
+good in polar organic solvents 
+(DMF, DMSO, alcohols)  
+ 
+ 
+CYanine7.5 – Tetrazine, BF4 salt 
+(M) FP-AXFCD0, 1mg  
+moderate solubility in water, good in 
+polar organic solvents (DMF, DMSO, 
+alcohols)   
+ 
+919.9 
+[802.5] 
+“ “ 
+ 
+ 
+CYanine7 – MethylTetrazine 
+(M) FP-AXBJ80, 1mg  
+ 
+1200.43 
+ 
+753/775 255 000 
+QY:0.16 
+ 
+ 
+Soluble in DMSO, DMF, Water, MeOH 
+ 
+ 
+ 
+References – CYanine7.5 dyes [] 
+Loebel, C.; Rodell, C.B.; Chen, M.H.; Burdick, J.A. Shear-thinning and self-healing hydrogels as injectable therapeutics and 
+for 3D-printing. Nature Protocols, 2017, 12(8), 1521–1541. doi: 10.1038/nprot.2017.053  
+O'Mary, H.L.; Aldayel, A.M.; Valdes, S.A.; Naguib, Y.W.; Li, X.; Salvady, K.; Cui, Z. Acid-sensitive sheddable PEGylated, 
+mannose-modified nanoparticles increase the delivery of betamethasone to chronic inflammation sites in a mouse model. 
+Molecular Pharmaceutics, 2017, 14(6), 1929–1937. doi: 10.1021/acs.molpharmaceut.7b00024  
+Sivak, L.; Subr, V.; Tomala, J.; Rihova, B.; Strohalm, J.; Etrych, T.; Kovar, M. Overcoming multidrug resistance via 
+simultaneous delivery of cytostatic drug and P-glycoprotein inhibitor to cancer cells by HPMA copolymer conjugate. 
+Biomaterials, 2017, 115, 65–80. doi: 10.1016/j.biomaterials.2016.11.013  
+Lin, S.; Shah, A.; Hernández-Gil, J.; Stanziola, A.; Harriss, B.I.; Matsunaga, T.O.; Long, N.; Bamber, J.; Tang, M.-X. 
+Optically and acoustically triggerable sub-micron phase-change contrast agents for enhanced photoacoustic and ultrasound 
+imaging. Photoacoustics, 2017, 6, 26–36. doi: 10.1016/j.pacs.2017.04.001  
+Cheng, J.; Feng, S.; Han, S.; Zhang, X.; Chen, Y.; Zhou, X.; Wang, R.; Li, X.; Hu, H.; Zhang, J. Facile Assembly of Cost-
+Effective and Locally Applicable or Injectable Nanohemostats for Hemorrhage Control. ACS Nano, 2016, 10(11), 
+9957&ndash9973. doi: 10.1021/acsnano.6b04124  
+
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.29 
+ 
+Zhang, Q.; Tao, H.; Lin, Y.; Hu, Y.; An, H.; Zhang, D.; Feng, S.; Hu, H.; Wang, R.; Li, X.; Zhang, J. A superoxide 
+dismutase/catalase mimetic nanomedicine for targeted therapy of inflammatory bowel disease. Biomaterials, 2016, 105, 206–
+221. doi: 10.1016/j.biomaterials.2016.08.010  
+Feng, S.; Hu, Y.; Peng, S.; Han, S.; Tao, H.; Zhang, Q.; Xu, X.; Zhang, J.; Hu, H. Nanoparticles responsive to the 
+inflammatory microenvironment for targeted treatment of arterial restenosis. Biomaterials, 2016, 105, 167–184. doi: 
+10.1016/j.biomaterials.2016.08.003  
+Dou, Y.; Guo, J.; Chen, Y.; Han, S.; Xu, X.; Shi, Q.; Jia, Y.; Liu, Y.; Deng, Y.; Wang, R.; Li, X.; Zhang, J. Sustained delivery 
+by a cyclodextrin material-based nanocarrier potentiates antiatherosclerotic activity of rapamycin via selectively inhibiting 
+mTORC1 in mice. Journal of Controlled Release, 2016, 235, 48–62. doi: 10.1016/j.jconrel.2016.05.049  
+Markovic, S.; Belz, J.; Kumar, R.; Cormack, R.A.; Sridhar, S.; Niedre, M. Near-infrared fluorescence imaging platform for 
+quantifying in vivo nanoparticle diffusion from drug loaded implants. International Journal of Nanomedicine, 2016, 11, 
+1213–1223. doi: 10.2147/IJN.S93324  
+Zhang, Z.; Cai, H.; Liu, Z.; Yao, P. Effective Enhancement of Hypoglycemic Effect of Insulin by Liver-targeted 
+Nanoparticles Containing Cholic Acid-modified Chitosan Derivative. Molecular Pharmaceutics, 2016, 13(7), 2433–2442. 
+doi: 10.1021/acs.molpharmaceut.6b00188  
+Han, F.Y.; Thurecht, K.J.; Lam, A.-L.; Whittaker, A.K.; Smith, M.T. Novel Polymeric Bioerodable Microparticles for 
+Prolonged-Release Intrathecal Delivery of Analgesic Agents for Relief of Intractable Cancer-Related Pain. Journal of 
+Pharmaceutical Sciences, 2015, 104(7), 2334–2344. doi: 10.1002/jps.24497  
+Duong, H.T.T.; Dong, Z.; Su, L; Boyer, C.; George, J.; Davis, T.P.; Wang, J. The Use of Nanoparticles to Deliver Nitric 
+Oxide to Hepatic Stellate Cells for Treating Liver Fibrosis and Portal Hypertension. Small, 2015, 11(19), 2291–2304. doi: 
+10.1002/smll.201402870  
+Chen, K.; Xu, X.; Guo, J.W.; Zhang, X.; Han, S.; Wang, R.; Li, X.; Zhang, J. Enhanced Intracellular Delivery and Tissue 
+Retention of Nanoparticles by Mussel-Inspired Surface Chemistry. Biomacromolecules, 2015, 16(11), 3574–3583. doi: 
+10.1021/acs.biomac.5b01056  
+Lin, Y.-A.; Cheetham, A.G.; Zhang, P.; Ou, Y.-C.; Li, Y.; Liu, G.; Hermida Merino, D.; Hamley, I.W.; Cui, H. Multi-Walled 
+Nanotubes Formed by Catanionic Mixtures of Drug Amphiphiles. ACS Nano, 2014, 8(12), 12690-12700. doi: 
+10.1021/nn505688b  
+Graen, T.M.D.; Hoefling, M.; Grubmüller, H. AMBER-DYES: Characterization of Charge Fluctuations and Force Field 
+Parameterization of Fluorescent Dyes for Molecular Dynamics Simulations. Journal of Chemical Theory and Computation, 
+2014, 10(12), 5505-5512. doi: 10.1021/ct500869p  
+Lu, H.D.; Soranno, D.E.; Rodell, C.B.; Kim, I.L.; Burdick, J.A. Secondary Photocrosslinking of Injectable Shear-Thinning 
+Dock-and-Lock Hydrogels. Advanced Healthcare Materials, 2013, 2(7), 1028-1036. doi: 10.1002/adhm.201200343  
+Yang, H.; Mao, H.; Wan, Z.; Zhu, A.; Guo, M.; Li, Y.; Li, X.; Wan, J.; Yang, X.; Shuai, X. et al. Micelles assembled with 
+carbocyanine dyes for theranostic near-infrared fluorescent cancer imaging and photothermal therapy. Biomaterials, 2013, 
+34(36), 9124-9133. doi: 10.1016/j.biomaterials.2013.08.022  
+Zhou, K.; Liu, H.; Zhang, S.; Huang, X.; Wang, Y.; Huang, G.; Sumer, B.D.; Gao, J. Multicolored pH-Tunable and 
+Activatable Fluorescence Nanoplatform Responsive to Physiologic pH Stimuli. Journal of the American Chemical Society, 
+2012, 134(18), 7803-7811. doi: 10.1021/ja300176w  
+ 
+ 
+Applications 
+All CYanine dyes are proposed of labeling biomolecules and subsequent use in fluorimetric assays in a variety of 
+tehcniques (microplate assay, IF Microscopy, FlCM, MicroArray,…). Please ask for any question. 
+application notice for fluorescent labeling of proteins to analyze in electrophoresis (2D-gel PAGE). 
+ 
+Other applications include dying stuff, tracing,… in industries like clothes, cosmetics, hydrology, material 
+technologies, … These reagents are for R&D use, not for use in human or animals, therapeutics. Sfety for 
+environment should also be appreciated. 
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.30 
+ 
+ 
+Other Fluorescent dyes 
+Organic small fluorescent dyes include: FluoProbes, CFdyes, AFdyes, DLdyes,…  
+ 
+ FluoProbes dyes (FP, CY, AF, BDP) 
++  
+*fluorescent 
+dyes 
+FluoProbes® [FPstd_] CYanine dyes[FPCY__] 
+ 
+AF dyes [FPAF__] BrDIPY[FPBDP_] Other labels 
+ 
+Overview 
+ 
+(Direct Labeling) 
+PH-BB052a PH-BB060c PH-BB060c - CF Dyes[PH] 
+FluoLid[PH] 
+Seta Dyes[PH] 
+IRDyes[PH] 
+NHSucc.Ester (BA6800) (BB7493) (R08112) (AWHFC1) & 
+23383A/FL 
+ 
+TFP Ester +     
+STP Ester +     
+Maleimide  (BA6810) (JO6660) (820731)   
+Hydrazide  (1Q7081) (LQV050) (846631) (AWHFA1) & 
+85357Aou9 
+ 
+Azide  (YE4970) (HO7250) (AXCJ91) (AWHF81) 
+&AQANB1 
+ 
+PicolylAzide    (AYH9B1)  CF Dyes 
+Labeling Kits + (EV0870) 3Dye 2D 
+DI GE (Cy2/Cy3/Cy5) 
+labeling kit  
+   
+(Linkers)      
+Alkyne  (YE4970) (1A6320) (AXCECA) (AS29U1)  
+DBCO - (DQP790) (B432L1) (B35T42)  
+BCN -    CF Dyes  
+Tetrazine   (WXS720)  (B35TG0) CF Dyes  
+Methyl-Tetraz      
+TCO     CF Dyes  
+Carboxyl  (FH9770) (CY5CA0) () (M1270A) 
+AWHF91 
+ 
+Amine  (BA6790) (CY3AM0) () (AWHF70)  
+AminoOxy  (AWJSC.1)   CF Dyes  
+Thiol  (1B7350)    
+Hydroxyl - - - -  
+Aldehyde      
+(Tags, Labels,  + 
+() NHS 
+() Maleimide 
+() Azide 
+() Alkyne 
+() Tetrazine 
+() Amine 
+() Carboxyl 
+() Thiol 
+  
+Biotin () NHS 
+() Maleimide 
+ 
+() Alkyne 
+() Tetrazine 
+() Amine 
+() Carboxyl 
+() Thiol 
+  
+Streptavidin +     
+Avidin -     
+      
+(Dual Tags or  Label) &//Trifunctional    
+Biotin & 
+Cyanine 
+- Cy5-Biotin-Azide 
+(AXBJ40) 
+   
+(Haptens,  Ligands, Substrats)    
+Phalloidin +     
+Annexin V +     
+Cholesterol  +   (U47711)  
+dUTP +     
+ 
+ 
+Superior FluoProbes fluorescent dyes,   
+FluoProbes fluorescent dyes are superior fluorescrent dyes in a variety of techniques and applications, thanks to 
+superior phostability and brightness.  
+FT-FPCY__ (CYanine dyes)  
+ 
+ P.31 
+ 
+See the BioSciences catalogue pages C74>C75-82 
+FP dyes functionalized by NHS (BA6810), Maleimide (BA6810), Azide (YE4970), Alkyne (YE4970), Hydrazide (1Q7081), DBCO (-), 
+Amino (BA6790), Carboxyl (FH9770). Protein labeling kits () 
+i.e. FP390A ; FP405_ ; FP425A ; FP488_ ; FP510X ; FP514A1 ; FP520A ; FP521X ; FP532A ; FP547_ ; FP548_ ; FP549_ ; FP547H ; 
+FP550A ; FP560_ ; FP565A ; FP590_ ; FP590A ; FP594_ ; FP594A ; FP632_ ; FP633A ; FP647H ; FP647N ; FP652_ ; FP654_ ; FP679H ; 
+FP680A ; FP682_ ; FP700A ; FP704_ ; FP749H ; FP778_ ; FP782_ ; FP655L ; FP782_ ; FP655L ; ; FluoProbes XXL(large Stoke’s shift)  
+ 
+CYanine dyes  
+FluoProbes CYanine dyes are very popular series of fluorescent dyes. 
+See the BioSciences catalogue pages C74>C87-89 
+functionalized by NHS (BB7493), Maleimide (JO6660), Azide (HO7250), Alkyne (1A6320), Hydrazide (LQV050), DBCO (DQP790), 
+Amino (CY3AM0), Carboxyl (CY3CA0). 3Dye 2D DI GE (CY2/CY3/CY5) labeling kit (EV0870) 
++ 
+BrDIPY dyes (or FluProbes Neutral dyes, BOron-DIPYrromethène)  
+FluoProbes BrDIPY Neutral dyes are non charged dyes with sharp absorption and fluorescent emission peaks.  
+See the BioSciences catalogue pages C74>C82 
+BrDIPY dyes functionalized by NHS (23383A/FL), Maleimide (AWHFB1), Amine (AWHF70), Carboxyl (M1270A)), Azide (AWHF81), 
+DBCO (B35T42), Tetrazine (B35TG0), Hydrazide (853579), Alkyne (AS29U1), Cholesterol (U47711) 
+ 
+AF dyes (equivalent to A lexaF  luor™) 
+AF dyes are generic great dyes for many applications, same molecules to the Ale  xa Fl uor® (a trade  mark from 
+Mol ecu larPro bes, now ThermoFisher).  
+AF dyes functionalized by NHS (R08112), Maleimide (820731), Hydrazide (846631), Azide (AXCJ91), Alkyne (AXCECA), DBCO 
+(B432L1), Amine (), Carboxyl () 
+ 
+ 
+ 
+ Other Fluorescent Labels: 
+Classic dyes such as FAM, R110, JOE TAMRA, and ROX. 
+See the BioSciences catalogue pages C74>C90-92 
+ 
+CF dyes  see PH-BB060b 
+CF Dyes[PH] are great dyes for many fluorescent applications. See the BioSciences catalogue pages C74>C90-92 
+CF Dyes[PH] functionalized by NHS (AQK200ok), Maleimide (820731), Hydrazide (AQJ760), Azide (IWT530), Picolyl-Azide (YQX020), 
+Alkyne (IWT590), BCN (PQI250), Tetrazine (AYMGEA), MethyTetrazine (AQA2I0), TCO (AS2IOA),  AminoOxy (FK7610), MTS 
+(1C3400) 
+mFluor & iFluor Dyes see PH-BB060m() 
+mFluor & iFluor[PH]  are great dyes for standard fluorescent applications.  
+Ask Interbiotech for labeling kits  
+DY dyes  ask Interbiotech 
+DY dyes are mostly hemicyanine, indocyanine structures.  
+Ask Interbiotech for availability and equivalent alternatives. 
+Seta Dyes see PH-BB060s 
+Seta Dyes[PH] are great dyes for standard fluorescent applications.  
+Ask Interbiotech for availability. and equivalent alternatives. 
+Atto dyes see PH-BB060a 
+Atto dyes are great dyes for standard fluorescent applications.  
+Ask Interbiotech for availability and equivalent alternatives. 
+IRDyes  ask Interbiotech 
+IRDyes[PH] are NeaInfraRed dyes, useful for low background in tissue samples and WB.  
+Ask Interbiotech for availability and equivalent alternatives.  
+FluoLid  see PH-BB052n 
+FluoLid[PH] are solid-state fluorescent dyes (also known as quantum dots).  
+Ask Interbiotech for availability. 
+ 
+Related products 
+* Coupling agents: EDAC  (UP52005A, FP-WU5580) 
+   Buffers: MES Buffer (14035B) 
+ 
+Ordering information 
+ 
+Catalogue size quantities and prices may be found at http://www.fluoprobes. 
+For any information, please ask : Fluoprobes / Interchim; Hotline : +33(0)4 70 03 73 06 
+Disclaimer : Materials from FluoProbes® are sold for research use only, and are not intended for food, drug, household, or cosmetic use. 
+FluoProbes® is not liable for any damage resulting from handling or contact with this product. Rev.U04E 

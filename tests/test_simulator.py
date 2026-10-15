@@ -4,6 +4,7 @@ import dataclasses
 
 import numpy as np
 
+from plsim.reference import load_reference_database
 from plsim.samples import SAMPLE_DATABASE, get_sample
 from plsim.sources import Monochromator
 from plsim.spectrometer import PLSpectrometer
@@ -78,6 +79,34 @@ def test_emitted_power_scales_with_quantum_yield():
     bright_scan = PLSpectrometer(sample=dye, scatter_fraction=0.0).acquire(**window)
     dim_scan = PLSpectrometer(sample=dim, scatter_fraction=0.0).acquire(**window)
     assert np.isclose(bright_scan.emitted_power.max(), 2.0 * dim_scan.emitted_power.max())
+
+
+def test_the_reference_database_peaks_where_the_sources_say():
+    import json
+
+    from plsim.reference import DEFAULT_PATH
+
+    records = json.loads(DEFAULT_PATH.read_text())
+    database = load_reference_database()
+    assert set(database) == set(SAMPLE_DATABASE)
+    for key, dye in database.items():
+        grid = np.arange(dye.emission.wavelength_nm[0], dye.emission.wavelength_nm[-1], 0.1)
+        peak = grid[int(np.argmax(dye.emission(grid)))]
+        assert abs(peak - records[key]["emission_max_nm"]) <= 4.0, key
+
+
+def test_the_reference_database_runs_through_the_instrument():
+    dye = load_reference_database()["cy5"]
+    scan = PLSpectrometer(sample=dye, scatter_fraction=0.0).acquire(
+        lambda_exc_nm=649.0, lambda_min_nm=600.0, lambda_max_nm=780.0, dlambda_nm=0.5
+    )
+    assert abs(scan.emission_peak_nm - 670.0) <= 4.0
+
+
+def test_model_and_reference_agree_on_the_band_width():
+    measured = load_reference_database()["cy3"]
+    x = np.arange(520.0, 640.0, 0.25)
+    assert abs(fwhm_nm(x, measured.emission(x)) - get_sample("cy3").emission.fwhm_nm) < 2.0
 
 
 def test_cy5_is_the_brighter_dye_at_its_own_optimum():

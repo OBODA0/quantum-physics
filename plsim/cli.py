@@ -6,6 +6,7 @@ import argparse
 import dataclasses
 from pathlib import Path
 
+from .reference import available as reference_available, load_reference_database
 from .samples import SAMPLE_DATABASE, get_sample
 from .spectrometer import PLSpectrometer
 
@@ -16,6 +17,8 @@ def build_parser():
         description="Photoluminescence spectrometer simulator (xenon lamp, dye samples, photodiode).",
     )
     parser.add_argument("--sample", default="cy3", help="sample from the database (default: %(default)s)")
+    parser.add_argument("--database", choices=("auto", "reference", "model"), default="auto",
+                        help="reference = measured bands, model = Gaussian bands (default: %(default)s)")
     parser.add_argument("--list-samples", action="store_true", help="print the sample database and exit")
     parser.add_argument("--lambda-exc", type=float, default=550.0, metavar="NM",
                         help="excitation wavelength (default: %(default)s)")
@@ -36,30 +39,49 @@ def build_parser():
     return parser
 
 
-def list_samples():
-    """One line per dye in the sample database."""
-    lines = []
-    for key, dye in SAMPLE_DATABASE.items():
+def choose_database(choice):
+    """Return (database, label) for the requested source of sample data."""
+    if choice == "model":
+        return SAMPLE_DATABASE, "Gaussian model bands"
+    if choice == "auto" and not reference_available():
+        return SAMPLE_DATABASE, "Gaussian model bands (no reference data found)"
+    return load_reference_database(), "measured bands from data/reference_spectra.json"
+
+
+def list_samples(database, label):
+    lines = ["sample database: {} ({})".format(label, len(database))]
+    for key, dye in database.items():
         lines.append(
-            "{:<16} {:<14} excitation {:>5.0f} nm  emission {:>5.0f} nm  quantum yield {:g}".format(
+            "{:<16} {:<16} excitation {:>5.0f} nm  emission {:>5.0f} nm  quantum yield {:g}  ({})".format(
                 key,
                 dye.name,
-                dye.absorption.center_nm,
-                dye.emission.center_nm,
+                dye.absorption.center_nm if hasattr(dye.absorption, "center_nm") else _curve_peak(dye.absorption),
+                dye.emission.center_nm if hasattr(dye.emission, "center_nm") else _curve_peak(dye.emission),
                 dye.quantum_yield,
+                dye.solvent,
             )
         )
     return "\n".join(lines)
 
 
+def _curve_peak(band):
+    """Wavelength of the maximum of a tabulated band, on a fine grid."""
+    import numpy as np
+
+    wavelengths = np.asarray(band.wavelength_nm, dtype=float)
+    grid = np.arange(wavelengths[0], wavelengths[-1], 0.1)
+    return float(grid[int(np.argmax(band(grid)))])
+
+
 def main(argv=None):
     args = build_parser().parse_args(argv)
+    database, label = choose_database(args.database)
 
     if args.list_samples:
-        print(list_samples())
+        print(list_samples(database, label))
         return 0
 
-    sample = get_sample(args.sample)
+    sample = get_sample(args.sample, database)
     if args.peak_absorbance is not None:
         sample = dataclasses.replace(sample, peak_absorbance=args.peak_absorbance)
 
@@ -82,6 +104,7 @@ def main(argv=None):
     )
 
     print("sample           : {} ({})".format(sample.name, sample.solvent))
+    print("database         : {}".format(label))
     print("quantum yield    : {:g}".format(sample.quantum_yield))
     print(
         "excitation       : {:g} nm, power {:.4g} (relative units)".format(
