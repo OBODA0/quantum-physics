@@ -6,7 +6,6 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from .bands import gaussian
 from .detector import Photodetector
 from .samples import Dye
 from .sources import ExcitationArm, Monochromator
@@ -78,14 +77,15 @@ class PLSpectrometer:
 
         wavelengths = np.arange(lambda_min_nm, lambda_max_nm + 0.5 * dlambda_nm, dlambda_nm)
 
-        excitation_power = self.excitation.power_at(lambda_exc_nm)
-        emitted_power = self.sample.emitted_power(wavelengths, lambda_exc_nm, excitation_power)
-        emitted_power = emitted_power * self.detection_monochromator.throughput
+        step_nm = float(wavelengths[1] - wavelengths[0]) if wavelengths.size > 1 else dlambda_nm
+        detection = self.detection_monochromator
 
-        scatter_power = (
-            self.scatter_fraction
-            * excitation_power
-            * gaussian(wavelengths, lambda_exc_nm, self.detection_monochromator.bandwidth_nm)
+        excitation_power = self.excitation.power_at(lambda_exc_nm)
+        emitted_power = detection.throughput * detection.broaden(
+            self.sample.emitted_power(wavelengths, lambda_exc_nm, excitation_power), step_nm
+        )
+        scatter_power = detection.throughput * detection.line_at(
+            wavelengths, lambda_exc_nm, self.scatter_fraction * excitation_power
         )
 
         photocurrent = self.detector.current(emitted_power + scatter_power, wavelengths)

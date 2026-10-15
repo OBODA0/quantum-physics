@@ -5,7 +5,14 @@ import dataclasses
 import numpy as np
 
 from plsim.samples import SAMPLE_DATABASE, get_sample
+from plsim.sources import Monochromator
 from plsim.spectrometer import PLSpectrometer
+
+
+def fwhm_nm(x, y):
+    """Full width at half maximum of a simple peak."""
+    above_half = x[y >= y.max() / 2.0]
+    return float(above_half[-1] - above_half[0])
 
 
 def test_detection_grid_follows_the_step_size():
@@ -28,12 +35,27 @@ def test_each_dye_emits_at_its_emission_maximum():
         assert abs(peak - dye.emission.center_nm) <= 1.0, key
 
 
-def test_a_dye_does_not_emit_below_its_excitation_wavelength():
+def test_a_dye_does_not_emit_far_below_its_excitation_wavelength():
     scan = PLSpectrometer(sample=get_sample("cy5"), scatter_fraction=0.0).acquire(
         lambda_exc_nm=649.0, lambda_min_nm=400.0, lambda_max_nm=800.0, dlambda_nm=1.0
     )
-    below = scan.wavelengths_nm < 649.0
-    assert np.all(scan.emitted_power[below] == 0.0)
+    far_below = scan.wavelengths_nm < 649.0 - 20.0
+    assert np.all(scan.emitted_power[far_below] == 0.0)
+
+
+def test_the_monochromator_broadens_the_measured_band():
+    dye = get_sample("cy3")
+    spectrometer = PLSpectrometer(
+        sample=dye,
+        scatter_fraction=0.0,
+        detection_monochromator=Monochromator(bandwidth_nm=10.0),
+    )
+    scan = spectrometer.acquire(
+        lambda_exc_nm=520.0, lambda_min_nm=530.0, lambda_max_nm=640.0, dlambda_nm=0.25
+    )
+    measured = fwhm_nm(scan.wavelengths_nm, scan.emitted_power)
+    expected = np.hypot(dye.emission.fwhm_nm, 10.0)
+    assert abs(measured - expected) < 1.0
 
 
 def test_excitation_inside_the_range_leaves_a_stray_light_line():

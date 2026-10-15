@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from .bands import gaussian
+from .bands import FWHM_TO_SIGMA, gaussian
 
 # Relative amplitudes and wavelengths of the strongest xenon emission lines in
 # the visible / near-infrared region. Illustrative values, not measured lamp data.
@@ -55,6 +55,25 @@ class Monochromator:
 
     def transmission(self, wavelength_nm, center_nm):
         return gaussian(wavelength_nm, center_nm, self.bandwidth_nm, self.throughput)
+
+    def broaden(self, power, step_nm):
+        """Pass a spectrum through the instrument: convolve it with the passband.
+
+        A spectrum measured through the monochromator is the true spectrum
+        smeared by the passband, so narrow features (like a stray excitation
+        line) come out with the passband width.
+        """
+        sigma_nm = self.bandwidth_nm * FWHM_TO_SIGMA
+        half_width_nm = 4.0 * sigma_nm
+        offsets_nm = np.arange(-half_width_nm, half_width_nm + 0.5 * step_nm, step_nm)
+        kernel = np.exp(-0.5 * (offsets_nm / sigma_nm) ** 2)
+        kernel = kernel / (kernel.sum() * step_nm)
+        return np.convolve(power, kernel, mode="same") * step_nm
+
+    def line_at(self, wavelength_nm, center_nm, power):
+        """Power density of a line of total power `power` centred on center_nm."""
+        sigma_nm = self.bandwidth_nm * FWHM_TO_SIGMA
+        return power * gaussian(wavelength_nm, center_nm, self.bandwidth_nm) / (sigma_nm * np.sqrt(2.0 * np.pi))
 
 
 @dataclass(frozen=True)
