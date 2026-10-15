@@ -1,0 +1,15 @@
+[project]
+name = "pl-spectrometer-simulator"
+version = "0.1.0"
+description = "Photoluminescence (PL) spectrometer simulator: xenon lamp excitation, dye sample database, monochromator detection."
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.0",
+    "matplotlib>=3.8",
+]
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = ["pytest>=8"]
