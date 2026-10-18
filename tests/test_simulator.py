@@ -42,6 +42,42 @@ def test_each_dye_emits_at_its_emission_maximum():
         assert abs(peak - dye.emission.center_nm) <= 1.0, key
 
 
+def test_the_readme_dye_table_matches_the_reference_pack():
+    """The README drifted from the data once; this keeps it honest."""
+    import json
+    import re
+    from pathlib import Path
+
+    from plsim.reference import DEFAULT_PATH
+
+    records = json.loads(DEFAULT_PATH.read_text())
+    readme = (Path(__file__).resolve().parent.parent / "README.md").read_text()
+    seen = set()
+    for line in readme.splitlines():
+        if not line.startswith("| `"):
+            continue
+        cells = [cell.strip() for cell in line.strip("|").split("|")]
+        if len(cells) != 6 or cells[0].strip("`") not in records:
+            continue
+        key, _name, absorption, emission, quantum_yield, extinction = cells
+        key = key.strip("`")
+        seen.add(key)
+        record = records[key]
+        assert float(re.search(r"[\d.]+", absorption).group()) == record["absorption_max_nm"], key
+        assert float(re.search(r"[\d.]+", emission).group()) == record["emission_max_nm"], key
+        assert float(re.search(r"[\d.]+", quantum_yield).group()) == record["quantum_yield"], key
+        assert float(extinction.replace(",", "")) == record["extinction_coefficient_per_M_per_cm"], key
+    assert seen == set(records)
+
+
+def test_the_monochromator_preserves_the_band_integral():
+    """Widening a band must not change how much light is in it."""
+    grid = np.arange(450.0, 900.0, 0.5)
+    band = get_sample("cy3").emission_shape(grid)
+    widened = Monochromator(bandwidth_nm=2.0).broaden(band, 0.5)
+    assert np.isclose(np.trapezoid(widened, grid), np.trapezoid(band, grid), rtol=1e-3)
+
+
 def test_the_monochromator_broadens_the_measured_band():
     dye = get_sample("cy3")
     spectrometer = PLSpectrometer(
