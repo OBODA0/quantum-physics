@@ -45,7 +45,7 @@ Equal concentration does not mean equal absorbance: A_peak = epsilon * c * l, an
 | 650 nm | Cy5 | 0.2471 | 43.39% | 668.0 nm | 0.06824 | 5.848 |
 | 650 nm | Methylene blue | 0.0550 | 11.90% | 686.0 nm | 0.00138 | 0.183 |
 
-### 3.2 How far the unverified methylene blue numbers could move that table
+### 3.1 How far the unverified methylene blue numbers could move that table
 
 No primary source was found for methylene blue's extinction coefficient, and its quantum yield in water is a value used in photodynamic-therapy work rather than a measurement read here. So the 650 nm row above is re-run at the top and bottom of every sourced range. Only 650 nm is listed, because that is where methylene blue absorbs most of the light it can use.
 
@@ -60,7 +60,7 @@ No primary source was found for methylene blue's extinction coefficient, and its
 
 Cy5 at the same 650 nm excitation gives 0.06824, so even the last row - the top of both unverified ranges at once - leaves methylene blue an order of magnitude below Cy5, and Cy3 at 550 nm (0.00523) ahead of every methylene blue row. The ranking in section 3 does not depend on the numbers that could not be sourced.
 
-### 3.1 What is drawn below the excitation wavelength, and how much stray light is left
+### 3.2 What is drawn below the excitation wavelength, and how much stray light is left
 
 The emission band is the measured one: the model applies no extra suppression to the part of the band that lies below lambda_exc, because that part of the spectrum is the dye's own measured band shape and its amplitude there is small. A real instrument would record scattered excitation light at the same time, which is the stray-light column.
 
@@ -110,9 +110,11 @@ Kasha's rule, measured on the simulated band (Cy3, excitation swept inside the a
 | detector responsivity at 670 nm | 0.449 A/W |
 | detector responsivity at 686 nm | 0.463 A/W |
 
-## 6. Numbers the report must not copy from the earlier draft
+## 6. Values that are easy to get wrong
 
-| claim in the draft | value there | what the sources support |
+Each of these is quoted somewhere in the literature or the dye vendor material. The middle column is the quoted value; the right-hand column is what the sources held for this project actually support, and that is the value the report uses.
+
+| quantity | as sometimes quoted | what the sources support |
 | --- | --- | --- |
 | methylene blue extinction coefficient | 80000 | 67,000 as measured in water (PhotochemCAD PSW009), 74,028 (OMLC/Prahl), 107,800 for the deconvoluted monomer (ACS Omega 2020). No source reports 80,000. |
 | methylene blue emission maximum | 686 nm | 685.0 nm on the shipped digitized curve; 686 nm is used in the published literature on the same band. Say which curve you quote. |

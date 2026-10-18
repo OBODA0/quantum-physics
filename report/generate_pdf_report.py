@@ -153,6 +153,8 @@ def build_pdf():
     story.append(Paragraph("Assignment 1: Photoluminescence (PL) Spectroscopy Simulation", s["title"]))
     story.append(Paragraph("<b>Course:</b> Nanotechnology &amp; Quantum Physics &nbsp;|&nbsp; "
                            "<b>Topic:</b> instrument simulation, Kasha's rule, multi-dye spectroscopy", s["subtitle"]))
+    story.append(Paragraph("<b>Students:</b> Mohamed Oboda (2111011090) &nbsp;|&nbsp; "
+                           "Mert SOLMAZ (2311011039)", s["subtitle"]))
 
     meta = [
         [Paragraph("<b>Simulator</b>", s["body"]),
@@ -231,8 +233,9 @@ def build_pdf():
     story.append(Paragraph("<b>1.2 Sample database and baseline spectra.</b>", s["h2"]))
     story.append(Paragraph(
         "Cy3 and Cy5 are the sulfoindocyanine dyes introduced as fluorescent labelling reagents, "
-        "and [3] reports the Cy3 chromophore optimally excited at 546 nm and Cy5 with the 633 nm HeNe "
-        "or 647 nm Kr line, while the model uses the vendor maxima of 550 and 649 nm [9]. Methylene "
+        "and the model uses the vendor maxima, 550 nm for Cy3 and 649 nm for Cy5 [9]. The same "
+        "vendor documentation names the lines the fluorescence literature conventionally uses, the "
+        "633 nm helium-neon and 647 nm krypton-argon lines [9]. Methylene "
         "blue is a phenothiazinium dye whose excited state is quenched "
         "both by internal conversion and by intersystem crossing [4, 6], which is why its quantum "
         "yield is the lowest of the three. The database holds the three dyes named in the task, at "
@@ -256,8 +259,9 @@ def build_pdf():
                         ("part1_methylene-blue.png", "methylene blue")):
         story.append(figure(name, 330, 211))
     story.append(Paragraph(
-        "<b>Figure 3:</b> the same three measurements at full scale, one per dye (these are the "
-        "screen captures of the simulator output for question 1): "
+        "<b>Figure 3:</b> the same three measurements at full scale, one per dye - the screen "
+        "captures the task asks for, taken as the simulator's own output written straight to an image "
+        "file, with no post-processing: "
         "<i>A</i>(&lambda;<sub>exc</sub>) and <i>A</i><sub>peak</sub> and &Phi;<sub>f</sub> are printed "
         "in each title. Peak currents: Cy3 5.2 &times; 10<sup>-3</sup>, Cy5 6.8 &times; "
         "10<sup>-2</sup>, methylene blue 1.6 &times; 10<sup>-3</sup> (relative units).", s["caption"]))
@@ -301,17 +305,20 @@ def build_pdf():
         "all have to be right to reach it - and it is not evidence about the dye, which is why 2.3 says "
         "so again. The curve rises towards the absorption maximum and collapses when the absorption "
         "does.<br/>"
-        "3. <b>Below about 450 nm the simulation has nothing to work with</b>: the digitized Cy3 "
-        "absorption curve begins at 450 nm, so the model reads zero absorption below it. (The 400 nm "
-        "harmonic filter does not enter here - it only blocks wavelengths below 400 nm, which the "
-        "sweep does not use.) At 450 nm the dye genuinely absorbs very little; the cause of this limit "
-        "is the tabulated range, not the physics.<br/>"
-        "4. <b>Above about 590 nm the simulation returns exactly zero.</b> This is a limit of the data, "
-        "not of the physics: the digitized Cy3 absorption curve was measured from 450 nm to 590 nm, and "
-        "the model reads zero outside that range. The measured methanol spectrum of the same "
-        "chromophore (kept in <i>data/raw/</i>) shows the absorption tail continuing with a small but "
-        "non-zero extinction coefficient at 650 nm, so a real instrument would record a weak, not "
-        "vanishing, signal there.<br/>"
+        "3. <b>Below about 450 nm the model reads zero absorption.</b> The strip it uses begins at "
+        "450 nm, and the same dye record's wider excitation strip gives 1.8 % of the peak at 450 nm "
+        "and 0.2 % at 400 nm, while the documented methanol spectrum gives 4.3 % at 450 nm - all far "
+        "below what the figure can show, but not zero. So this end is a limit of the tabulated range "
+        "rather than of the physics. (The 400 nm harmonic filter does not enter here: it only blocks "
+        "wavelengths below 400 nm, which the sweep does not use.)<br/>"
+        "4. <b>Above about 590 nm the simulation returns exactly zero</b>, for two different reasons. "
+        "The strip the model uses was digitized over 450-590 nm, so between 590 and about 610 nm this "
+        "is a limit of the data: the same record's corrected excitation strip runs to 649 nm and reads "
+        "0.4 % of the peak at 600 nm and 0.02 % at 610 nm. From about 620 nm to 700 nm the curve is "
+        "flat because the dye is, not because the data stops - that strip returns zero there, and the "
+        "documented methanol spectrum of the same chromophore, which does reach 700 nm, reads 0.2 % at "
+        "650 nm, an absorbed fraction of 0.07 % at the concentration used here. A real instrument "
+        "would record a weak, not vanishing, signal near 600 nm, and nothing measurable beyond it.<br/>"
         "5. <b>Stray light tracks the excitation wavelength.</b> With stray light enabled, the "
         "scattered line sits exactly at &lambda;<sub>exc</sub> and moves with it, which is why the "
         "harmonic filter and the second monochromator exist.", s["body"]))
@@ -457,8 +464,8 @@ def build_pdf():
 
         "[3] R. B. Mujumdar, L. A. Ernst, S. R. Mujumdar, C. J. Lewis and A. S. Waggoner, \"Cyanine dye "
         "labeling reagents: sulfoindocyanine succinimidyl esters\", <i>Bioconjugate Chemistry</i> "
-        "<b>4</b> (1993) 105-111. DOI 10.1021/bc00020a001. (The Cy3/Cy5 chromophores and their "
-        "excitation ranges.)",
+        "<b>4</b> (1993) 105-111. DOI 10.1021/bc00020a001. (Introduction of the sulfoindocyanine "
+        "succinimidyl esters; the vendor values for the maxima used here are in [9].)",
 
         "[4] E. M. Tuite and J. M. Kelly, \"Photochemical interactions of methylene blue and analogues "
         "with DNA and other biological substrates\", <i>Journal of Photochemistry and Photobiology B: "
@@ -470,8 +477,10 @@ def build_pdf():
         "constructs in Tris buffer, read from the paper's own text: about 0.2 ns for the free dye, "
         "with components of 0.6-1.1 ns and 1.5-2.5 ns.)",
 
-        "[6] L. M. Moreira et al., \"Phenotiazinium dyes as photosensitizers in photodynamic therapy\" "
-        "(title as published), in <i>Advanced Aspects of Spectroscopy</i>, InTech, 2012, p. 395. DOI "
+        "[6] L. M. Moreira, J. P. Lyon, A. P. Romani, D. Severino, M. R. Rodrigues and "
+        "H. P. M. de Oliveira, \"Phenotiazinium dyes as photosensitizers in photodynamic therapy: "
+        "spectroscopic properties and photochemical mechanisms\" (title and spelling as printed), in "
+        "<i>Advanced Aspects of Spectroscopy</i>, InTech, 2012, ch. 14. DOI "
         "10.5772/48087. (Methylene blue: the singlet state decays by internal conversion and by "
         "intersystem crossing, with a triplet yield of 0.52, which is why its quantum yield is the "
         "lowest of the three.)",
@@ -489,13 +498,17 @@ def build_pdf():
         "from a citable source, RP Photonics, \"Responsivity\", DOI 10.61835/xal, an article on "
         "responsivity and how it relates to quantum efficiency.",
 
-        "[9] Dye spectra and molar extinction coefficients: the Cytiva/GE Healthcare Cy3 "
-        "amine-reactive sheet 28951573 (catalogue PA23001: 550 nm, 150 000, 570 nm) and the Cy5 "
-        "maleimide sheet 28954683 (PA25031: 649 nm, 250 000, 670 nm; the amine-reactive code is "
-        "PA25001); for methylene blue the PhotochemCAD record PSW009, whose own reference is "
-        "JACS Au (DOI 10.1021/jacsau.5c01463), and the OMLC/Prahl measured spectrum. The full source "
-        "table, with a confidence for each value and the raw files, is the data-sources appendix of "
-        "this report, and the raw files themselves are in <i>data/raw/</i>.",
+        "[9] Dye spectra and molar extinction coefficients, from the vendor documentation kept in "
+        "<i>data/raw/</i>. Cy3: the Cytiva Cy3 instructions-for-use sheet and the Cy3 maleimide "
+        "specification sheet 28954681, which print absorbance maximum 550 nm, emission maximum "
+        "570 nm, and 150 000 M<sup>-1</sup>cm<sup>-1</sup> at 552 nm in the labelling formula. Cy5: "
+        "the maleimide sheet 28954683, which prints 649 nm, 250 000 M<sup>-1</sup>cm<sup>-1</sup> at "
+        "650 nm, and 670 nm. Methylene blue: the PhotochemCAD record PSW009, whose own reference is "
+        "JACS Au (DOI 10.1021/jacsau.5c01463), and the OMLC/Prahl measured spectrum. The same vendor "
+        "documentation names the conventional Cy5 excitation lines, the 633 nm helium-neon and "
+        "647 nm krypton-argon lines. The full source table, with a confidence for each value and the "
+        "raw files, is the data-sources appendix of this report, and the raw files themselves are in "
+        "<i>data/raw/</i>.",
 
         "[10] A published Cy5 emission bandwidth, used only as a cross-check on the width measured here: "
         "<i>Biosensors</i> <b>13</b> (2023) 876, Table 2, DOI 10.3390/bios13090876 (open access, "
@@ -514,7 +527,7 @@ def build_pdf():
         "literature; the one published value found, a Cy5 emission FWHM of 37.4 nm [10], is 4 nm wider "
         "than the 33.4 nm measured here, and for Cy3 no published value was found at all. The FPbase records from which the Cy3 and Cy5 bands are digitized do "
         "not state their provenance; the fully documented curves for the same chromophores are the "
-        "PhotochemCAD methanol spectra kept in <i>data/raw/</i>. Section 3.2 of the generated number "
+        "PhotochemCAD methanol spectra kept in <i>data/raw/</i>. Section 3.1 of the generated number "
         "table tests how much any of this could move the result: re-run at the top of both unverified "
         "ranges at once, methylene blue reaches 0.00429 at 650 nm against Cy5's 0.06824 and Cy3's "
         "0.00523 at 550 nm, so the ranking between the three dyes does not depend on the numbers that "

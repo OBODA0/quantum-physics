@@ -1,7 +1,8 @@
 """Measured reference data: digitized absorption and emission bands.
 
 The pack in `data/reference_spectra.json` was collected from vendor spec
-sheets, spectral databases and peer-reviewed papers; `data/SOURCES.md` gives a
+sheets, spectral databases and peer-reviewed papers; the data-sources appendix of the
+report gives a
 source and a confidence for every number.
 """
 
@@ -14,7 +15,7 @@ from .bands import TabulatedBand
 from .samples import Dye
 
 DEFAULT_PATH = Path(__file__).resolve().parent.parent / "data" / "reference_spectra.json"
-SOURCE = "data/reference_spectra.json (see data/SOURCES.md)"
+SOURCE = "data/reference_spectra.json (see the data-sources appendix of the report)"
 
 
 def available(path=DEFAULT_PATH):

@@ -36,8 +36,9 @@ OUTPUT = Path(__file__).resolve().parent / "numbers.md"
 # Which database build() selected, so the robustness table below uses the same one.
 DATABASE = "reference"
 
-# Second-opinion verification of 2026-10-18 (see data/SOURCES.md, section
-# "Second opinion"): the five numbers the report must not get wrong.
+# Five values that circulate in the literature but that the sources held here do not
+# support. Each one carries what the sources do say, so the number in the report is the
+# second column and never the first.
 CORRECTIONS = [
     ("methylene blue extinction coefficient", "80000", "67,000 as measured in water "
      "(PhotochemCAD PSW009), 74,028 (OMLC/Prahl), 107,800 for the deconvoluted monomer "
@@ -97,7 +98,6 @@ def band_peak(band, lo, hi):
 def build(database_choice="reference"):
     global DATABASE
     records = json.loads(Path(DEFAULT_PATH).read_text())
-    global DATABASE
     DATABASE = database_choice
     source = SAMPLE_DATABASE if database_choice == "model" else load_reference_database()
     dyes = {key: with_concentration(dye, CONCENTRATION_M, PATH_LENGTH_CM) for key, dye in source.items()}
@@ -185,7 +185,7 @@ def build(database_choice="reference"):
                 lambda_exc, dye.name, dye.absorbance(lambda_exc), dye.absorbed_fraction(lambda_exc),
                 peak, scan.photocurrent.max(), integrated))
     add("")
-    add("### 3.2 How far the unverified methylene blue numbers could move that table")
+    add("### 3.1 How far the unverified methylene blue numbers could move that table")
     add("")
     add("No primary source was found for methylene blue's extinction coefficient, and its quantum "
         "yield in water is a value used in photodynamic-therapy work rather than a measurement read "
@@ -217,7 +217,7 @@ def build(database_choice="reference"):
         "depend on the numbers that could not be sourced.")
     add("")
 
-    add("### 3.1 What is drawn below the excitation wavelength, and how much stray light is left")
+    add("### 3.2 What is drawn below the excitation wavelength, and how much stray light is left")
     add("")
     add("The emission band is the measured one: the model applies no extra suppression to the "
         "part of the band that lies below lambda_exc, because that part of the spectrum is the "
@@ -329,12 +329,16 @@ def build(database_choice="reference"):
             wavelength, detector.responsivity(wavelength)))
     add("")
 
-    add("## 6. Numbers the report must not copy from the earlier draft")
+    add("## 6. Values that are easy to get wrong")
     add("")
-    add("| claim in the draft | value there | what the sources support |")
+    add("Each of these is quoted somewhere in the literature or the dye vendor material. The middle "
+        "column is the quoted value; the right-hand column is what the sources held for this project "
+        "actually support, and that is the value the report uses.")
+    add("")
+    add("| quantity | as sometimes quoted | what the sources support |")
     add("| --- | --- | --- |")
-    for claim, drafted, supported in CORRECTIONS:
-        add("| {} | {} | {} |".format(claim, drafted, supported))
+    for quantity, quoted, supported in CORRECTIONS:
+        add("| {} | {} | {} |".format(quantity, quoted, supported))
     add("")
 
     add("## 7. Still unverified")

@@ -1,6 +1,7 @@
 """Sample database: the dyes of the class task, as a Gaussian model.
 
-Band centres and quantum yields are the sourced values from `data/SOURCES.md`,
+Band centres and quantum yields are the sourced values from the data-sources appendix
+of the report,
 where each number carries its solvent and its spread. The band shapes are
 Gaussian approximations; `plsim/reference.py` loads the measured band shapes
 for the same three dyes.
@@ -85,7 +86,7 @@ SAMPLE_DATABASE = {
             "563-570 nm). Quantum yield 0.04 holds for the free dye in PBS; conjugates and sulfo-Cy3 are "
             "reported at 0.10-0.31, so quote it together with the solvent."
         ),
-        source="data/SOURCES.md",
+        source="the data-sources appendix of the report",
     ),
     "cy5": Dye(
         name="Cy5",
@@ -99,7 +100,7 @@ SAMPLE_DATABASE = {
             "solution; individual measurements span 0.19-0.30, and 0.4 in methanol is disputed by an "
             "integrating-sphere measurement of 0.17."
         ),
-        source="data/SOURCES.md",
+        source="the data-sources appendix of the report",
     ),
     "methylene-blue": Dye(
         name="Methylene blue",
@@ -114,7 +115,7 @@ SAMPLE_DATABASE = {
             "The molar extinction coefficient depends on how the dimer is treated: 67,000-74,000 in dilute "
             "water as measured, 107,800 for the deconvoluted monomer."
         ),
-        source="data/SOURCES.md",
+        source="the data-sources appendix of the report",
     ),
 }
 

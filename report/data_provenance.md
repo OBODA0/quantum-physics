@@ -29,12 +29,12 @@ for comparison.
 
 | quantity | value used | source | confidence |
 | --- | --- | --- | --- |
-| absorption maximum | 550 nm | Cytiva PA23001 datasheet | high; 544-555 nm across suppliers |
-| emission maximum | 570 nm | Cytiva PA23001 datasheet | high; 563-570 nm across suppliers |
+| absorption maximum | 550 nm | Cytiva Cy3 instruction sheet | high; 544-555 nm across suppliers |
+| emission maximum | 570 nm | Cytiva Cy3 instruction sheet | high; 563-570 nm across suppliers |
 | absorption FWHM | 45.0 nm | measured here on the FPbase curve | medium; methanol record 53.9 nm |
 | emission FWHM | 28.6 nm | measured here on the FPbase curve | medium; methanol record about 40 nm |
 | quantum yield | 0.04, free dye in PBS | peer-reviewed free-dye measurement | medium-high; conjugates 0.10-0.31 |
-| extinction coefficient | 150,000 | Cytiva PA23001; Lumiprobe; Interchim | high; sulfo-Cy3 quoted at 162,000 |
+| extinction coefficient | 150,000 at 552 nm | Cytiva Cy3 sheets; Lumiprobe | high; sulfo form 162,000 |
 | Stokes shift | 20 nm | derived from the two maxima above | high; 14 nm between the curve peaks |
 | pH dependence | flat over pH 4-10 | supplier product page | low; a supplier claim, not measured here |
 
@@ -53,7 +53,7 @@ methanol, is the PhotochemCAD record 016 kept in `data/raw/`.
 | absorption FWHM | 37.7 nm | measured here on the FPbase curve | medium; methanol record 39.2 nm |
 | emission FWHM | 33.4 nm | measured here on the FPbase curve | medium; methanol record 38.5 nm |
 | quantum yield | 0.28 in water | peer-reviewed, quoting the aqueous value | medium; individual results 0.19-0.30 |
-| extinction coefficient | 250,000 | Cytiva 28954683; Lumiprobe; Interchim | high; sulfo-Cy5 quoted at 271,000 |
+| extinction coefficient | 250,000 at 650 nm | Cytiva 28954683; Lumiprobe | high; sulfo form 271,000 |
 | Stokes shift | 21 nm | derived from the two maxima above | high |
 | salt / solvent effect | about 1 nm red shift | peer-reviewed, read in full | medium-high |
 
@@ -96,7 +96,7 @@ OMLC measured data set and the deconvoluted monomer value above.
 5. **The dimerisation constant of methylene blue in water.** The paper exists but is paywalled and
    its abstract contains no numbers.
 
-Section 3.2 of the generated number table re-runs the 650 nm result at the top and bottom of every
+Section 3.1 of the generated number table re-runs the 650 nm result at the top and bottom of every
 range listed above, and shows that the ranking between the three dyes does not depend on any of it.
 
 ## Raw files kept in the repository
@@ -116,7 +116,8 @@ Every digitized curve can be re-derived from these rather than trusted:
 | `interchim_fpcy.txt` | Interchim (FluoProbes) cyanine data, a second independent supplier |
 | `rs_cyanine.txt` | review of cyanine photophysics, used for the conjugate quantum-yield spread |
 
-The Cytiva Cy3 amine-reactive pack sheet (PA23001) was fetched and read while the Cy3 values were
-collected, but the copy kept in the repository arrived corrupt and has since been removed; its
-values are corroborated by the readable Cytiva Cy3 documents, Lumiprobe, Interchim and Thermo
-listed above.
+The readable vendor documents are the ones cited: the Cytiva Cy3 instruction sheet, the Cy3
+maleimide specification sheet 28954681 and the Cy5 maleimide sheet 28954683 all print the values used
+here, and they agree with Lumiprobe, Interchim and Thermo. The Cytiva Cy3 amine-reactive pack sheet
+(PA23001) states the same three Cy3 values; it was read when the data was collected, but the copy kept
+in the repository arrived corrupt and was removed, so it is the readable sheets that the report cites.
