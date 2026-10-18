@@ -6,7 +6,7 @@ import argparse
 import dataclasses
 from pathlib import Path
 
-from .reference import available as reference_available, load_reference_database
+from .reference import available as reference_available, load_reference_database, reported_maxima
 from .samples import SAMPLE_DATABASE, get_sample, with_concentration
 from .spectrometer import PLSpectrometer
 
@@ -52,24 +52,28 @@ def choose_database(choice):
     return load_reference_database(), "measured bands from data/reference_spectra.json"
 
 
-def list_samples(database, label):
+def list_samples(database, label, maxima=None):
+    """One line per dye. `maxima` gives the values the sources report, which are
+    a few nm away from the peaks of the digitized curves."""
     lines = ["sample database: {} ({})".format(label, len(database))]
     for key, dye in database.items():
+        if maxima and key in maxima:
+            absorption_nm, emission_nm = maxima[key]
+        else:
+            absorption_nm = _band_peak(dye.absorption)
+            emission_nm = _band_peak(dye.emission)
         lines.append(
             "{:<16} {:<16} excitation {:>5.0f} nm  emission {:>5.0f} nm  quantum yield {:g}  ({})".format(
-                key,
-                dye.name,
-                dye.absorption.center_nm if hasattr(dye.absorption, "center_nm") else _curve_peak(dye.absorption),
-                dye.emission.center_nm if hasattr(dye.emission, "center_nm") else _curve_peak(dye.emission),
-                dye.quantum_yield,
-                dye.solvent,
+                key, dye.name, absorption_nm, emission_nm, dye.quantum_yield, dye.solvent
             )
         )
     return "\n".join(lines)
 
 
-def _curve_peak(band):
-    """Wavelength of the maximum of a tabulated band, on a fine grid."""
+def _band_peak(band):
+    """Wavelength of the maximum of a band: its centre, or the curve's own peak."""
+    if hasattr(band, "center_nm"):
+        return band.center_nm
     import numpy as np
 
     wavelengths = np.asarray(band.wavelength_nm, dtype=float)
@@ -83,7 +87,8 @@ def main(argv=None):
     database, label = choose_database(args.database)
 
     if args.list_samples:
-        print(list_samples(database, label))
+        maxima = reported_maxima() if reference_available() else None
+        print(list_samples(database, label, maxima))
         return 0
 
     if args.dlambda <= 0.0:

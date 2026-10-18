@@ -156,6 +156,11 @@ def build(database_choice="reference"):
                 peak, integrated))
     add("")
 
+    add("Peak wavelengths are read off the scan on the step-size grid after the detection "
+        "passband, so they can differ from the tabulated curve peak by about one step "
+        "(methylene blue reads 685.5 nm on a 0.5 nm grid and 686 nm on a 1 nm grid; the "
+        "curve itself peaks at 685.0 nm). That is the instrument, not an inconsistency.")
+    add("")
     add("The digitized curves are defined only inside the range where they were measured "
         "(Cy3 absorption 450-590 nm, Cy5 430-734 nm, methylene blue 300-800 nm). Outside that "
         "range the model reads zero absorption, which is why Cy3 shows 0.00 % at 450 nm while "

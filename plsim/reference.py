@@ -22,6 +22,20 @@ def available(path=DEFAULT_PATH):
     return Path(path).exists()
 
 
+def reported_maxima(path=DEFAULT_PATH):
+    """The absorption and emission maxima the sources state, per dye.
+
+    These differ by a few nm from the peaks of the digitized curves (the Cy3
+    curve peaks at 554 nm where the vendors say 550 nm). Figures and listings use
+    the reported values so that what is drawn agrees with what is written.
+    """
+    records = json.loads(Path(path).read_text())
+    return {
+        key: (float(record["absorption_max_nm"]), float(record["emission_max_nm"]))
+        for key, record in records.items()
+    }
+
+
 def load_reference_database(path=DEFAULT_PATH):
     """Build the sample database from the measured reference pack."""
     records = json.loads(Path(path).read_text())

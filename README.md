@@ -47,9 +47,9 @@ Two databases are available:
 ```
 uv sync
 uv run python -m plsim --list-samples
-uv run python -m plsim --sample cy5 --lambda-exc 649 --range 600 780 --dlambda 0.5
-uv run python -m plsim --sample methylene-blue --lambda-exc 664 --range 550 800 --ideal
-uv run python -m plsim --sample cy5 --database model --lambda-exc 649 --range 600 780
+uv run python -m plsim --sample cy5 --lambda-exc 649 --range 600 780 --dlambda 0.5 --concentration 1e-6
+uv run python -m plsim --sample methylene-blue --lambda-exc 664 --range 550 800 --ideal --concentration 1e-6
+uv run python -m plsim --sample cy5 --database model --lambda-exc 649 --range 600 780 --concentration 1e-6
 ```
 
 The figure is written to `out/` unless `--show` is given. `--ideal` removes the

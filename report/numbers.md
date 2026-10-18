@@ -45,6 +45,8 @@ Equal concentration does not mean equal absorbance: A_peak = epsilon * c * l, an
 | 650 nm | Cy5 | 0.2471 | 43.39% | 667.5 nm | 5.848 |
 | 650 nm | Methylene blue | 0.0550 | 11.90% | 685.5 nm | 0.183 |
 
+Peak wavelengths are read off the scan on the step-size grid after the detection passband, so they can differ from the tabulated curve peak by about one step (methylene blue reads 685.5 nm on a 0.5 nm grid and 686 nm on a 1 nm grid; the curve itself peaks at 685.0 nm). That is the instrument, not an inconsistency.
+
 The digitized curves are defined only inside the range where they were measured (Cy3 absorption 450-590 nm, Cy5 430-734 nm, methylene blue 300-800 nm). Outside that range the model reads zero absorption, which is why Cy3 shows 0.00 % at 450 nm while the independent check on the same dye puts it near 0.6 %. It does not change the conclusion at 450 nm, where all three dyes are transparent, but the report should say "negligible" rather than "exactly zero".
 
 ## 4. The excitation sweep (question 2)
