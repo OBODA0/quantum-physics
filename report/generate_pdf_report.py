@@ -17,6 +17,7 @@ from reportlab.platypus import (
 )
 from reportlab.pdfgen import canvas
 
+REPO_ROOT = Path(__file__).resolve().parent.parent
 PDF_FILENAME = "Assignment_1_PL_Spectroscopy_Simulation_Report.pdf"
 PDF_PATH = Path(__file__).resolve().parent / PDF_FILENAME
 FIG_DIR = Path(__file__).resolve().parent / "report_figures"
@@ -362,23 +363,34 @@ def build_pdf():
     ))
     story.append(Spacer(1, 6))
 
+    # Every file that produced the results in this report. Resolved against the
+    # repository root, and a missing file is an error rather than a silently
+    # shorter appendix.
     code_files = [
-        ("plsim/samples.py", "Sample Database (Cy3, Cy5, Methylene Blue Models)"),
-        ("plsim/sources.py", "Optical Source Arm (Xenon Lamp, Monochromator & Filter)"),
-        ("plsim/spectrometer.py", "Instrument Scan Engine (Optical Power & Convolution)"),
-        ("plsim/detector.py", "Photodetector & Responsivity Curve Model"),
-        ("plsim/bands.py", "Gaussian Band Model & Stokes Convolution"),
+        ("plsim/bands.py", "Band shapes: Gaussian model and tabulated measured bands"),
+        ("plsim/sources.py", "Excitation arm: xenon lamp, monochromator, harmonic filter"),
+        ("plsim/samples.py", "Sample database, absorbance, concentration"),
+        ("plsim/reference.py", "Loader for the measured reference band data"),
+        ("plsim/detector.py", "Silicon photodiode and its responsivity curve"),
+        ("plsim/spectrometer.py", "The instrument: one PL scan end to end"),
+        ("plsim/analysis.py", "Excitation scans and their model check"),
+        ("plsim/plot.py", "Figure rendering"),
+        ("plsim/cli.py", "Command line interface (the user settings)"),
+        ("plsim/__init__.py", "Package interface"),
+        ("report/generate_assignment_figures.py", "The figures for questions 1, 2 and 3"),
+        ("report/generate_numbers.py", "The number table the report quotes from"),
+        ("tests/test_simulator.py", "The checks behind the physics claims"),
     ]
 
     for rel_path, desc in code_files:
-        full_path = Path(rel_path)
-        if full_path.exists():
-            story.append(Paragraph(f"<b>File: {rel_path}</b> — <i>{desc}</i>", h2_style))
-            with open(full_path, "r", encoding="utf-8") as f:
-                content = f.read()
-            # Truncate very long docstrings or format cleanly
-            story.append(Preformatted(content, code_style))
-            story.append(Spacer(1, 10))
+        full_path = REPO_ROOT / rel_path
+        if not full_path.exists():
+            raise FileNotFoundError(f"appendix source missing: {full_path}")
+        story.append(Paragraph(f"<b>File: {rel_path}</b> — <i>{desc}</i>", h2_style))
+        with open(full_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        story.append(Preformatted(content, code_style))
+        story.append(Spacer(1, 10))
 
     # Build the document
     doc.build(story, canvasmaker=NumberedCanvas)
