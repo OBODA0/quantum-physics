@@ -274,11 +274,11 @@ def generate_part2(dyes):
     right.set_ylabel("normalized intensity")
     right.legend(loc="upper right")
 
-    figure.suptitle("Part 2: excitation wavelength sweep of Cy3 ({:.0f}-{:.0f} nm). The overlay "
-                    "shows 470-560 nm because Cy3 does not absorb at 450, 600 or 650 nm - its "
-                    "measured absorption band stops at {:.0f} nm".format(
+    figure.suptitle("Part 2: excitation wavelength sweep of Cy3 ({:.0f}-{:.0f} nm)\n"
+                    "the overlay shows 470-560 nm: Cy3 does not absorb at 450, 600 or 650 nm, "
+                    "its measured absorption band stops at {:.0f} nm".format(
                         EXCITATION_START_NM, EXCITATION_STOP_NM, ABSORPTION_RANGE_NM["cy3"][1]),
-                    fontweight="bold")
+                    fontweight="bold", fontsize=12.5)
     figure.savefig(FIG_DIR / "part2_cy3_excitation_sweep.png", dpi=300)
     plt.close(figure)
 
@@ -341,9 +341,9 @@ def generate_part3(dyes):
                       bbox=dict(boxstyle="round", fc="white", ec="#bbbbbb"))
     axes[0].set_ylabel("photodetector current (relative a.u., shared scale)")
     figure.suptitle("Part 3: emission spectra of the three dyes at the same concentration "
-                    "({:.0f} nM in 1 cm) and the same path length; stray light is left out of "
+                    "({:.0f} nM in 1 cm)\nand the same path length; stray light is left out of "
                     "these panels so the dyes can be compared".format(CONCENTRATION_M * 1e9),
-                    fontweight="bold")
+                    fontweight="bold", fontsize=13)
     figure.savefig(FIG_DIR / "part3_three_dyes_comparison.png", dpi=300)
     plt.close(figure)
 
@@ -359,8 +359,8 @@ def generate_part3(dyes):
     for wavelength, style in ((450.0, "-"), (550.0, "--"), (650.0, ":")):
         axis.axvline(wavelength, color="#333333", lw=1.1, ls=style, alpha=0.75)
         axis.text(wavelength, 1.045, "{:.0f} nm".format(wavelength), ha="center", fontsize=9, color="#333333")
-    axis.set_title("Why the three peaks differ at the same concentration: the three absorption "
-                   "curves,\nwith the three excitation wavelengths marked")
+    axis.set_title("Why the three peaks differ at the same concentration\nthe three absorption "
+                   "curves, with the three excitation wavelengths marked")
     axis.set_xlabel("wavelength (nm)")
     axis.set_ylabel("absorption, normalized to each dye's own maximum")
     axis.set_ylim(0.0, 1.15)
