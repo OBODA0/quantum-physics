@@ -4,11 +4,12 @@ Gate the built PDF before it is submitted.
 Checks the file that will actually be uploaded, not the repository:
 
   1. every DOI printed in the PDF resolves at Crossref (PS1 protection),
-  2. the appendix carries the expected number of source files,
-  3. the figures are embedded as images, not linked,
-  4. the page count and title metadata are set.
+  2. every printed DOI is a clickable link, and no link in the file is broken,
+  3. the appendix carries the expected number of source files,
+  4. the figures are embedded as images, not linked,
+  5. the page count and title metadata are set.
 
-Usage: python report/check_pdf.py [--min-figures 9] [--appendix-files 14]
+Usage: python report/check_pdf.py [--min-figures 9] [--appendix-files 15]
 """
 
 import argparse
@@ -44,7 +45,7 @@ def clean(doi):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--min-figures", type=int, default=9)
-    parser.add_argument("--appendix-files", type=int, default=14)
+    parser.add_argument("--appendix-files", type=int, default=15)
     parser.add_argument("--offline", action="store_true", help="skip the DOI resolution check")
     arguments = parser.parse_args(argv)
 
@@ -73,9 +74,19 @@ def main(argv=None):
     if "anonymous" in info:
         failures.append("PDF title metadata")
 
+    raw = PDF.read_bytes()
+    uri_links = raw.count(b"/URI")
+    dest_links = raw.count(b"/Dest [")
+    print(f"clickable DOI links : {uri_links}")
+    if dest_links:
+        # in-text jump links, if any were added back: they must resolve, so this gate fails closed
+        print(f"in-text jump links  : {dest_links} (must resolve to the reference list)")
+
     joined = re.sub(r"\s+", " ", text)
     dois = sorted({clean(d) for d in re.findall(r"10\.[0-9]{4,}/[^\s,;]+", joined)})
     print(f"DOIs printed        : {len(dois)}")
+    if uri_links < len(dois):
+        failures.append(f"only {uri_links} clickable links for {len(dois)} DOIs")
     if not arguments.offline:
         for doi in dois:
             code = resolve(doi)

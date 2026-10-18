@@ -45,6 +45,21 @@ Equal concentration does not mean equal absorbance: A_peak = epsilon * c * l, an
 | 650 nm | Cy5 | 0.2471 | 43.39% | 668.0 nm | 0.06824 | 5.848 |
 | 650 nm | Methylene blue | 0.0550 | 11.90% | 686.0 nm | 0.00138 | 0.183 |
 
+### 3.2 How far the unverified methylene blue numbers could move that table
+
+No primary source was found for methylene blue's extinction coefficient, and its quantum yield in water is a value used in photodynamic-therapy work rather than a measurement read here. So the 650 nm row above is re-run at the top and bottom of every sourced range. Only 650 nm is listed, because that is where methylene blue absorbs most of the light it can use.
+
+| methylene blue at 650 nm | epsilon (1/M/cm) | Phi_f | peak photocurrent |
+| --- | --- | --- | --- |
+| as used above (PhotochemCAD water) | 67,000 | 0.02 | 0.00138 |
+| OMLC, measured at 10 umol/L | 74,028 | 0.02 | 0.00152 |
+| the value with no primary source found - not used, shown for scale | 95,000 | 0.02 | 0.00191 |
+| deconvoluted monomer | 107,800 | 0.02 | 0.00214 |
+| the ethanol quantum yield applied to water | 67,000 | 0.04 | 0.00277 |
+| the top of both ranges at once | 107,800 | 0.04 | 0.00429 |
+
+Cy5 at the same 650 nm excitation gives 0.06824, so even the last row - the top of both unverified ranges at once - leaves methylene blue an order of magnitude below Cy5, and Cy3 at 550 nm (0.00523) ahead of every methylene blue row. The ranking in section 3 does not depend on the numbers that could not be sourced.
+
 ### 3.1 What is drawn below the excitation wavelength, and how much stray light is left
 
 The emission band is the measured one: the model applies no extra suppression to the part of the band that lies below lambda_exc, because that part of the spectrum is the dye's own measured band shape and its amplitude there is small. A real instrument would record scattered excitation light at the same time, which is the stray-light column.

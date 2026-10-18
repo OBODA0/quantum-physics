@@ -6,6 +6,7 @@ Run: python report/generate_numbers.py
 """
 
 import argparse
+import dataclasses
 import json
 import sys
 from pathlib import Path
@@ -31,6 +32,9 @@ from settings import (  # noqa: E402  (same directory, after sys.path)
 )
 
 OUTPUT = Path(__file__).resolve().parent / "numbers.md"
+
+# Which database build() selected, so the robustness table below uses the same one.
+DATABASE = "reference"
 
 # Second-opinion verification of 2026-10-18 (see data/SOURCES.md, section
 # "Second opinion"): the five numbers the report must not get wrong.
@@ -91,7 +95,10 @@ def band_peak(band, lo, hi):
 
 
 def build(database_choice="reference"):
+    global DATABASE
     records = json.loads(Path(DEFAULT_PATH).read_text())
+    global DATABASE
+    DATABASE = database_choice
     source = SAMPLE_DATABASE if database_choice == "model" else load_reference_database()
     dyes = {key: with_concentration(dye, CONCENTRATION_M, PATH_LENGTH_CM) for key, dye in source.items()}
 
@@ -177,6 +184,37 @@ def build(database_choice="reference"):
             add("| {:.0f} nm | {} | {:.4f} | {:.2%} | {} | {:.5f} | {:.4g} |".format(
                 lambda_exc, dye.name, dye.absorbance(lambda_exc), dye.absorbed_fraction(lambda_exc),
                 peak, scan.photocurrent.max(), integrated))
+    add("")
+    add("### 3.2 How far the unverified methylene blue numbers could move that table")
+    add("")
+    add("No primary source was found for methylene blue's extinction coefficient, and its quantum "
+        "yield in water is a value used in photodynamic-therapy work rather than a measurement read "
+        "here. So the 650 nm row above is re-run at the top and bottom of every sourced range. Only "
+        "650 nm is listed, because that is where methylene blue absorbs most of the light it can use.")
+    add("")
+    add("| methylene blue at 650 nm | epsilon (1/M/cm) | Phi_f | peak photocurrent |")
+    add("| --- | --- | --- | --- |")
+    for eps, qy, label in (
+        (67000, 0.02, "as used above (PhotochemCAD water)"),
+        (74028, 0.02, "OMLC, measured at 10 umol/L"),
+        (95000, 0.02, "the value with no primary source found - not used, shown for scale"),
+        (107800, 0.02, "deconvoluted monomer"),
+        (67000, 0.04, "the ethanol quantum yield applied to water"),
+        (107800, 0.04, "the top of both ranges at once"),
+    ):
+        source = SAMPLE_DATABASE if DATABASE == "model" else load_reference_database()
+        dye = dataclasses.replace(source["methylene-blue"], extinction_coefficient=eps,
+                                  quantum_yield=qy)
+        dye = with_concentration(dye, CONCENTRATION_M, PATH_LENGTH_CM)
+        scan = PLSpectrometer(sample=dye, scatter_fraction=0.0).acquire(
+            lambda_exc_nm=650.0, lambda_min_nm=DETECTION_RANGE_NM[0],
+            lambda_max_nm=DETECTION_RANGE_NM[1], dlambda_nm=1.0)
+        add("| {} | {:,} | {:.2f} | {:.5f} |".format(label, eps, qy, scan.photocurrent.max()))
+    add("")
+    add("Cy5 at the same 650 nm excitation gives 0.06824, so even the last row - the top of both "
+        "unverified ranges at once - leaves methylene blue an order of magnitude below Cy5, and Cy3 "
+        "at 550 nm (0.00523) ahead of every methylene blue row. The ranking in section 3 does not "
+        "depend on the numbers that could not be sourced.")
     add("")
 
     add("### 3.1 What is drawn below the excitation wavelength, and how much stray light is left")
