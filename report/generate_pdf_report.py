@@ -26,6 +26,10 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 PDF_FILENAME = "Assignment_1_PL_Spectroscopy_Simulation_Report.pdf"
 PDF_PATH = Path(__file__).resolve().parent / PDF_FILENAME
 FIG_DIR = Path(__file__).resolve().parent / "report_figures"
+COVER_PDF = Path(__file__).resolve().parent / "cover.pdf"
+# The submitted cover page is prepended after the build, so this document numbers itself from
+# page 2 and counts one extra page.
+COVER_PAGES = 1 if COVER_PDF.exists() else 0
 
 
 class NumberedCanvas(canvas.Canvas):
@@ -62,7 +66,8 @@ class NumberedCanvas(canvas.Canvas):
             self.setStrokeColor(colors.HexColor("#dddddd"))
             self.setLineWidth(0.6)
             self.line(54, 11 * 72 - 42, 8.5 * 72 - 54, 11 * 72 - 42)
-        self.drawRightString(8.5 * 72 - 54, 34, f"Page {self._pageNumber} of {page_count}")
+        self.drawRightString(8.5 * 72 - 54, 34,
+                             f"Page {self._pageNumber + COVER_PAGES} of {page_count + COVER_PAGES}")
         self.drawString(54, 34, "Nanotechnology / Quantum Physics - PL Spectrometer Simulation")
         self.setStrokeColor(colors.HexColor("#dddddd"))
         self.setLineWidth(0.6)
@@ -137,6 +142,47 @@ class ReferenceParagraph(Paragraph):
     def __init__(self, text, style=None, **kwargs):
         # ReportLab re-constructs a paragraph with text=None when it splits one across pages.
         super().__init__(link_dois(text) if text is not None else None, style, **kwargs)
+
+
+def _count_pages(path):
+    from pypdf import PdfReader
+    return len(PdfReader(str(path)).pages)
+
+
+def _prepend_cover(report_path, cover_path, page_count):
+    """Put the submitted cover in front of the report, carrying the report's own footer.
+
+    The cover is used exactly as submitted; only the footer line is added to it, so the
+    page numbering runs unbroken from page 1 to the last page.
+    """
+    import io
+
+    from pypdf import PdfReader, PdfWriter
+
+    overlay_buffer = io.BytesIO()
+    overlay = canvas.Canvas(overlay_buffer, pagesize=letter)
+    overlay.setFont("Helvetica", 9)
+    overlay.setFillColor(colors.HexColor("#555555"))
+    overlay.drawString(54, 34, "Nanotechnology / Quantum Physics - PL Spectrometer Simulation")
+    overlay.drawRightString(8.5 * 72 - 54, 34, f"Page 1 of {page_count}")
+    overlay.setStrokeColor(colors.HexColor("#dddddd"))
+    overlay.setLineWidth(0.6)
+    overlay.line(54, 46, 8.5 * 72 - 54, 46)
+    overlay.showPage()
+    overlay.save()
+    overlay_buffer.seek(0)
+
+    front = PdfReader(str(cover_path)).pages[0]
+    front.merge_page(PdfReader(overlay_buffer).pages[0])
+
+    writer = PdfWriter()
+    writer.add_page(front)
+    for page in PdfReader(str(report_path)).pages:
+        writer.add_page(page)
+    temporary = report_path.with_suffix(".with-cover.pdf")
+    with open(temporary, "wb") as handle:
+        writer.write(handle)
+    temporary.replace(report_path)
 
 
 def build_pdf():
@@ -238,9 +284,9 @@ def build_pdf():
         "633 nm helium-neon and 647 nm krypton-argon lines [9]. Methylene "
         "blue is a phenothiazinium dye whose excited state is quenched "
         "both by internal conversion and by intersystem crossing [4, 6], which is why its quantum "
-        "yield is the lowest of the three: the 0.04 that is often quoted for it is an absolute "
-        "measurement in ethanol [11], and the aqueous value used here is the 0.02 reference-standard "
-        "convention declared in section 4. The database holds the three dyes named in the task, at "
+        "yield is the lowest of the three: the 0.04 that is often quoted for it is the ethanol value, "
+        "and the aqueous value used here is the 0.02 reference-standard convention declared in "
+        "section 4. The database holds the three dyes named in the task, at "
         "the same concentration "
         "(1 &micro;mol/L in a 1 cm cuvette, so <i>A</i> = &epsilon;<i>c</i><i>l</i> differs between "
         "them: 0.150 for Cy3, 0.250 for Cy5, 0.067 for methylene blue). Each dye was excited at its own "
@@ -462,7 +508,7 @@ def build_pdf():
     references = [
         "[1] M. Kasha, \"Characterization of electronic transitions in complex molecules\", "
         "<i>Discussions of the Faraday Society</i> <b>9</b> (1950) 14-19. DOI 10.1039/DF9500900014. "
-        "(The rule stated for states, and the internal-conversion timescale quoted above.)",
+        "(The rule stated for states.)",
 
         "[2] J. R. Lakowicz, <i>Principles of Fluorescence Spectroscopy</i>, 3rd ed., Springer, 2006. "
         "DOI 10.1007/978-0-387-46312-4. (&sect;1.3.2, \"Emission Spectra Are Typically Independent of "
@@ -520,12 +566,6 @@ def build_pdf():
         "[10] A published Cy5 emission bandwidth, used only as a cross-check on the width measured here: "
         "<i>Biosensors</i> <b>13</b> (2023) 876, Table 2, DOI 10.3390/bios13090876 (open access, "
         "PMC10526137), which gives an Aptamer-Cy5 emission maximum at 665.0 nm with a 37.4 nm FWHM.",
-
-        "[11] J. Olmsted III, \"Calorimetric determinations of absolute fluorescence quantum yields\", "
-        "<i>Journal of Physical Chemistry</i> <b>83</b> (1979) 2581-2584. DOI 10.1021/j100483a006. "
-        "(The primary attribution for the 0.04 figure that is widely quoted for methylene blue, which "
-        "it measures in ethanol by an absolute method; the value used in this report, 0.02 in water, "
-        "is the reference-standard convention, and the two are not interchangeable.)",
     ]
     for reference in references:
         story.append(ReferenceParagraph(reference, s["ref"]))
@@ -535,10 +575,9 @@ def build_pdf():
         "blue extinction coefficient of 95,000 M<sup>-1</sup>cm<sup>-1</sup>, so it is not used: the "
         "pack carries 67,000 (PhotochemCAD, water), 74,028 (OMLC) and 107,800 for the deconvoluted "
         "monomer. The quantum yield of methylene blue in water, 0.02, is the value used in "
-        "photodynamic-therapy work, where it serves as a reference standard; the value with a primary "
-        "attribution is 0.04, measured in ethanol by a calorimetric absolute method [11], and some "
-        "readable sources also quote 0.04 for water, so the range is 0.02-0.04 rather than a single "
-        "number. The emission bandwidths quoted here are measured on the digitized bands rather than "
+        "photodynamic-therapy work, where it serves as a reference standard; the measured value is "
+        "0.04 in ethanol (the PhotochemCAD record I12 kept in <i>data/raw/</i>), and some readable "
+        "sources also quote 0.04 for water, so the range is 0.02-0.04 rather than a single number. The emission bandwidths quoted here are measured on the digitized bands rather than "
         "taken from the literature; a published Cy5 emission FWHM of 37.4 nm [10], for an aptamer "
         "conjugate, is 4 nm wider than the 33.4 nm measured here, and no published bandwidth for Cy3 "
         "was found at all. The FPbase records from which the Cy3 and Cy5 bands are digitized do "
@@ -556,11 +595,15 @@ def build_pdf():
         "The files below are read from the repository at build time, so the appendix cannot drift from "
         "the code that produced the figures. Every result in this report is reproducible with "
         "<i>uv sync</i> followed by the two generator scripts listed here. The first file is the source "
-        "and confidence behind every dye value, which section 4 cites as the appendix.", s["body"]))
+        "and confidence behind every dye value, and the second is the generated number table this "
+        "report quotes its sections 3.1 and 3.3 from; both are what section 4 and the title page point "
+        "at.", s["body"]))
 
     code_files = [
         ("report/data_provenance.md",
          "Source and confidence behind every dye value, and what could not be verified"),
+        ("report/numbers.md",
+         "The generated number table: every value this report quotes, with its check"),
         ("plsim/bands.py", "Band shapes: Gaussian model and tabulated measured bands"),
         ("plsim/sources.py", "Excitation arm: xenon lamp, monochromator, harmonic filter"),
         ("plsim/samples.py", "Sample database, absorbance, concentration"),
@@ -593,7 +636,10 @@ def build_pdf():
         story.append(Spacer(1, 10))
 
     doc.build(story, canvasmaker=NumberedCanvas)
-    print(f"PDF built: {PDF_PATH}")
+    page_count = _count_pages(PDF_PATH) + COVER_PAGES
+    if COVER_PDF.exists():
+        _prepend_cover(PDF_PATH, COVER_PDF, page_count)
+    print(f"PDF built: {PDF_PATH} ({page_count} pages)")
 
 
 if __name__ == "__main__":

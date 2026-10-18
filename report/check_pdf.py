@@ -45,7 +45,7 @@ def clean(doi):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--min-figures", type=int, default=9)
-    parser.add_argument("--appendix-files", type=int, default=15)
+    parser.add_argument("--appendix-files", type=int, default=16)
     parser.add_argument("--offline", action="store_true", help="skip the DOI resolution check")
     arguments = parser.parse_args(argv)
 
@@ -74,8 +74,12 @@ def main(argv=None):
     if "anonymous" in info:
         failures.append("PDF title metadata")
 
+    joined = re.sub(r"\s+", " ", text)
     raw = PDF.read_bytes()
-    if b"https://github.com/OBODA0/pl-spectrometer-simulator" not in raw:
+    # The URL text can be split across the content stream, so look for it in the extracted
+    # text as well as the raw bytes.
+    if "github.com/OBODA0/pl-spectrometer-simulator" not in joined and \
+            b"github.com/OBODA0/pl-spectrometer-simulator" not in raw:
         failures.append("repository link missing from the title page")
     uri_links = raw.count(b"/URI")
     dest_links = raw.count(b"/Dest [")
@@ -84,7 +88,6 @@ def main(argv=None):
         # in-text jump links, if any were added back: they must resolve, so this gate fails closed
         print(f"in-text jump links  : {dest_links} (must resolve to the reference list)")
 
-    joined = re.sub(r"\s+", " ", text)
     dois = sorted({clean(d) for d in re.findall(r"10\.[0-9]{4,}/[^\s,;]+", joined)})
     print(f"DOIs printed        : {len(dois)}")
     if uri_links < len(dois):

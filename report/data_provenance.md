@@ -93,9 +93,11 @@ OMLC measured data set and the deconvoluted monomer value above.
 1. **A primary source for the extinction coefficient of 95,000 M-1cm-1** that circulates widely for
    methylene blue. It is not used here. The sourced values are 67,000, 74,028 and 107,800.
 2. **A primary measurement of the methylene blue quantum yield in water.** 0.02 is the value used
-   when methylene blue serves as an aqueous reference in photodynamic therapy; the value with a
-   primary attribution, 0.04, was measured in ethanol by a calorimetric absolute method (Olmsted
-   1979). Some readable sources also attach 0.04 to water. Honest range for water: 0.02-0.04.
+   when methylene blue serves as an aqueous reference in photodynamic therapy; the measured value,
+   0.04, is for ethanol (PhotochemCAD record I12, kept in `data/raw/`), and the literature
+   attributes it to a calorimetric absolute measurement of 1979 whose text is paywalled and was not
+   read here, which is why it is not one of the numbered references. Some readable sources attach
+   0.04 to water as well. Honest range for water: 0.02-0.04.
 3. **Any published emission bandwidth for Cy3.** None was found. For Cy5 the published value we
    could check against its source, 37.4 nm for an aptamer-Cy5 conjugate, sits 4 nm above the 33.4 nm
    measured here; further published Cy5 values exist that this project could not open, so they are

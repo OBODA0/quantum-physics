@@ -16,4 +16,4 @@ package = false
 pythonpath = ["."]
 
 [dependency-groups]
-dev = ["pytest>=8", "reportlab>=4"]
+dev = ["pytest>=8", "reportlab>=4", "pypdf>=5"]

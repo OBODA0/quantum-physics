@@ -268,8 +268,8 @@ def generate_part2(dyes):
     right.set_title("PL intensity while the excitation wavelength is swept\n"
                     "measured vs model vs absorbance")
     right.axvline(ABSORPTION_RANGE_NM["cy3"][1], color="#888888", lw=1.0, ls="-.")
-    right.annotate("the measured Cy3 absorption curve ends at {:.0f} nm:\n"
-                   "past it the model has no data and reads zero".format(ABSORPTION_RANGE_NM["cy3"][1]),
+    right.annotate("the tabulated Cy3 absorption band ends at {:.0f} nm:\n"
+                   "beyond about 620 nm the dye itself is transparent".format(ABSORPTION_RANGE_NM["cy3"][1]),
                    xy=(ABSORPTION_RANGE_NM["cy3"][1], 0.35), xytext=(ABSORPTION_RANGE_NM["cy3"][1] + 35.0, 0.35),
                    fontsize=8.5, color="#555555",
                    arrowprops=dict(arrowstyle="->", color="#888888", lw=1.0))
