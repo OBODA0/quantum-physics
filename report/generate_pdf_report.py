@@ -261,7 +261,7 @@ def build_pdf():
         "3. <b>Below about 450 nm the simulation has nothing to work with</b>: the digitized Cy3 "
         "absorption curve begins at 450 nm, so the model reads zero absorption below it. (The 400 nm "
         "harmonic filter does not enter here - it only blocks wavelengths below 400 nm, which the "
-        "sweep does not use.) At 450 nm the dye genuinely absorbs very little; the pole of this limit "
+        "sweep does not use.) At 450 nm the dye genuinely absorbs very little; the cause of this limit "
         "is the tabulated range, not the physics.<br/>"
         "4. <b>Above about 590 nm the simulation returns exactly zero.</b> This is a limit of the data, "
         "not of the physics: the digitized Cy3 absorption curve was measured from 450 nm to 590 nm, and "
