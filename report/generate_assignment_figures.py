@@ -89,6 +89,76 @@ def description(dye, lambda_exc, with_name=True):
         dye.absorbance(lambda_exc), dye.peak_absorbance, dye.quantum_yield)
 
 
+
+
+# --- instrument diagram -----------------------------------------------------
+
+
+def generate_diagram(dyes):
+    """The design itself: the optical train the simulator models."""
+    print("Instrument diagram")
+    from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+
+    figure, axis = plt.subplots(figsize=(13.0, 5.6), constrained_layout=True)
+    axis.set_xlim(0, 104)
+    axis.set_ylim(-2, 36)
+    axis.axis("off")
+
+    boxes = [
+        ("Xenon arc lamp\n250-1000 nm\nshape model", 8.5),
+        ("Excitation\nmonochromator\nlambda_exc, 5 nm", 23.0),
+        ("Harmonic filter\npasses > 400 nm", 37.5),
+        ("Sample\ndye in 1 cm cuvette\nA = eps*c*l", 52.5),
+        ("Detection\nmonochromator\nlambda_min-lambda_max, dlambda, 2 nm", 69.0),
+        ("Silicon photodiode\nR(lambda)\nI = R*P", 88.0),
+    ]
+    width, height, top = 12.8, 9.4, 25.0
+
+    for label, centre in boxes:
+        axis.add_patch(FancyBboxPatch(
+            (centre - width / 2, top - height), width, height,
+            boxstyle="round,pad=0.35,rounding_size=0.8",
+            linewidth=1.2, edgecolor="#2c5282", facecolor="#eef3f9"))
+        axis.text(centre, top - height / 2, label, ha="center", va="center", fontsize=8.6, color="#1a2a40")
+
+    for index in range(len(boxes) - 1):
+        start = boxes[index][1] + width / 2
+        end = boxes[index + 1][1] - width / 2
+        axis.add_patch(FancyArrowPatch((start + 0.2, top - height / 2), (end - 0.2, top - height / 2),
+                                       arrowstyle="-|>", mutation_scale=13, linewidth=1.3, color="#2c5282"))
+
+    # the user settings act on the two monochromators
+    axis.annotate("user setting 1\nexcitation wavelength",
+                  xy=(21.5, top - height - 0.4), xytext=(21.5, 9.2), ha="center", fontsize=8.4, color="#c1440e",
+                  arrowprops=dict(arrowstyle="->", color="#c1440e", lw=1.1))
+    axis.annotate("user setting 2 and 3\ndetection range and step size",
+                  xy=(69.5, top - height - 0.4), xytext=(69.5, 9.2), ha="center", fontsize=8.4, color="#c1440e",
+                  arrowprops=dict(arrowstyle="->", color="#c1440e", lw=1.1))
+
+    # what the sample does, and the one leak the instrument has to fight
+    axis.annotate("PL emitted at lambda > lambda_exc,\nband shape independent of lambda_exc (Kasha)",
+                  xy=(52.5, top - height - 0.4), xytext=(46.0, 1.2), ha="center", fontsize=8.4, color="#1b9e77",
+                  arrowprops=dict(arrowstyle="->", color="#1b9e77", lw=1.1))
+    axis.add_patch(FancyArrowPatch((52.5, top), (69.5, top + 3.4),
+                                   arrowstyle="-|>", mutation_scale=12, linewidth=1.1,
+                                   color="#c1440e", linestyle="--",
+                                   connectionstyle="arc3,rad=-0.28"))
+    axis.text(61.5, top + 4.6, "stray excitation light reaching the detector (0.1 % in the figures)",
+              ha="center", fontsize=8.4, color="#c1440e")
+
+    axis.text(15.5, top + 1.4, "excitation arm", ha="center", fontsize=9.0, color="#2c5282", style="italic")
+    axis.text(69.0, top + 1.4, "detection arm", ha="center", fontsize=9.0, color="#2c5282", style="italic")
+    axis.add_patch(FancyArrowPatch((94.5, top - height / 2), (101.5, top - height / 2),
+                                   arrowstyle="-|>", mutation_scale=13, linewidth=1.3, color="#2c5282"))
+    axis.text(101.5, top - height / 2 - 2.6, "detected\nspectrum", ha="center", fontsize=8.4, color="#4a5568")
+
+    axis.set_title("The instrument the simulator models: every box is a module in the appendix code",
+                   fontsize=12.5, fontweight="bold")
+    figure.savefig(FIG_DIR / "part1_instrument_diagram.png", dpi=300)
+    plt.close(figure)
+    return None
+
+
 # --- question 1 -------------------------------------------------------------
 
 
@@ -277,6 +347,27 @@ def generate_part3(dyes):
     figure.savefig(FIG_DIR / "part3_three_dyes_comparison.png", dpi=300)
     plt.close(figure)
 
+    # Why the peaks differ: each dye sits at a different point of its own absorption curve.
+    figure, axis = plt.subplots(figsize=(10.5, 5.6), constrained_layout=True)
+    for key in DYE_KEYS:
+        dye = dyes[key]
+        grid = np.arange(dye.absorption.wavelength_nm[0], dye.absorption.wavelength_nm[-1], 0.5)
+        curve = dye.absorption(grid)
+        axis.plot(grid, curve / curve.max(), color=DYE_COLORS[key], lw=2.2,
+                  label="{} absorption (peaks at {:.0f} nm)".format(
+                      dye.name, grid[int(np.argmax(curve))]))
+    for wavelength, style in ((450.0, "-"), (550.0, "--"), (650.0, ":")):
+        axis.axvline(wavelength, color="#333333", lw=1.1, ls=style, alpha=0.75)
+        axis.text(wavelength, 1.045, "{:.0f} nm".format(wavelength), ha="center", fontsize=9, color="#333333")
+    axis.set_title("Why the three peaks differ at the same concentration: the three absorption "
+                   "curves,\nwith the three excitation wavelengths marked")
+    axis.set_xlabel("wavelength (nm)")
+    axis.set_ylabel("absorption, normalized to each dye's own maximum")
+    axis.set_ylim(0.0, 1.15)
+    axis.legend(loc="upper right")
+    figure.savefig(FIG_DIR / "part3_absorption_overlay.png", dpi=300)
+    plt.close(figure)
+
     styles = {450.0: (2.4, "-"), 550.0: (1.6, "--"), 650.0: (1.2, ":")}
     figure, axis = plt.subplots(figsize=(11.5, 6.5), constrained_layout=True)
     heights = []
@@ -315,6 +406,8 @@ def main(argv=None):
     dyes = database(arguments.database)
     print("dye data: {} bands, concentration {:.0f} nM, path length {:g} cm, stray light {:.1%}".format(
         arguments.database, CONCENTRATION_M * 1e9, PATH_LENGTH_CM, SCATTER_FRACTION))
+
+    generate_diagram(dyes)
 
     actions = {"part1": generate_part1, "part2": generate_part2, "part3": generate_part3}
     chosen = list(actions) if arguments.only == "all" else [arguments.only]

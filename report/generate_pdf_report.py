@@ -1,19 +1,22 @@
 """
-Generate the complete, submission-ready PDF report for Assignment 1:
-PL Spectroscopy Simulation.
+Build the submission PDF for Assignment 1: PL spectroscopy simulation.
 
-Uses ReportLab to build a professional, publication-quality document
-including all figures, theoretical analysis, literature references,
-and complete source code in the appendix.
+Text, numbers and figures all come from the repository: the numbers from
+report/numbers.md (generated), the figures from report/report_figures/
+(generated), the references from report/references/AUDIT.md (audited), and the
+appendix from the source files themselves, read at build time.
+
+Usage: python report/generate_pdf_report.py     (run from anywhere; paths resolve
+against the repository root)
 """
 
-import os
 from pathlib import Path
+
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import (
-    SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, PageBreak, KeepTogether, Preformatted
+    SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, PageBreak, Preformatted
 )
 from reportlab.pdfgen import canvas
 
@@ -22,8 +25,10 @@ PDF_FILENAME = "Assignment_1_PL_Spectroscopy_Simulation_Report.pdf"
 PDF_PATH = Path(__file__).resolve().parent / PDF_FILENAME
 FIG_DIR = Path(__file__).resolve().parent / "report_figures"
 
+
 class NumberedCanvas(canvas.Canvas):
     """Two-pass canvas to dynamically compute and print 'Page X of Y'."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._saved_page_states = []
@@ -44,328 +49,361 @@ class NumberedCanvas(canvas.Canvas):
         self.saveState()
         self.setFont("Helvetica", 9)
         self.setFillColor(colors.HexColor("#555555"))
-        
-        # Header (pages after title/page 1)
         if self._pageNumber > 1:
             self.drawString(54, 11 * 72 - 36, "Assignment 1: Photoluminescence (PL) Spectroscopy Simulation")
             self.setStrokeColor(colors.HexColor("#dddddd"))
             self.setLineWidth(0.6)
             self.line(54, 11 * 72 - 42, 8.5 * 72 - 54, 11 * 72 - 42)
-        
-        # Footer
-        page_str = f"Page {self._pageNumber} of {page_count}"
-        self.drawRightString(8.5 * 72 - 54, 34, page_str)
-        self.drawString(54, 34, "Nanotechnology / Quantum Physics — PL Spectrometer Simulation")
+        self.drawRightString(8.5 * 72 - 54, 34, f"Page {self._pageNumber} of {page_count}")
+        self.drawString(54, 34, "Nanotechnology / Quantum Physics - PL Spectrometer Simulation")
         self.setStrokeColor(colors.HexColor("#dddddd"))
         self.setLineWidth(0.6)
         self.line(54, 46, 8.5 * 72 - 54, 46)
         self.restoreState()
 
 
+def styles():
+    base = getSampleStyleSheet()
+    return {
+        "title": ParagraphStyle("DocTitle", parent=base["Normal"], fontName="Helvetica-Bold",
+                                fontSize=21, leading=25, textColor=colors.HexColor("#1a2a40"), spaceAfter=6),
+        "subtitle": ParagraphStyle("DocSubtitle", parent=base["Normal"], fontName="Helvetica",
+                                   fontSize=11, leading=15, textColor=colors.HexColor("#4a5568"), spaceAfter=14),
+        "h1": ParagraphStyle("Heading1_Custom", parent=base["Normal"], fontName="Helvetica-Bold",
+                             fontSize=14, leading=18, textColor=colors.HexColor("#1b365d"),
+                             spaceBefore=14, spaceAfter=8, keepWithNext=True),
+        "h2": ParagraphStyle("Heading2_Custom", parent=base["Normal"], fontName="Helvetica-Bold",
+                             fontSize=11, leading=15, textColor=colors.HexColor("#2c5282"),
+                             spaceBefore=10, spaceAfter=5, keepWithNext=True),
+        "body": ParagraphStyle("Body_Custom", parent=base["Normal"], fontName="Helvetica",
+                               fontSize=9.5, leading=14, textColor=colors.HexColor("#2d3748"), spaceAfter=7),
+        "caption": ParagraphStyle("Caption_Custom", parent=base["Normal"], fontName="Helvetica-Oblique",
+                                  fontSize=8.5, leading=12, textColor=colors.HexColor("#4a5568"),
+                                  alignment=1, spaceAfter=10),
+        "ref": ParagraphStyle("Ref_Custom", parent=base["Normal"], fontName="Helvetica",
+                              fontSize=8.5, leading=12.5, textColor=colors.HexColor("#2d3748"),
+                              leftIndent=20, firstLineIndent=-20, spaceAfter=5),
+        "code": ParagraphStyle("Code_Custom", parent=base["Normal"], fontName="Courier",
+                               fontSize=7.2, leading=9.2, textColor=colors.HexColor("#1a202c")),
+    }
+
+
+def figure(name, width, height):
+    path = FIG_DIR / name
+    if not path.exists():
+        raise FileNotFoundError(f"figure missing: {path}")
+    return Image(str(path), width=width, height=height)
+
+
 def build_pdf():
-    doc = SimpleDocTemplate(
-        str(PDF_PATH),
-        pagesize=letter,
-        leftMargin=54,
-        rightMargin=54,
-        topMargin=54,
-        bottomMargin=54
-    )
-
-    styles = getSampleStyleSheet()
-
-    # Custom styles
-    title_style = ParagraphStyle(
-        "DocTitle",
-        parent=styles["Normal"],
-        fontName="Helvetica-Bold",
-        fontSize=22,
-        leading=26,
-        textColor=colors.HexColor("#1a2a40"),
-        alignment=0,
-        spaceAfter=6
-    )
-
-    subtitle_style = ParagraphStyle(
-        "DocSubtitle",
-        parent=styles["Normal"],
-        fontName="Helvetica",
-        fontSize=12,
-        leading=16,
-        textColor=colors.HexColor("#4a5568"),
-        spaceAfter=15
-    )
-
-    h1_style = ParagraphStyle(
-        "Heading1_Custom",
-        parent=styles["Normal"],
-        fontName="Helvetica-Bold",
-        fontSize=14,
-        leading=18,
-        textColor=colors.HexColor("#1b365d"),
-        spaceBefore=14,
-        spaceAfter=8,
-        keepWithNext=True
-    )
-
-    h2_style = ParagraphStyle(
-        "Heading2_Custom",
-        parent=styles["Normal"],
-        fontName="Helvetica-Bold",
-        fontSize=11,
-        leading=15,
-        textColor=colors.HexColor("#2c5282"),
-        spaceBefore=10,
-        spaceAfter=5,
-        keepWithNext=True
-    )
-
-    body_style = ParagraphStyle(
-        "Body_Custom",
-        parent=styles["Normal"],
-        fontName="Helvetica",
-        fontSize=9.5,
-        leading=14,
-        textColor=colors.HexColor("#2d3748"),
-        spaceAfter=7
-    )
-
-    caption_style = ParagraphStyle(
-        "Caption_Custom",
-        parent=styles["Normal"],
-        fontName="Helvetica-Oblique",
-        fontSize=8.5,
-        leading=12,
-        textColor=colors.HexColor("#4a5568"),
-        alignment=1, # Center
-        spaceAfter=10
-    )
-
-    ref_style = ParagraphStyle(
-        "Ref_Custom",
-        parent=styles["Normal"],
-        fontName="Helvetica",
-        fontSize=8.5,
-        leading=12.5,
-        textColor=colors.HexColor("#2d3748"),
-        leftIndent=20,
-        firstLineIndent=-20,
-        spaceAfter=5
-    )
-
-    code_style = ParagraphStyle(
-        "Code_Custom",
-        parent=styles["Normal"],
-        fontName="Courier",
-        fontSize=7.2,
-        leading=9.2,
-        textColor=colors.HexColor("#1a202c")
-    )
-
+    s = styles()
+    doc = SimpleDocTemplate(str(PDF_PATH), pagesize=letter, leftMargin=54, rightMargin=54,
+                            topMargin=54, bottomMargin=54)
     story = []
 
-    # Title Block
-    story.append(Paragraph("Assignment 1: Photoluminescence (PL) Spectroscopy Simulation", title_style))
-    story.append(Paragraph("<b>Course:</b> Nanotechnology & Quantum Physics &nbsp;|&nbsp; <b>Topic:</b> Instrument Simulation, Kasha's Rule & Multi-Chromophore Spectroscopy", subtitle_style))
-    story.append(Spacer(1, 4))
+    # ---------------------------------------------------------------- title
+    story.append(Paragraph("Assignment 1: Photoluminescence (PL) Spectroscopy Simulation", s["title"]))
+    story.append(Paragraph("<b>Course:</b> Nanotechnology &amp; Quantum Physics &nbsp;|&nbsp; "
+                           "<b>Topic:</b> instrument simulation, Kasha's rule, multi-dye spectroscopy", s["subtitle"]))
 
-    # Executive Summary / Metadata Table
-    meta_data = [
-        [Paragraph("<b>Simulator Architecture</b>", body_style), Paragraph("Xenon Arc Lamp, Dual Monochromators, Harmonic Filter, Silicon Photodiode", body_style)],
-        [Paragraph("<b>Sample Database</b>", body_style), Paragraph("Organic Dyes: Cyanine 3 (Cy3), Cyanine 5 (Cy5), Methylene Blue (MB)", body_style)],
-        [Paragraph("<b>Physics Models Implemented</b>", body_style), Paragraph("Beer-Lambert Law, Stokes Shift, Kasha's Rule, Bandpass Convolution, Stray Scattering", body_style)]
+    meta = [
+        [Paragraph("<b>Simulator</b>", s["body"]),
+         Paragraph("Xenon arc lamp, excitation monochromator, harmonic filter, sample, detection "
+                   "monochromator, silicon photodiode", s["body"])],
+        [Paragraph("<b>Sample database</b>", s["body"]),
+         Paragraph("Cy3, Cy5, methylene blue - absorption and emission bands digitized from vendor "
+                   "datasheets, PhotochemCAD and OMLC measurements", s["body"])],
+        [Paragraph("<b>Physics</b>", s["body"]),
+         Paragraph("Beer-Lambert absorption, fluorescence quantum yield, Kasha's rule, monochromator "
+                   "passband convolution, detector responsivity, stray excitation light", s["body"])],
+        [Paragraph("<b>Built with</b>", s["body"]),
+         Paragraph("Google Antigravity and a customized pi coding agent, using the DeepSeek v4.1 "
+                   "Flash and Gemini models", s["body"])],
+        [Paragraph("<b>Source of numbers</b>", s["body"]),
+         Paragraph("every value quoted below is generated by the project code into "
+                   "<i>report/numbers.md</i>; every dye value is sourced in <i>data/SOURCES.md</i>", s["body"])],
     ]
-    meta_table = Table(meta_data, colWidths=[160, 344])
-    meta_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#f7fafc")),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor("#cbd5e0")),
-        ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#e2e8f0")),
-        ('TOPPADDING', (0,0), (-1,-1), 4),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
-        ('LEFTPADDING', (0,0), (-1,-1), 8),
-        ('RIGHTPADDING', (0,0), (-1,-1), 8),
+    table = Table(meta, colWidths=[110, 394])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor("#f7fafc")),
+        ('BOX', (0, 0), (-1, -1), 1, colors.HexColor("#cbd5e0")),
+        ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#e2e8f0")),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('TOPPADDING', (0, 0), (-1, -1), 4),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+        ('LEFTPADDING', (0, 0), (-1, -1), 8),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 8),
     ]))
-    story.append(meta_table)
-    story.append(Spacer(1, 14))
+    story.append(table)
+    story.append(Spacer(1, 12))
 
-    # =========================================================================
-    # PART 1 (25%)
-    # =========================================================================
-    story.append(Paragraph("1. Design of the PL Spectrometer System & Baseline Dye Spectra (25%)", h1_style))
+    # ================================================================ PART 1
+    story.append(Paragraph("1. Design of the PL spectrometer and the three dye spectra (25%)", s["h1"]))
+    story.append(figure("part1_instrument_diagram.png", 504, 217))
     story.append(Paragraph(
-        "<b>1.1 Instrument Architecture & Operating Principles:</b><br/>"
-        "A steady-state photoluminescence (PL) spectrometer was designed and implemented in Python to model a complete laboratory optical train. "
-        "The excitation arm utilizes a <b>high-pressure Xenon arc lamp</b> offering continuous spectral radiance across the ultraviolet, visible, and near-infrared domains (250–1000 nm). "
-        "A primary excitation monochromator (5 nm Gaussian passband) isolates the user-defined excitation wavelength (&lambda;<sub>exc</sub>). "
-        "A long-pass harmonic order-sorting filter cuts off wavelengths below 400 nm to suppress second-order diffraction harmonics from the grating. "
-        "The filtered beam illuminates the sample cuvette, inducing molecular electronic transitions. "
-        "Fluorescence emission is collected at 90&deg; geometry (to minimize direct beam transmission) and scanned through a secondary detection monochromator "
-        "(2 nm resolution) operating across [&lambda;<sub>min</sub>, &lambda;<sub>max</sub>] with increment &Delta;&lambda;. "
-        "A calibrated silicon photodiode detects the radiant flux, accounting for wavelength-dependent spectral responsivity <i>R(&lambda;)</i>.",
-        body_style
-    ))
+        "<b>Figure 1:</b> the instrument the simulator models. Every box is a module in the appendix "
+        "code: the lamp spectrum (<i>sources.py</i>), the monochromators and harmonic filter "
+        "(<i>sources.py</i>), the dye database (<i>samples.py</i>, <i>reference.py</i>), the detector "
+        "(<i>detector.py</i>) and the scan that connects them (<i>spectrometer.py</i>). The three user "
+        "settings act where the drawing shows them.", s["caption"]))
 
+    story.append(Paragraph("<b>1.1 The design.</b>", s["h2"]))
     story.append(Paragraph(
-        "<b>1.2 Sample Database & Baseline Spectra:</b><br/>"
-        "The sample database models three benchmark fluorophores widely utilized in nanotechnology, single-molecule fluorescence resonance energy transfer (FRET), and bioimaging: "
-        "<b>Cy3</b> (&lambda;<sub>abs</sub> = 550 nm, &lambda;<sub>em</sub> = 570 nm, &Phi;<sub>f</sub> = 0.04), "
-        "<b>Cy5</b> (&lambda;<sub>abs</sub> = 649 nm, &lambda;<sub>em</sub> = 670 nm, &Phi;<sub>f</sub> = 0.28), and "
-        "<b>Methylene Blue</b> (&lambda;<sub>abs</sub> = 664 nm, &lambda;<sub>em</sub> = 686 nm, &Phi;<sub>f</sub> = 0.04). "
-        "Figure 1 displays the simulated photoluminescence spectra acquired for all three dyes under optimal excitation.",
-        body_style
-    ))
+        "A xenon arc lamp provides a broad continuum across the visible and near infrared. The "
+        "excitation monochromator isolates the excitation wavelength &lambda;<sub>exc</sub> with a 5 nm "
+        "passband; a long-pass harmonic filter removes the second-order grating output below 400 nm so "
+        "the sample sees &lambda;<sub>exc</sub> and not 2&lambda;<sub>exc</sub>. The beam crosses a 1 cm "
+        "cuvette holding the dye. The emitted light is collected and scanned by a second monochromator, "
+        "2 nm passband, across the detection range [&lambda;<sub>min</sub>, &lambda;<sub>max</sub>] in "
+        "steps of &Delta;&lambda;, and detected by a silicon photodiode whose responsivity "
+        "<i>R</i>(&lambda;) grows through the visible and cuts off near 1100 nm. A small fraction of the "
+        "excitation light reaches the detector as stray light; the figures use 0.1 % of the excitation "
+        "power, which is what a double monochromator with a harmonic filter is expected to leave. "
+        "Intensities are relative: the model reproduces spectra and relative intensities, not absolute "
+        "radiometric values.", s["body"]))
+    story.append(Paragraph(
+        "What the sample does is described by two bands per dye, absorption and emission, taken from "
+        "measured data rather than from ideal Gaussians. The absorbed fraction follows the "
+        "Beer-Lambert law, so the emitted power is "
+        "<i>P</i><sub>exc</sub>(&lambda;<sub>exc</sub>) &times; [1 &minus; "
+        "10<sup>&minus;A(&lambda;<sub>exc</sub>)</sup>] &times; &Phi;<sub>f</sub>, with "
+        "<i>A</i> = &epsilon;&middot;<i>c</i>&middot;<i>l</i>. The emission band shape itself is "
+        "independent of the excitation wavelength, which is the subject of section 2.", s["body"]))
 
-    # Add Part 1 Figure
-    p1_img_path = str(FIG_DIR / "part1_combined_overview.png")
-    if os.path.exists(p1_img_path):
-        story.append(Image(p1_img_path, width=500, height=150))
-        story.append(Paragraph("<b>Figure 1:</b> Baseline simulated PL emission spectra for Cy3 (&lambda;<sub>exc</sub> = 550 nm), Cy5 (&lambda;<sub>exc</sub> = 649 nm), and Methylene Blue (&lambda;<sub>exc</sub> = 664 nm). In each scan, the stray excitation light line is shown alongside the resolved Stokes-shifted fluorescence peak.", caption_style))
-
+    story.append(Paragraph("<b>1.2 Sample database and baseline spectra.</b>", s["h2"]))
+    story.append(Paragraph(
+        "The database holds the three dyes named in the task, at the same concentration "
+        "(1 &micro;mol/L in a 1 cm cuvette, so <i>A</i> = &epsilon;<i>c</i><i>l</i> differs between "
+        "them: 0.150 for Cy3, 0.250 for Cy5, 0.067 for methylene blue). Each dye was excited at its own "
+        "absorption maximum. The spectra below are the instrument output, not idealised curves: they "
+        "carry the lamp and monochromator throughput, the 2 nm detection passband and the detector "
+        "responsivity, which is why the peaks fall at 568 nm, 668 nm and 686 nm rather than exactly on "
+        "the vendors' quoted maxima of 570 nm, 670 nm and 685 nm.", s["body"]))
+    story.append(figure("part1_combined_overview.png", 504, 151))
+    story.append(Paragraph(
+        "<b>Figure 2:</b> simulated PL spectra of Cy3 (&lambda;<sub>exc</sub> = 550 nm), Cy5 "
+        "(649 nm) and methylene blue (664 nm), all at 1 &micro;mol/L in 1 cm, with the stray excitation "
+        "line shown in each panel. Each panel has its own current scale; the peak absorbances differ by "
+        "a factor of 3.7.", s["caption"]))
+    for name, label in (("part1_cy3.png", "Cy3"), ("part1_cy5.png", "Cy5"),
+                        ("part1_methylene-blue.png", "methylene blue")):
+        story.append(figure(name, 330, 211))
+    story.append(Paragraph(
+        "<b>Figure 3:</b> the same three measurements at full scale, one per dye: "
+        "<i>A</i>(&lambda;<sub>exc</sub>) and <i>A</i><sub>peak</sub> and &Phi;<sub>f</sub> are printed "
+        "in each title. Peak currents: Cy3 5.2 &times; 10<sup>-3</sup>, Cy5 6.8 &times; "
+        "10<sup>-2</sup>, methylene blue 1.6 &times; 10<sup>-3</sup> (relative units).", s["caption"]))
     story.append(PageBreak())
 
-    # =========================================================================
-    # PART 2 (50%)
-    # =========================================================================
-    story.append(Paragraph("2. Excitation Wavelength Variation (400 nm to 700 nm) on Cy3 (50%)", h1_style))
+    # ================================================================ PART 2
+    story.append(Paragraph("2. Excitation wavelength from 400 nm to 700 nm (50%)", s["h1"]))
     story.append(Paragraph(
-        "To rigorously investigate how the excitation energy modulates emission behavior, <b>Cyanine 3 (Cy3)</b> was chosen as the test sample. "
-        "The excitation wavelength &lambda;<sub>exc</sub> was systematically varied across the range from <b>400 nm to 700 nm</b> in increments while monitoring the full detection window (500–750 nm).",
-        body_style
-    ))
-
-    p2_img_path = str(FIG_DIR / "part2_cy3_excitation_sweep.png")
-    if os.path.exists(p2_img_path):
-        story.append(Image(p2_img_path, width=500, height=185))
-        story.append(Paragraph("<b>Figure 2:</b> (Left) Overlaid PL emission spectra of Cy3 under varying excitation wavelengths (450–610 nm). Note that the emission peak remains strictly anchored at 570 nm. (Right) Measured peak photoluminescence intensity at 570 nm as a function of excitation wavelength (400–700 nm), demonstrating exact alignment with the ground-state optical absorbance spectrum <i>A(&lambda;)</i>.", caption_style))
-
-    story.append(Paragraph("<b>2.1 Systematic Observations:</b>", h2_style))
+        "<b>2.1 What was done.</b> Cy3 was chosen because its absorption (550 nm) and emission "
+        "(570 nm) both sit comfortably inside the detector's useful range and it is the best documented "
+        "of the three dyes. The excitation wavelength was swept from 400 nm to 700 nm in 2 nm steps "
+        "while the whole emission band was recorded, and the plotted intensity is the integral of the "
+        "emitted band over the detection range, not the height at one fixed wavelength: a fixed window "
+        "stops watching the dye and starts watching the window as soon as &lambda;<sub>exc</sub> moves "
+        "past it.", s["body"]))
+    story.append(figure("part2_cy3_excitation_sweep.png", 504, 195))
     story.append(Paragraph(
-        "1. <b>Invariance of Emission Peak Position (&lambda;<sub>em</sub> = 570 nm):</b> As evidenced in Figure 2 (Left), changing &lambda;<sub>exc</sub> from 450 nm to 580 nm does <i>not</i> alter the spectral shape, bandwidth (FWHM &approx; 32 nm), or peak centroid of the fluorescence emission. The maximum emission relentlessly occurs at 570 nm.<br/>"
-        "2. <b>Excitation-Dependent Emission Amplitude:</b> The intensity of the 570 nm peak is strongly modulated by &lambda;<sub>exc</sub>. It exhibits a steep resonance rise starting at 480 nm, reaches a maximum at &lambda;<sub>exc</sub> = 550 nm, and plummets rapidly beyond 570 nm.<br/>"
-        "3. <b>Zero Emission at Edge Boundaries (400 nm and &ge; 620 nm):</b> Below 440 nm and above 620 nm, the detected photoluminescence drops to baseline zero.<br/>"
-        "4. <b>Rayleigh Scattering Artifact:</b> When elastic scattering is enabled, a sharp, narrow band appears exactly at the excitation wavelength whenever &lambda;<sub>exc</sub> lies inside the detection range (500–750 nm), perfectly simulating physical spectrometer optics.",
-        body_style
-    ))
+        "<b>Figure 4:</b> (left) emission spectra for six excitation wavelengths, all peaking at "
+        "568.0 nm with 28.0 nm FWHM; (right) the integrated PL intensity across the sweep, the model "
+        "prediction <i>P</i><sub>exc</sub>(&lambda;)[1 &minus; "
+        "10<sup>&minus;A(&lambda;)</sup>]&Phi;<sub>f</sub>, and the absorbance normalised to its own "
+        "maximum. The two model curves lie on top of each other; the absorbance differs slightly "
+        "because the intensity carries the xenon lamp spectrum as a weight.", s["caption"]))
 
-    story.append(Paragraph("<b>2.2 Theoretical Discussion in the Light of Literature:</b>", h2_style))
+    story.append(Paragraph("<b>2.2 What is observed.</b>", s["h2"]))
     story.append(Paragraph(
-        "<b>Kasha's Rule & Rapid Internal Conversion:</b> The strict invariance of the emission spectrum to excitation energy is the fundamental hallmark of <b>Kasha's Rule</b> [1, 2]. "
-        "Upon optical excitation at shorter wavelengths (&lambda;<sub>exc</sub> &lt; 550 nm, such as 480 nm or 510 nm), the molecule absorbs excess photon energy and is promoted to higher vibronic levels of the first singlet state <i>S</i><sub>1</sub>(v &gt; 0) or higher electronic manifolds (<i>S</i><sub>n</sub>, n &ge; 2). "
-        "In condensed-phase molecular systems, radiationless deactivation processes—namely <b>internal conversion (IC)</b> and <b>vibrational relaxation (VR)</b> to solvent bath modes—occur on an ultrafast timescale of <b>10<sup>-13</sup> to 10<sup>-12</sup> seconds (100 fs – 1 ps)</b>. "
-        "Because spontaneous fluorescence emission occurs on a much longer nanosecond timescale (&tau;<sub>f</sub> &approx; 0.3–1.0 ns for Cy3 [3]), the excited electron completely thermalizes to the lowest vibrational level of the first excited state, <i>S</i><sub>1</sub>(v = 0), before emission can take place. "
-        "Consequently, all radiative transitions originate from the exact same thermalized zero-point level (<i>S</i><sub>1</sub> &rarr; <i>S</i><sub>0</sub>), preserving identical emission spectral shape, bandwidth, and Stokes shift regardless of the initial excitation photon energy [1, 2].",
-        body_style
-    ))
+        "1. <b>The emission band does not move.</b> Across every excitation wavelength that produces a "
+        "signal (470-560 nm) the peak stays at 568.0 nm and the FWHM at 28.0 nm. Only the height "
+        "changes. This is Kasha's rule in the data rather than in prose.<br/>"
+        "2. <b>The height follows the absorbed light.</b> The measured integrated intensity equals "
+        "<i>P</i><sub>exc</sub>(&lambda;)[1 &minus; 10<sup>&minus;A(&lambda;)</sup>]&Phi;<sub>f</sub> "
+        "to within 10<sup>-16</sup> of full scale, the numerical noise of the comparison. The curve "
+        "rises towards the absorption maximum and collapses when the absorption does.<br/>"
+        "3. <b>Below about 450 nm there is nothing to see</b>, for two independent reasons: the dye "
+        "barely absorbs there, and the harmonic filter blocks excitation light below 400 nm.<br/>"
+        "4. <b>Above about 590 nm the simulation returns exactly zero.</b> This is a limit of the data, "
+        "not of the physics: the digitized Cy3 absorption curve was measured from 450 nm to 590 nm, and "
+        "the model reads zero outside that range. The measured methanol spectrum of the same "
+        "chromophore (kept in <i>data/raw/</i>) shows the absorption tail continuing with a small but "
+        "non-zero extinction coefficient at 650 nm, so a real instrument would record a weak, not "
+        "vanishing, signal there.<br/>"
+        "5. <b>Stray light tracks the excitation wavelength.</b> With stray light enabled, the "
+        "scattered line sits exactly at &lambda;<sub>exc</sub> and moves with it, which is why the "
+        "harmonic filter and the second monochromator exist.", s["body"]))
 
+    story.append(Paragraph("<b>2.3 Do the observations fit the literature?</b>", s["h2"]))
     story.append(Paragraph(
-        "<b>Absorption Profile Match (The Excitation Spectrum):</b> Figure 2 (Right) reveals that tracking the 570 nm emission intensity as a function of &lambda;<sub>exc</sub> generates an excitation spectrum that exactly mirrors the ground-state absorbance <i>A(&lambda;)</i>. "
-        "According to the <b>Beer-Lambert Law</b>, the absorbed photon rate is given by:<br/>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>I<sub>abs</sub>(&lambda;<sub>exc</sub>) = I<sub>0</sub>(&lambda;<sub>exc</sub>) &times; [1 &minus; 10<sup>&minus;&epsilon;(&lambda;<sub>exc</sub>)&middot;c&middot;l</sup>] &approx; 2.303 &times; I<sub>0</sub>(&lambda;<sub>exc</sub>) &times; &epsilon;(&lambda;<sub>exc</sub>) &times; c &times; l</b> &nbsp;&nbsp;&nbsp;&nbsp;(for dilute samples)<br/>"
-        "Because fluorescence emission intensity is directly proportional to absorbed power (<b>I<sub>PL</sub> = I<sub>abs</sub> &times; &Phi;<sub>f</sub></b>), excitation at 400 nm produces negligible fluorescence because the molar extinction coefficient &epsilon;(400) is close to zero. Conversely, excitation at &lambda;<sub>exc</sub> = 550 nm matches the &pi;&ndash;&pi;* S<sub>0</sub> &rarr; S<sub>1</sub> absorption resonance of the indocyanine chromophore, maximizing photon capture and yielding maximal emission [3].",
-        body_style
-    ))
-
+        "<b>Yes, and the reason is a separation of timescales.</b> Absorption promotes the molecule to "
+        "higher vibrational levels of the first excited singlet state, or to higher electronic states. "
+        "Internal conversion and vibrational relaxation then remove that excess energy in "
+        "10<sup>-13</sup>-10<sup>-12</sup> s [1, 2], while fluorescence from Cy3 takes of order "
+        "0.2-2 ns [5]. Because emission is six orders of magnitude slower than the relaxation, every "
+        "excited molecule emits from the same thermalized level, S<sub>1</sub>(v = 0), whatever photon "
+        "it absorbed. The emission spectrum is therefore fixed in shape, position and width, and only "
+        "the number of excited molecules - that is, the absorbed light - changes with "
+        "&lambda;<sub>exc</sub>. That is Kasha's rule as Kasha stated it for states [1] and as "
+        "Lakowicz states it for wavelength, in a section titled exactly that [2, &sect;1.3.2].", s["body"]))
     story.append(Paragraph(
-        "<b>Stokes Shift & Energy Conservation:</b> Photoluminescence represents an inelastic scattering process accompanied by positive Stokes loss (20 nm / 638 cm<sup>-1</sup> for Cy3) due to Franck-Condon structural reorganization and solvent dipole reorganization [2, 3]. "
-        "At &lambda;<sub>exc</sub> &ge; 620 nm, the incident photon energy (h&nu; &le; 2.0 eV) falls below the zero-zero (0&ndash;0) energy gap of the Cy3 chromophore. In the absence of multi-photon upconversion, the sample cannot emit photons with greater energy than it absorbed. Hence, emission is strictly zero, conforming fully to literature [1-3].",
-        body_style
-    ))
-
+        "<b>The intensity behaviour is the excitation spectrum, with one honest caveat.</b> The "
+        "absorbed photon rate follows Beer-Lambert, so "
+        "<i>I</i><sub>PL</sub> &prop; <i>I</i><sub>0</sub>(&lambda;<sub>exc</sub>)[1 &minus; "
+        "10<sup>&minus;&epsilon;(&lambda;<sub>exc</sub>)<i>c</i><i>l</i></sup>]&Phi;<sub>f</sub>, which "
+        "for a dilute sample is &prop; &epsilon;(&lambda;<sub>exc</sub>)&Phi;<sub>f</sub>. The curve in "
+        "Figure 4 (right) therefore tracks the absorption band, but the lamp spectrum "
+        "<i>I</i><sub>0</sub>(&lambda;) sits inside that expression, so the two curves are similar "
+        "rather than identical - the residual difference visible in the figure is the xenon lamp, not "
+        "an error. Correcting for <i>I</i><sub>0</sub>(&lambda;) is what an instrument does when it "
+        "records a quantum-corrected excitation spectrum.", s["body"]))
+    story.append(Paragraph(
+        "<b>A note on what this simulation can and cannot demonstrate.</b> The invariance of the band "
+        "with &lambda;<sub>exc</sub> is built into the model, because that is what the timescale "
+        "argument above requires. What the sweep verifies is the consequence: that the absorbed "
+        "fraction, and nothing else, depends on the excitation wavelength, and that the resulting "
+        "intensity agrees with the Beer-Lambert prediction to machine precision. In that sense the "
+        "simulator is a test of the consequences of Kasha's rule rather than a discovery of it.", s["body"]))
+    story.append(Paragraph(
+        "<b>The Stokes shift.</b> Absorption and emission maxima are separated by 20 nm, which is "
+        "638 cm<sup>-1</sup> calculated from the quoted 550 and 570 nm values (the digitized curve "
+        "peaks, 554 and 568 nm, give 14 nm and 445 cm<sup>-1</sup>; the figure is quoted from the "
+        "sourced maxima). The shift is the Franck-Condon and solvent reorganisation energy, and it is "
+        "why the emission sits at longer wavelength than the absorption, never at shorter.", s["body"]))
     story.append(PageBreak())
 
-    # =========================================================================
-    # PART 3 (25%)
-    # =========================================================================
-    story.append(Paragraph("3. Multi-Dye Emission Spectra under Varying Excitation (450, 550, 650 nm) (25%)", h1_style))
+    # ================================================================ PART 3
+    story.append(Paragraph("3. The three dyes on one graph at 450, 550 and 650 nm (25%)", s["h1"]))
     story.append(Paragraph(
-        "The three fluorophores (Cy3, Cy5, and Methylene Blue) were simulated under identical optical conditions, identical standard path length (1 cm), and identical peak optical density / concentration. "
-        "The excitation monochromator was set successively to <b>&lambda;<sub>exc</sub> = 450 nm, 550 nm, and 650 nm</b>. "
-        "Figure 3 presents the resulting emission spectra plotted on the same graph.",
-        body_style
-    ))
-
-    p3_img_path = str(FIG_DIR / "part3_three_dyes_comparison.png")
-    if os.path.exists(p3_img_path):
-        story.append(Image(p3_img_path, width=500, height=155))
-        story.append(Paragraph("<b>Figure 3:</b> Comparative emission spectra of Cy3, Cy5, and Methylene Blue plotted on identical absolute intensity axes at &lambda;<sub>exc</sub> = 450 nm (Left), 550 nm (Center), and 650 nm (Right).", caption_style))
-
-    story.append(Paragraph("<b>3.1 Physical & Chemical Reasons Why the Peaks Are NOT the Same:</b>", h2_style))
+        "<b>3.1 The colours come from the absorption bands.</b> All three dyes were simulated at the "
+        "same concentration, 1 &micro;mol/L in a 1 cm cuvette, so their peak absorbances differ by their "
+        "extinction coefficients: 0.150 (Cy3), 0.250 (Cy5) and 0.067 (methylene blue). \"The same "
+        "concentration\" is not \"the same absorbance\" - that is the first thing to say about this "
+        "question. The second is that each dye sits at a different point of its own absorption curve, "
+        "shown in Figure 5.", s["body"]))
+    story.append(figure("part3_absorption_overlay.png", 470, 251))
     story.append(Paragraph(
-        "Even when the molar concentrations of the three dyes in solution are strictly identical, their photoluminescence emission peaks differ radically in both <b>spectral location</b> and <b>peak intensity (amplitude)</b>. This divergence is governed by five fundamental physical and photophysical mechanisms:",
-        body_style
-    ))
+        "<b>Figure 5:</b> the three absorption bands, each normalised to its own maximum, with the "
+        "three excitation wavelengths marked. At 550 nm Cy3 is at its maximum while Cy5 and methylene "
+        "blue are on their rising edges; at 650 nm the situation is reversed.", s["caption"]))
+    story.append(figure("part3_three_dyes_comparison.png", 504, 164))
+    story.append(Paragraph(
+        "<b>Figure 6:</b> the same graph for each excitation wavelength - 450 nm (left), 550 nm "
+        "(centre), 650 nm (right) - on one shared absolute intensity scale, which is what makes the "
+        "comparison meaningful. The legend gives <i>A</i>(&lambda;<sub>exc</sub>) for each curve in that "
+        "panel.", s["caption"]))
+    story.append(figure("part3_single_canvas_overlay.png", 470, 266))
+    story.append(Paragraph(
+        "<b>Figure 7:</b> all nine spectra on a single canvas, with the peak current of every curve "
+        "printed beside it. The empty-looking curves are not an error: they are the dyes that do not "
+        "absorb at that wavelength.", s["caption"]))
 
-    reasons = [
-        ("1. Wavelength-Dependent Extinction Coefficients &epsilon;(&lambda;<sub>exc</sub>):",
-         "The rate of optical photon absorption is governed by the Beer-Lambert relation: <i>A(&lambda;<sub>exc</sub>) = &epsilon;(&lambda;<sub>exc</sub>)&middot;c&middot;l</i>. "
-         "Each dye possesses a unique electronic structure and transition dipole moment:<br/>"
-         "&bull; <b>At &lambda;<sub>exc</sub> = 450 nm:</b> All three dyes possess near-zero extinction coefficients (&epsilon;<sub>450</sub> &ll; &epsilon;<sub>max</sub>). As a consequence, negligible light is absorbed by any sample, resulting in virtually flat, sub-baseline emission across the board.<br/>"
-         "&bull; <b>At &lambda;<sub>exc</sub> = 550 nm:</b> Cy3 is excited at its exact absorption resonance peak (&lambda;<sub>max</sub> = 550 nm, &epsilon; &approx; 150,000 M<sup>-1</sup>cm<sup>-1</sup>), absorbing &sim;90% of incident photons. By contrast, Cy5 and Methylene Blue have their absorption bands positioned in the red/NIR (&gt;600 nm) and have negligible absorption at 550 nm. Thus, only Cy3 produces strong fluorescence.<br/>"
-         "&bull; <b>At &lambda;<sub>exc</sub> = 650 nm:</b> Cy5 (&lambda;<sub>max</sub> = 649 nm, &epsilon; &approx; 250,000 M<sup>-1</sup>cm<sup>-1</sup>) and Methylene Blue (&lambda;<sub>max</sub> = 664 nm, &epsilon; &approx; 80,000 M<sup>-1</sup>cm<sup>-1</sup>) absorb strongly, while Cy3 has zero absorption (it cannot absorb photons beyond its band edge)."),
+    story.append(Paragraph("<b>3.2 Why the peaks are not the same.</b>", s["h2"]))
+    story.append(Paragraph(
+        "The peak height is a product of four terms, and the first is the one the question is looking "
+        "for:", s["body"]))
+    story.append(Paragraph(
+        "<b>(1) How much light the dye absorbs at &lambda;<sub>exc</sub>.</b> "
+        "<i>A</i>(&lambda;<sub>exc</sub>) = &epsilon;(&lambda;<sub>exc</sub>)<i>c</i><i>l</i>, and "
+        "&epsilon; at a given wavelength depends entirely on where that wavelength falls in the dye's "
+        "own band. At 550 nm Cy3 absorbs 28.0 % of the incident light while Cy5 absorbs 2.81 % and "
+        "methylene blue 1.19 %. At 650 nm it is Cy5 that absorbs 43.4 %, methylene blue 11.9 %, and Cy3 "
+        "nothing at all.<br/>"
+        "<b>(2) The quantum yield.</b> Of the photons absorbed, only the fraction &Phi;<sub>f</sub> is "
+        "emitted: 0.28 for Cy5, 0.04 for Cy3, 0.02 for methylene blue in water. This is why the "
+        "550 nm panel is not lopsided in favour of Cy3: Cy3 absorbs ten times more light than Cy5 "
+        "there, yet the two peaks come out within 12 % of each other, because Cy5 converts absorbed "
+        "photons into fluorescence seven times more efficiently.<br/>"
+        "<b>(3) The detector's wavelength dependence.</b> The silicon responsivity is about a third "
+        "higher at methylene blue's emission (686 nm) than at Cy3's (568 nm), so equal emitted power at "
+        "those two wavelengths does not give equal photocurrent.<br/>"
+        "<b>(4) The width of the emission band.</b> The three bands are 28, 32 and 47 nm wide. For the "
+        "same emitted power, a broader band means a lower peak, which penalises methylene blue a second "
+        "time on top of its low quantum yield.", s["body"]))
+    story.append(Paragraph(
+        "<b>One honest caveat about 450 nm.</b> At that wavelength none of the three dyes absorbs "
+        "meaningfully (0.24 % for Cy5, 0.20 % for methylene blue, and nothing measurable for Cy3), so "
+        "the left panel of Figure 6 is nearly empty for a physical reason and not because the "
+        "simulation failed. The comparison the question is really asking about is the 550 nm and 650 nm "
+        "panels, where the dyes that absorb are also the dyes that light up.", s["body"]))
+    story.append(Paragraph(
+        "<b>Peak currents for the record</b> (relative units, 1 &micro;mol/L, 1 cm): at 450 nm Cy3 "
+        "0.00000, Cy5 0.00040, methylene blue 0.00002; at 550 nm Cy3 0.00523, Cy5 0.00468, methylene "
+        "blue 0.00015; at 650 nm Cy3 0.00000, Cy5 0.06824, methylene blue 0.00138.", s["body"]))
+    story.append(PageBreak())
 
-        ("2. Disparity in Fluorescence Quantum Yield (&Phi;<sub>f</sub>):",
-         "The total emitted fluorescence power is proportional to the <b>Fluorescence Quantum Yield</b>, defined as the ratio of photons emitted to photons absorbed: "
-         "<b>&Phi;<sub>f</sub> = k<sub>r</sub> / (k<sub>r</sub> + &sum; k<sub>nr</sub>)</b>. "
-         "In our database (derived from standard literature [3, 4]):<br/>"
-         "&bull; <b>Cy5 has a high quantum yield of &Phi;<sub>f</sub> = 0.28 (28%).</b><br/>"
-         "&bull; <b>Methylene Blue has a low quantum yield of &Phi;<sub>f</sub> = 0.04 (4%).</b><br/>"
-         "Therefore, at &lambda;<sub>exc</sub> = 650 nm, even if Cy5 and Methylene Blue absorbed comparable amounts of light, Cy5 yields a peak approximately <b>7 times more intense</b> than Methylene Blue because 96% of excited Methylene Blue molecules deactivate via non-radiative pathways (specifically, rapid intersystem crossing into the triplet state <i>T</i><sub>1</sub>, mediated by sulfur spin-orbit coupling) [4]."),
+    # ============================================================ references
+    story.append(Paragraph("4. References", s["h1"]))
+    story.append(Paragraph(
+        "Every item below was checked to resolve; the two DOIs that do not exist in common secondary "
+        "sources for the Tuite and Albani entries are given here in their corrected form. Where a claim "
+        "rests on a closed-access text that could not be read, the claim is phrased as standard textbook "
+        "content rather than as a quotation.", s["body"]))
 
-        ("3. Spectral Responsivity of the Photodetector R(&lambda;):",
-         "Real spectrometers employ silicon photodiodes or PMTs whose responsivity <i>R(&lambda;)</i> is intrinsically wavelength-dependent. Silicon exhibits higher quantum efficiency in the 650–850 nm region than at 550 nm (scaling as &lambda; / 1.24 &mu;m). Emitted photons from Cy5 (670 nm) and Methylene Blue (686 nm) generate greater photocurrent per optical watt than 570 nm photons from Cy3."),
+    references = [
+        "[1] M. Kasha, \"Characterization of electronic transitions in complex molecules\", "
+        "<i>Discussions of the Faraday Society</i> <b>9</b> (1950) 14-19. DOI 10.1039/DF9500900014. "
+        "(Statement of the rule for states, pp. 14-15; internal conversion faster than emission, p. 16.)",
 
-        ("4. Excitation Source Spectral Radiance I<sub>0</sub>(&lambda;<sub>exc</sub>):",
-         "The Xenon arc lamp does not emit a flat continuum; its spectral irradiance profile varies across 450, 550, and 650 nm due to arc plasma temperature and characteristic atomic xenon emission lines, delivering different incident photon fluxes at each chosen excitation wavelength."),
+        "[2] J. R. Lakowicz, <i>Principles of Fluorescence Spectroscopy</i>, 3rd ed., Springer, 2006. "
+        "DOI 10.1007/978-0-387-46312-4. (&sect;1.3.2, \"Emission Spectra Are Typically Independent of "
+        "the Excitation Wavelength\", p. 7; &sect;1.4.2, \"Timescale of Molecular Processes in "
+        "Solution\", p. 12.)",
 
-        ("5. Chromophore Chemical Structure & Conjugation Length:",
-         "Cy3 and Cy5 are symmetrical indocyanine dyes differing by the length of their polymethine bridge: Cy3 is a trimethine (3 carbon chain), whereas Cy5 is a pentamethine (5 carbon chain). "
-         "Extending the conjugated &pi;-electron system by two -CH= units increases electron delocalization, narrowing the HOMO-LUMO energy gap by approximately 0.33 eV. This shifts both the absorption and emission peaks &sim;100 nm to the red according to the free-electron particle-in-a-box model [3]. Methylene Blue is a tricyclic phenothiazine, with distinct electronic symmetry and selection rules [4].")
+        "[3] R. B. Mujumdar, L. A. Ernst, S. R. Mujumdar, C. J. Lewis and A. S. Waggoner, \"Cyanine dye "
+        "labeling reagents: sulfoindocyanine succinimidyl esters\", <i>Bioconjugate Chemistry</i> "
+        "<b>4</b> (1993) 105-111. DOI 10.1021/bc00020a001. (The Cy3/Cy5 chromophores and their "
+        "excitation ranges.)",
+
+        "[4] E. M. Tuite and J. M. Kelly, \"Photochemical interactions of methylene blue and analogues "
+        "with DNA and other biological substrates\", <i>Journal of Photochemistry and Photobiology B: "
+        "Biology</i> <b>21</b> (1993) 103-124. DOI 10.1016/1011-1344(93)80173-7. (Excited-state "
+        "behaviour of methylene blue.)",
+
+        "[5] A. Berrocal-Martin et al., <i>Journal of Physical Chemistry B</i> <b>129</b> (2025) "
+        "11626-11635. DOI 10.1021/acs.jpcb.5c03845. (Fluorescence lifetimes of Cy3 in solution: about "
+        "0.2 ns free dye, components of 0.6-1.1 ns and 1.5-2.5 ns.)",
+
+        "[6] L. M. Moreira et al., \"Phenothiazinium dyes as photosensitizers in photodynamic therapy\", "
+        "InTech, 2012, p. 395. DOI 10.5772/48087. (Methylene blue: internal conversion and triplet "
+        "formation, which is why its quantum yield is the lowest of the three.)",
+
+        "[7] H. Kuhn, \"A quantum-mechanical theory of light absorption of organic dyes and similar "
+        "compounds\", <i>Journal of Chemical Physics</i> <b>17</b> (1949) 1198-1212. DOI "
+        "10.1063/1.1747143. (Free-electron model of the cyanine chain: why two extra methine units "
+        "shift the band about 100 nm to the red.)",
+
+        "[8] Hamamatsu Photonics, \"Si photodiodes\", technical note KSPD9001E04, sec. 2-3, eq. (2-3). "
+        "(Silicon responsivity, R = &eta;&lambda;/1.24.)",
+
+        "[9] Dye spectra and molar extinction coefficients: Cytiva/GE Healthcare spec sheets PA23001 "
+        "(Cy3) and PA25031 (Cy5); PhotochemCAD records (Taniguchi and Lindsey, 2018) and the "
+        "OMLC/Prahl measured spectra for methylene blue. The full source table, with a confidence for "
+        "each value and the raw files, is in <i>data/SOURCES.md</i> and <i>data/raw/</i>.",
     ]
-
-    for title, desc in reasons:
-        story.append(Paragraph(f"<b>{title}</b>", body_style))
-        story.append(Paragraph(desc, body_style))
-        story.append(Spacer(1, 2))
-
-    story.append(PageBreak())
-
-    # =========================================================================
-    # REFERENCES (Strictly verified, authentic literature)
-    # =========================================================================
-    story.append(Paragraph("4. Authentic Academic References", h1_style))
-    story.append(Paragraph(
-        "<i>All references listed below are authentic, peer-reviewed, and verifiable standard literature in physical chemistry, molecular spectroscopy, and fluorescence instrumentation:</i>",
-        body_style
-    ))
-    story.append(Spacer(1, 4))
-
-    refs = [
-        "[1] Kasha, M. (1950). \"Characterization of electronic transitions in complex molecules.\" <i>Discussions of the Faraday Society</i>, 9, 14–19. DOI: 10.1039/DF9500900014.",
-        "[2] Lakowicz, J. R. (2006). <i>Principles of Fluorescence Spectroscopy</i> (3rd ed.). Springer Science+Business Media, LLC, New York. ISBN: 978-0-387-31278-1. DOI: 10.1007/978-0-387-46312-4.",
-        "[3] Mujumdar, R. B., Ernst, L. A., Mujumdar, S. R., Lewis, C. J., & Waggoner, A. S. (1993). \"Cyanine dye labeling reagents: Sulfoindocyanine succinimidyl esters.\" <i>Bioconjugate Chemistry</i>, 4(2), 105–111. DOI: 10.1021/bc00020a001.",
-        "[4] Tuite, E. M., & Kelly, J. M. (1993). \"Photochemical interactions of methylene blue and analogues with DNA and other biological substrates.\" <i>Journal of Photochemistry and Photobiology B: Biology</i>, 21(2-3), 103–124. DOI: 10.1016/1011-1344(93)80169-M.",
-        "[5] Albani, J. R. (2007). <i>Principles and Applications of Fluorescence Spectroscopy</i>. Blackwell Publishing Ltd, Oxford, UK. ISBN: 978-1-405-13891-8. DOI: 10.1002/9780470691274.",
-        "[6] Sauer, M., Hofkens, J., & Enderlein, J. (2011). <i>Handbook of Fluorescence Spectroscopy and Imaging: From Ensemble to Single Molecules</i>. Wiley-VCH Verlag GmbH & Co. KGaA, Weinheim. ISBN: 978-3-527-31669-4."
-    ]
-
-    for r in refs:
-        story.append(Paragraph(r, ref_style))
-
-    story.append(Spacer(1, 14))
-
-    # =========================================================================
-    # APPENDIX: FULL SOURCE CODE
-    # =========================================================================
-    story.append(Paragraph("Appendix: Complete Python Simulator Source Code", h1_style))
-    story.append(Paragraph(
-        "Below is the complete, modular source code implementing the photoluminescence spectrometer simulator, light source arm, sample database, detector model, and visualization scripts.",
-        body_style
-    ))
+    for reference in references:
+        story.append(Paragraph(reference, s["ref"]))
     story.append(Spacer(1, 6))
+    story.append(Paragraph(
+        "<b>Declared limitations.</b> No primary source was found for the widely repeated methylene "
+        "blue extinction coefficient of 95,000 M<sup>-1</sup>cm<sup>-1</sup>, so it is not used: the "
+        "pack carries 67,000 (PhotochemCAD, water), 74,028 (OMLC) and 107,800 for the deconvoluted "
+        "monomer. The quantum yield of methylene blue in water, 0.02, is the value used in "
+        "photodynamic-therapy work; the readable measurement in the literature is 0.04 in ethanol. No "
+        "published emission bandwidth was found for Cy3 or Cy5, so the FWHMs quoted here are measured "
+        "on the digitized curves. The FPbase records from which the Cy3 and Cy5 bands are digitized do "
+        "not state their provenance; the fully documented curves for the same chromophores are the "
+        "PhotochemCAD methanol spectra kept in <i>data/raw/</i>.", s["body"]))
+    story.append(PageBreak())
 
-    # Every file that produced the results in this report. Resolved against the
-    # repository root, and a missing file is an error rather than a silently
-    # shorter appendix.
+    # ============================================================== appendix
+    story.append(Paragraph("Appendix: complete source code", s["h1"]))
+    story.append(Paragraph(
+        "The files below are read from the repository at build time, so the appendix cannot drift from "
+        "the code that produced the figures. Every result in this report is reproducible with "
+        "<i>uv sync</i> followed by the two generator scripts listed here.", s["body"]))
+
     code_files = [
         ("plsim/bands.py", "Band shapes: Gaussian model and tabulated measured bands"),
         ("plsim/sources.py", "Excitation arm: xenon lamp, monochromator, harmonic filter"),
@@ -377,24 +415,21 @@ def build_pdf():
         ("plsim/plot.py", "Figure rendering"),
         ("plsim/cli.py", "Command line interface (the user settings)"),
         ("plsim/__init__.py", "Package interface"),
+        ("report/settings.py", "The optical conditions shared by every figure and number"),
         ("report/generate_assignment_figures.py", "The figures for questions 1, 2 and 3"),
-        ("report/generate_numbers.py", "The number table the report quotes from"),
+        ("report/generate_numbers.py", "The number table this report quotes from"),
         ("tests/test_simulator.py", "The checks behind the physics claims"),
     ]
-
     for rel_path, desc in code_files:
         full_path = REPO_ROOT / rel_path
         if not full_path.exists():
             raise FileNotFoundError(f"appendix source missing: {full_path}")
-        story.append(Paragraph(f"<b>File: {rel_path}</b> — <i>{desc}</i>", h2_style))
-        with open(full_path, "r", encoding="utf-8") as f:
-            content = f.read()
-        story.append(Preformatted(content, code_style))
+        story.append(Paragraph(f"<b>File: {rel_path}</b> - <i>{desc}</i>", s["h2"]))
+        story.append(Preformatted(full_path.read_text(encoding="utf-8"), s["code"]))
         story.append(Spacer(1, 10))
 
-    # Build the document
     doc.build(story, canvasmaker=NumberedCanvas)
-    print(f"PDF successfully built: {PDF_PATH}")
+    print(f"PDF built: {PDF_PATH}")
 
 
 if __name__ == "__main__":
