@@ -14,10 +14,9 @@ Source kinds used below:
 - **measured data set** - tabulated raw measurement published by a lab (OMLC/Prahl).
 - **peer-reviewed paper** - journal article; noted whether I could read the full text, the abstract only, or only the indexed PDF text via a search snippet.
 
-Raw downloaded files kept in `/tmp/plsim-data/raw/` so every digitized curve can be re-derived:
-`016-abs.txt`, `016-ems.txt` (Cy3 chromophore, methanol), `017-abs.txt`, `017-ems.txt` (Cy5 chromophore, methanol),
-`PSW009_abs.txt`, `PSW009_ems.txt` (methylene blue, water), `I12_abs.txt`, `I12_ems.txt` (methylene blue, ethanol),
-`ombc_mb.txt` (methylene blue, water, OMLC), plus the Cytiva PDFs and the FPbase dye records as JSON.
+Raw downloaded files are kept in **this repository** under `data/raw/`, so every
+digitized curve can be re-derived rather than trusted. The full inventory, with what
+each file is for, is at the end of this document (`## Inventory of data/raw/`).
 
 ---
 
@@ -149,6 +148,29 @@ maximum at 685 nm). Alternatives kept on disk: `raw/ombc_mb.txt` (OMLC water, ab
     but individual measurements span 0.19-0.30, so treat 0.28 as a central value, not as a measurement of your sample. Methylene blue 664/686/0.04: 664 nm and ~685-686 nm are
     right, but **0.04 is the ethanol value**; for water the literature value is 0.02.
 
+
+
+---
+
+## Inventory of `data/raw/`
+
+Every file in this directory, and what it is for. The digitized curves that end up
+in `reference_spectra.json` are derived from the tabulated text files here, which is
+why they are kept: each curve can be re-derived rather than trusted.
+
+| file | what it is |
+| --- | --- |
+| `016_abs.txt`, `016_ems.txt` | PhotochemCAD record 016, the Cy3 chromophore (indocarbocyanine) in methanol: absorption and emission, as shipped by OMLC/Prahl. The only absolute emission spectrum obtained for this chromophore. |
+| `017_abs.txt`, `017_ems.txt` | PhotochemCAD record 017, the Cy5 chromophore in methanol, same source. |
+| `PSW009_abs.txt`, `PSW009_ems.txt` | PhotochemCAD record PSW009, methylene blue in water (the absorption curve that ships in the pack). |
+| `I12_abs.txt`, `I12_ems.txt` | PhotochemCAD record I12, methylene blue in ethanol (the solvent of the 0.04 quantum yield). |
+| `ombc_mb.txt` | OMLC/Prahl measured methylene blue spectrum in water; the independent check on the 664 nm extinction coefficient (74,028). |
+| `fpbase_Cy3.json`, `fpbase_Cy5.json` | The FPbase dye records that the shipped Cy3 and Cy5 curves are digitized from. FPbase does not state the provenance of these records; that is recorded as a limitation. |
+| `cy3_monoreactive_28951573.pdf` | Cytiva PA23001 spec sheet for Cy3: 550 nm / 150,000 / 570 nm, and the ">0.15 for labelled protein" quantum yield. |
+| `cy5_28954683.pdf` | Cytiva PA25031 spec sheet for Cy5: 649 nm / 250,000 / 670 nm. |
+| `cy3_ifu.pdf`, `cy3_maleimide_28954681.pdf` | Further Cytiva Cy3 documents (instructions for use, maleimide derivative), used to check the conjugate quantum yields and the 552 nm extinction value. |
+| `rs_cyanine.pdf`, `rs_cyanine.txt` | Review article on cyanine photophysics, used for the sulfo-Cy3/sulfo-Cy5 extinction coefficients and the 0.10-0.31 conjugate quantum-yield spread. |
+| `interchim_fpcy.pdf`, `interchim_fpcy.txt` | Interchim (FluoProbes) cyanine data, the second independent vendor source for the same spread. |
 
 ---
 
