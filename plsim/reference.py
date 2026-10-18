@@ -1,9 +1,8 @@
 """Measured reference data: digitized absorption and emission bands.
 
-The pack in `data/reference_spectra.json` was collected from vendor spec
-sheets, spectral databases and peer-reviewed papers; the data-sources appendix of the
-report gives a
-source and a confidence for every number.
+The pack in `data/reference_spectra.json` was collected from vendor spec sheets,
+spectral databases and peer-reviewed papers; the data-sources appendix of the report
+gives a source and a confidence for every number.
 """
 
 from __future__ import annotations

@@ -1,8 +1,7 @@
 """Sample database: the dyes of the class task, as a Gaussian model.
 
-Band centres and quantum yields are the sourced values from the data-sources appendix
-of the report,
-where each number carries its solvent and its spread. The band shapes are
+Band centres and quantum yields are the sourced values from the data-sources appendix of
+the report, where each number carries its solvent and its spread. The band shapes are
 Gaussian approximations; `plsim/reference.py` loads the measured band shapes
 for the same three dyes.
 """

@@ -78,6 +78,25 @@ Peak wavelengths are read off the scan on the step-size grid after the detection
 
 The digitized curves are defined only inside the range where they were measured (Cy3 absorption 450-590 nm, Cy5 430-734 nm, methylene blue 300-800 nm). Outside that range the model reads zero absorption, which is why Cy3 shows 0.00 % at 450 nm while the independent check on the same dye puts it near 0.6 %. It does not change the conclusion at 450 nm, where all three dyes are transparent, but the report should say "negligible" rather than "exactly zero".
 
+### 3.3 What the Cy3 band reads at its own edges, and what the other two curves hold
+
+The model uses the absorbance strip of the shipped Cy3 record, 450-590 nm. The same record also carries a corrected excitation strip, 400-649 nm, and the documented methanol spectrum of the same chromophore (PhotochemCAD record 016) runs to 700 nm. Neither is spliced into the band, because the two disagree where they overlap, but together they bound how wrong the flat ends of the sweep are. Fractions are of each curve's own peak; the absorbed fraction is that fraction times A_peak, at the 1 umol/L and 1 cm used throughout.
+
+The absorbance strip and the excitation strip differ by 2.9 % of full scale on average over the window they share, which is why one strip is used rather than a splice of two.
+
+| wavelength | excitation strip (fraction of peak) | absorbed from it | methanol record 016 | absorbed from it |
+| --- | --- | --- | --- | --- |
+| 400 nm | 0.0019 | 0.07% | 0.0004 | 0.01% |
+| 450 nm | 0.0183 | 0.63% | 0.0426 | 1.46% |
+| 590 nm | 0.0143 | 0.49% | 0.0024 | 0.08% |
+| 600 nm | 0.0038 | 0.13% | 0.0025 | 0.09% |
+| 610 nm | 0.0002 | 0.01% | 0.0017 | 0.06% |
+| 620 nm | 0.0000 | 0.00% | 0.0006 | 0.02% |
+| 650 nm | - | - | 0.0020 | 0.07% |
+| 700 nm | - | - | 0.0010 | 0.04% |
+
+So the flat blue end rests on the tabulated range rather than on the dye: at 450 nm the wider strip puts Cy3 at 0.6 % of the light absorbed, more than Cy5 (0.24 %) or methylene blue (0.20 %) take there today. At the red end the position is reversed - the wider strip is zero from 620 nm on, and the methanol record gives a fraction of the peak that corresponds to an absorbed fraction of 0.07% at 650 nm. The zero between 590 and 610 nm is a data window; from 620 to 700 nm it is the dye.
+
 ## 4. The excitation sweep (question 2)
 
 - **Cy3**: strongest PL at 554.0 nm; measured curve equals P_exc*(1-10^-A)*Phi_f to 2.2e-16 of full scale; band integral constant to 0.0e+00.

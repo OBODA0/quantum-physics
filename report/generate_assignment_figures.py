@@ -278,8 +278,8 @@ def generate_part2(dyes):
     right.legend(loc="upper right")
 
     figure.suptitle("Part 2: excitation wavelength sweep of Cy3 ({:.0f}-{:.0f} nm)\n"
-                    "the overlay shows 470-560 nm: Cy3 does not absorb at 450, 600 or 650 nm, "
-                    "its measured absorption band stops at {:.0f} nm".format(
+                    "the overlay shows 470-560 nm: the tabulated Cy3 band reads zero at 450, 600 and "
+                    "650 nm, and it stops at {:.0f} nm".format(
                         EXCITATION_START_NM, EXCITATION_STOP_NM, ABSORPTION_RANGE_NM["cy3"][1]),
                     fontweight="bold", fontsize=12.5)
     figure.savefig(FIG_DIR / "part2_cy3_excitation_sweep.png", dpi=300)
@@ -335,8 +335,8 @@ def generate_part3(dyes):
             axis.text(0.5, 0.5,
                       "all three dyes are nearly transparent here\n"
                       "absorbed: {:.2f} % (Cy5), {:.2f} % (methylene blue),\n"
-                      "negligible for Cy3 - its measured absorption\n"
-                      "curve starts at 450 nm\n"
+                      "zero for Cy3 in the model - its tabulated\n"
+                      "band starts at 450 nm\n"
                       "this is why the panel looks empty".format(
                           100 * dyes["cy5"].absorbed_fraction(lambda_exc),
                           100 * dyes["methylene-blue"].absorbed_fraction(lambda_exc)),

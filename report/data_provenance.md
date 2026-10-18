@@ -38,6 +38,12 @@ for comparison.
 | Stokes shift | 20 nm | derived from the two maxima above | high; 14 nm between the curve peaks |
 | pH dependence | flat over pH 4-10 | supplier product page | low; a supplier claim, not measured here |
 
+The record carries three strips of the same dye: a corrected excitation strip (400-649 nm,
+250 points), an emission strip (514-670 nm) and the absorbance strip (450-590 nm) that this report's
+band is digitized from. The excitation strip is not spliced onto the band, because the two differ by
+2.9 % of full scale on average where they overlap; it is reported instead in section 3.3 of the
+generated number table, which gives what each curve holds at the band edges.
+
 Digitized curves: absorption 450-590 nm (curve peak 554 nm), emission 514-670 nm (curve peak
 568 nm), each normalized to its own maximum. FPbase states no manufacturer and no reference for
 these two records, so the curve shape is a conventional Cy3 shape rather than a traceable

@@ -282,6 +282,74 @@ def build(database_choice="reference"):
         "conclusion at 450 nm, where all three dyes are transparent, but the report should say "
         "\"negligible\" rather than \"exactly zero\".")
     add("")
+    add("### 3.3 What the Cy3 band reads at its own edges, and what the other two curves hold")
+    add("")
+    add("The model uses the absorbance strip of the shipped Cy3 record, 450-590 nm. The same record "
+        "also carries a corrected excitation strip, 400-649 nm, and the documented methanol spectrum "
+        "of the same chromophore (PhotochemCAD record 016) runs to 700 nm. Neither is spliced into the "
+        "band, because the two disagree where they overlap, but together they bound how wrong the flat "
+        "ends of the sweep are. Fractions are of each curve's own peak; the absorbed fraction is that "
+        "fraction times A_peak, at the 1 umol/L and 1 cm used throughout.")
+    add("")
+    raw = Path(__file__).resolve().parent.parent / "data" / "raw"
+    record = json.loads((raw / "fpbase_Cy3.json").read_text())
+    strips = {s["subtype"]: np.array(s["data"], dtype=float) for s in record["spectra"]}
+    excitation_strip, absorbance_strip = strips["EX"], strips["AB"]
+    meth_w, meth_v = [], []
+    for line in (raw / "016_abs.txt").read_text().splitlines():
+        parts = line.split()
+        if len(parts) >= 2:
+            try:
+                meth_w.append(float(parts[0]))
+                meth_v.append(float(parts[1]))
+            except ValueError:
+                continue
+    meth_w = np.array(meth_w)
+    meth_v = np.array(meth_v) / max(meth_v)
+    grid = np.arange(absorbance_strip[0, 0], absorbance_strip[-1, 0] + 1.0, 1.0)
+    disagreement = float(np.abs(
+        np.interp(grid, absorbance_strip[:, 0], absorbance_strip[:, 1] / absorbance_strip[:, 1].max())
+        - np.interp(grid, excitation_strip[:, 0], excitation_strip[:, 1] / excitation_strip[:, 1].max())
+    ).mean())
+    add("The absorbance strip and the excitation strip differ by {:.1f} % of full scale on average "
+        "over the window they share, which is why one strip is used rather than a splice of two."
+        .format(100 * disagreement))
+    add("")
+    add("| wavelength | excitation strip (fraction of peak) | absorbed from it | methanol record 016 | absorbed from it |")
+    add("| --- | --- | --- | --- | --- |")
+    cy3_peak_absorbance = 150000.0 * CONCENTRATION_M * PATH_LENGTH_CM
+    for wavelength in (400.0, 450.0, 590.0, 600.0, 610.0, 620.0, 650.0, 700.0):
+        fractions = []
+        for wavelengths, values in ((excitation_strip[:, 0], excitation_strip[:, 1] / excitation_strip[:, 1].max()),
+                                    (meth_w, meth_v)):
+            fractions.append(
+                float(np.interp(wavelength, wavelengths, values))
+                if wavelengths[0] <= wavelength <= wavelengths[-1] else float("nan")
+            )
+        absorbed = [
+            1.0 - 10 ** (-fraction * cy3_peak_absorbance) if fraction == fraction else float("nan")
+            for fraction in fractions
+        ]
+        cells = [
+            "{:.4f} | {:.2%}".format(fraction, value) if fraction == fraction else "- | -"
+            for fraction, value in zip(fractions, absorbed)
+        ]
+        add("| {:.0f} nm | {} | {} |".format(wavelength, cells[0], cells[1]))
+    add("")
+    add("So the flat blue end rests on the tabulated range rather than on the dye: at 450 nm the wider "
+        "strip puts Cy3 at {:.1f} % of the light absorbed, more than Cy5 ({:.2f} %) or methylene blue "
+        "({:.2f} %) take there today. At the red end the position is reversed - the wider strip is zero "
+        "from 620 nm on, and the methanol record gives a fraction of the peak that corresponds to an "
+        "absorbed fraction of {:.2%} at 650 nm. The zero between 590 and 610 nm is a data window; from "
+        "620 to 700 nm it is the dye.".format(
+            100 * (1.0 - 10 ** (-float(np.interp(450.0, excitation_strip[:, 0],
+                                                 excitation_strip[:, 1] / excitation_strip[:, 1].max()))
+                                  * cy3_peak_absorbance)),
+            100 * dyes["cy5"].absorbed_fraction(450.0),
+            100 * dyes["methylene-blue"].absorbed_fraction(450.0),
+            1.0 - 10 ** (-float(np.interp(650.0, meth_w, meth_v)) * cy3_peak_absorbance)))
+    add("")
+
     add("## 4. The excitation sweep (question 2)")
     add("")
     for key in DYE_KEYS:

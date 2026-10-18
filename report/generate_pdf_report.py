@@ -194,7 +194,7 @@ def build_pdf():
 
     # ================================================================ PART 1
     story.append(Paragraph("1. Design of the PL spectrometer and the three dye spectra (25%)", s["h1"]))
-    story.append(figure("part1_instrument_diagram.png", 504, 217))
+    story.append(figure("part1_instrument_diagram.png", 468, 201))
     story.append(Paragraph(
         "<b>Figure 1:</b> the instrument the simulator models. Every box is a module in the appendix "
         "code: the lamp spectrum (<i>sources.py</i>), the monochromators and harmonic filter "
@@ -257,7 +257,7 @@ def build_pdf():
         "a factor of 3.7.", s["caption"]))
     for name, label in (("part1_cy3.png", "Cy3"), ("part1_cy5.png", "Cy5"),
                         ("part1_methylene-blue.png", "methylene blue")):
-        story.append(figure(name, 330, 211))
+        story.append(figure(name, 296, 189))
     story.append(Paragraph(
         "<b>Figure 3:</b> the same three measurements at full scale, one per dye - the screen "
         "captures the task asks for, taken as the simulator's own output written straight to an image "
@@ -307,17 +307,20 @@ def build_pdf():
         "does.<br/>"
         "3. <b>Below about 450 nm the model reads zero absorption.</b> The strip it uses begins at "
         "450 nm, and the same dye record's wider excitation strip gives 1.8 % of the peak at 450 nm "
-        "and 0.2 % at 400 nm, while the documented methanol spectrum gives 4.3 % at 450 nm - all far "
-        "below what the figure can show, but not zero. So this end is a limit of the tabulated range "
+        "and 0.2 % at 400 nm - absorbed fractions of 0.6 % and 0.07 % at the concentration used here - "
+        "while the documented methanol spectrum gives 4.3 % at 450 nm, which is 1.5 % absorbed. All of "
+        "that is far below what the figure can show, but none of it is zero (section 3.3 of the "
+        "generated number table). So this end is a limit of the tabulated range "
         "rather than of the physics. (The 400 nm harmonic filter does not enter here: it only blocks "
         "wavelengths below 400 nm, which the sweep does not use.)<br/>"
         "4. <b>Above about 590 nm the simulation returns exactly zero</b>, for two different reasons. "
         "The strip the model uses was digitized over 450-590 nm, so between 590 and about 610 nm this "
         "is a limit of the data: the same record's corrected excitation strip runs to 649 nm and reads "
-        "0.4 % of the peak at 600 nm and 0.02 % at 610 nm. From about 620 nm to 700 nm the curve is "
+        "0.38 % of the peak at 600 nm and 0.02 % at 610 nm. From about 620 nm to 700 nm the curve is "
         "flat because the dye is, not because the data stops - that strip returns zero there, and the "
-        "documented methanol spectrum of the same chromophore, which does reach 700 nm, reads 0.2 % at "
-        "650 nm, an absorbed fraction of 0.07 % at the concentration used here. A real instrument "
+        "documented methanol spectrum of the same chromophore, which does reach 700 nm, reads 0.20 % at "
+        "650 nm, an absorbed fraction of 0.07 % at the concentration used here (both in section 3.3 of "
+        "the generated number table). A real instrument "
         "would record a weak, not vanishing, signal near 600 nm, and nothing measurable beyond it.<br/>"
         "5. <b>Stray light tracks the excitation wavelength.</b> With stray light enabled, the "
         "scattered line sits exactly at &lambda;<sub>exc</sub> and moves with it, which is why the "
@@ -328,11 +331,10 @@ def build_pdf():
         "<b>Yes, and the reason is a separation of timescales.</b> Absorption promotes the molecule to "
         "higher vibrational levels of the first excited singlet state, or to higher electronic states. "
         "Internal conversion and vibrational relaxation then remove that excess energy in about "
-        "10<sup>-13</sup>-10<sup>-12</sup> s: Kasha 1950 puts an estimated upper bound of "
-        "10<sup>-13</sup> s on the internal-conversion step from an intensity-ratio argument [1], "
-        "and that window is the modern textbook range for internal conversion and vibrational "
-        "relaxation [2, &sect;1.4.2], while fluorescence from Cy3 takes of order "
-        "0.2-2 ns [5]. Emission is therefore two to four orders of magnitude slower than the "
+        "10<sup>-13</sup>-10<sup>-12</sup> s, the range the fluorescence literature gives for those "
+        "two processes [2, &sect;1.4.2], while fluorescence from Cy3 takes of order 0.2-2 ns [5]. The "
+        "rule itself is Kasha's, stated for states in 1950 [1]. Emission is therefore two to four "
+        "orders of magnitude slower than the "
         "relaxation, so every "
         "excited molecule emits from the same thermalized level, S<sub>1</sub>(v = 0), whatever photon "
         "it absorbed. The emission spectrum is therefore fixed in shape, position and width, and only "
@@ -340,7 +342,7 @@ def build_pdf():
         "&lambda;<sub>exc</sub>. The two dyes in our own database illustrate the same chain-length "
         "argument: Cy3 is a trimethine cyanine absorbing at 550 nm and Cy5 a pentamethine at 649 nm, so "
         "two extra methine units shift the band by 99 nm in our own data, which is the free-electron "
-        "model of the cyanine chain in practice [3, 7]. That is Kasha's rule as Kasha stated it for "
+        "model of the cyanine chain in practice [7]. That is Kasha's rule as Kasha stated it for "
         "states [1] and as "
         "Lakowicz states it for wavelength, in the section whose title says exactly that [2, "
         "&sect;1.3.2].", s["body"]))
@@ -412,7 +414,7 @@ def build_pdf():
         "&epsilon; at a given wavelength depends entirely on where that wavelength falls in the dye's "
         "own band. At 550 nm Cy3 absorbs 28.0 % of the incident light while Cy5 absorbs 2.81 % and "
         "methylene blue 1.19 %. At 650 nm it is Cy5 that absorbs 43.4 %, methylene blue 11.9 %, and Cy3 "
-        "nothing at all.<br/>"
+        "nothing in the model: its tabulated band ends at 590 nm.<br/>"
         "<b>(2) The quantum yield.</b> Of the photons absorbed, only the fraction &Phi;<sub>f</sub> is "
         "emitted: 0.28 for Cy5, 0.04 for Cy3, 0.02 for methylene blue in water. This is why the "
         "550 nm panel is not lopsided in favour of Cy3: Cy3 absorbs ten times more light than Cy5 "
@@ -432,11 +434,14 @@ def build_pdf():
         "is normally measured: the same photon budget spread over a wider band gives a lower peak, and "
         "methylene blue is the broadest of the three as well as the weakest emitter.", s["body"]))
     story.append(Paragraph(
-        "<b>One honest caveat about 450 nm.</b> At that wavelength none of the three dyes absorbs "
-        "meaningfully (0.24 % for Cy5, 0.20 % for methylene blue, and nothing measurable for Cy3), so "
-        "the left panel of Figure 6 is nearly empty for a physical reason and not because the "
-        "simulation failed. The comparison the question is really asking about is the 550 nm and 650 nm "
-        "panels, where the dyes that absorb are also the dyes that light up.", s["body"]))
+        "<b>One honest caveat about 450 nm.</b> There the model returns exactly zero absorption for "
+        "Cy3, because its tabulated band begins at 450 nm and reads zero at that edge, against 0.24 % "
+        "for Cy5 and 0.20 % for methylene blue. The wider strip in the same record puts Cy3 near 0.6 % "
+        "at 450 nm (section 3.3 of the generated number table), which is more than either of the other "
+        "two - so the left panel of Figure 6 is nearly empty because all three dyes are effectively "
+        "transparent there, not because the simulation failed. The comparison the question is really "
+        "asking about is the 550 nm and 650 nm panels, where the dyes that absorb are also the dyes "
+        "that light up.", s["body"]))
     story.append(Paragraph(
         "<b>Peak currents for the record</b> (relative units, 1 &micro;mol/L, 1 cm): at 450 nm Cy3 "
         "0.00000, Cy5 0.00040, methylene blue 0.00002; at 550 nm Cy3 0.00523, Cy5 0.00468, methylene "
