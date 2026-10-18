@@ -89,8 +89,8 @@ def styles():
     }
 
 
-def wrapped_source(text, width=110):
-    """Wrap long source lines so a line cannot reach the page edge or split oddly."""
+def wrapped_source(text, width=120):
+    """Safety net: no appendix file has a line near this width, so nothing is changed."""
     lines = []
     for line in text.splitlines():
         while len(line) > width:
@@ -170,8 +170,9 @@ def build_pdf():
     story.append(Paragraph(
         "A xenon arc lamp provides a broad continuum across the visible and near infrared. The "
         "excitation monochromator isolates the excitation wavelength &lambda;<sub>exc</sub> with a 5 nm "
-        "passband; a long-pass harmonic filter removes the second-order grating output below 400 nm so "
-        "the sample sees &lambda;<sub>exc</sub> and not 2&lambda;<sub>exc</sub>. The beam crosses a 1 cm "
+        "passband; a long-pass harmonic filter removes the second-order grating output below 400 nm, so "
+        "the sample is not also illuminated at &lambda;<sub>exc</sub>/2 from second-order diffraction. "
+        "The beam crosses a 1 cm "
         "cuvette holding the dye. The emitted light is collected and scanned by a second monochromator, "
         "2 nm passband, across the detection range [&lambda;<sub>min</sub>, &lambda;<sub>max</sub>] in "
         "steps of &Delta;&lambda;, and detected by a silicon photodiode whose responsivity "
@@ -193,8 +194,9 @@ def build_pdf():
     story.append(Paragraph("<b>1.2 Sample database and baseline spectra.</b>", s["h2"]))
     story.append(Paragraph(
         "Cy3 and Cy5 are the sulfoindocyanine dyes introduced as fluorescent labelling reagents, "
-        "and their excitation ranges (546 nm for Cy3, 633-647 nm for Cy5) are the ones the model "
-        "reproduces [3]. Methylene blue is a phenothiazinium dye whose excited state is quenched "
+        "and [3] reports the Cy3 chromophore optimally excited at 546 nm and Cy5 with the 633 nm HeNe "
+        "or 647 nm Kr line, while the model uses the vendor maxima of 550 and 649 nm [9]. Methylene "
+        "blue is a phenothiazinium dye whose excited state is quenched "
         "both by internal conversion and by intersystem crossing [4, 6], which is why its quantum "
         "yield is the lowest of the three. The database holds the three dyes named in the task, at "
         "the same concentration "
@@ -204,9 +206,9 @@ def build_pdf():
         "carry the lamp and monochromator throughput, the 2 nm detection passband and the detector "
         "responsivity. Their peaks fall where the measured bands peak - 568.0 nm for Cy3, 668.0 nm for "
         "Cy5 and 685.0 nm for methylene blue on the digitized curves, read as 686 nm on the 1 nm scan "
-        "grid - which is a few nanometres away from the vendors' quoted maxima of 570, 670 and 685 nm. "
-        "That difference is in the source data, not in the instrument: a symmetric passband cannot "
-        "shift a band, it only widens it.", s["body"]))
+        "grid - against the vendor maxima of 570, 670 and 685 nm: 2 nm for Cy3 and Cy5 and none at all "
+        "for methylene blue. That difference is in the source data, not in the instrument: a symmetric "
+        "passband widens a band without moving its centre.", s["body"]))
     story.append(figure("part1_combined_overview.png", 504, 151))
     story.append(Paragraph(
         "<b>Figure 2:</b> simulated PL spectra of Cy3 (&lambda;<sub>exc</sub> = 550 nm), Cy5 "
@@ -334,7 +336,8 @@ def build_pdf():
         "<b>Figure 5:</b> the three absorption bands, each normalised to its own maximum, with the "
         "three excitation wavelengths marked. At 550 nm Cy3 is near its maximum (its curve peaks at "
         "554 nm) while Cy5 and methylene "
-        "blue are on their rising edges; at 650 nm the situation is reversed.", s["caption"]))
+        "blue are on their rising edges; at 650 nm Cy5 and methylene blue absorb while Cy3 has nothing "
+        "left above its band.", s["caption"]))
     story.append(figure("part3_three_dyes_comparison.png", 504, 164))
     story.append(Paragraph(
         "<b>Figure 6:</b> the same graph for each excitation wavelength - 450 nm (left), 550 nm "
@@ -363,12 +366,14 @@ def build_pdf():
         "550 nm panel is not lopsided in favour of Cy3: Cy3 absorbs ten times more light than Cy5 "
         "there, yet the two peaks come out within 12 % of each other, because Cy5 converts absorbed "
         "photons into fluorescence seven times more efficiently.<br/>"
-        "<b>(3) The detector's wavelength dependence.</b> The silicon responsivity is about a third "
+        "<b>(3) The detector's wavelength dependence.</b> A silicon photodiode of a given quantum "
+        "efficiency has a responsivity proportional to wavelength [8], and this one is about a third "
         "higher at methylene blue's emission (686 nm) than at Cy3's (568 nm), so equal emitted power at "
         "those two wavelengths does not give equal photocurrent.<br/>"
         "<b>(4) The width of the emission band.</b> Measured on the digitized bands, Cy3, Cy5 and "
         "methylene blue are 28.6, 33.4 and 48.6 nm wide (the simulated curves read 28, 32 and 47 nm "
-        "on a 1 nm grid). For the "
+        "on a 1 nm grid); the one published bandwidth found, 37.4 nm for Cy5 [10], is 4 nm wider than "
+        "the 33.4 nm measured here. For the "
         "same emitted power, a broader band means a lower peak, which penalises methylene blue a second "
         "time on top of its low quantum yield.", s["body"]))
     story.append(Paragraph(
@@ -438,6 +443,10 @@ def build_pdf():
         "JACS Au (DOI 10.1021/jacsau.5c01463), and the OMLC/Prahl measured spectrum. The full source "
         "table, with a confidence for each value and the raw files, is in <i>data/SOURCES.md</i> and "
         "<i>data/raw/</i>.",
+
+        "[10] A published Cy5 emission bandwidth, used only as a cross-check on the width measured here: "
+        "<i>Biosensors</i> <b>13</b> (2023) 876, Table 2 (open access, PMC10526137), which gives an "
+        "Aptamer-Cy5 emission maximum at 665.0 nm with a 37.4 nm FWHM.",
     ]
     for reference in references:
         story.append(Paragraph(reference, s["ref"]))
@@ -449,8 +458,8 @@ def build_pdf():
         "monomer. The quantum yield of methylene blue in water, 0.02, is the value used in "
         "photodynamic-therapy work; the readable measurement in the literature is 0.04 in ethanol. The "
         "emission bandwidths quoted here are measured on the digitized bands rather than taken from the "
-        "literature; a published Cy5 emission FWHM of 37.4 nm exists (Biosensors 2023, 13, 876, "
-        "Table 2) against our 33.4 nm, and for Cy3 no published value was found at all. The FPbase records from which the Cy3 and Cy5 bands are digitized do "
+        "literature; the one published value found, a Cy5 emission FWHM of 37.4 nm [10], is 4 nm wider "
+        "than the 33.4 nm measured here, and for Cy3 no published value was found at all. The FPbase records from which the Cy3 and Cy5 bands are digitized do "
         "not state their provenance; the fully documented curves for the same chromophores are the "
         "PhotochemCAD methanol spectra kept in <i>data/raw/</i>.", s["body"]))
     story.append(PageBreak())

@@ -36,14 +36,14 @@ Equal concentration does not mean equal absorbance: A_peak = epsilon * c * l, an
 | excitation | dye | A(lambda_exc) | absorbed fraction | emission peak | peak current | integrated PL |
 | --- | --- | --- | --- | --- | --- | --- |
 | 450 nm | Cy3 | 0.0000 | 0.00% | no emission | 0.00000 | 0 |
-| 450 nm | Cy5 | 0.0010 | 0.24% | 667.5 nm | 0.00040 | 0.03409 |
-| 450 nm | Methylene blue | 0.0009 | 0.20% | 685.5 nm | 0.00002 | 0.003153 |
-| 550 nm | Cy3 | 0.1427 | 28.00% | 568.0 nm | 0.00522 | 0.555 |
-| 550 nm | Cy5 | 0.0124 | 2.81% | 667.5 nm | 0.00467 | 0.4007 |
-| 550 nm | Methylene blue | 0.0052 | 1.19% | 685.5 nm | 0.00015 | 0.01929 |
+| 450 nm | Cy5 | 0.0010 | 0.24% | 668.0 nm | 0.00040 | 0.03409 |
+| 450 nm | Methylene blue | 0.0009 | 0.20% | 686.0 nm | 0.00002 | 0.003153 |
+| 550 nm | Cy3 | 0.1427 | 28.00% | 568.0 nm | 0.00523 | 0.555 |
+| 550 nm | Cy5 | 0.0124 | 2.81% | 668.0 nm | 0.00468 | 0.4007 |
+| 550 nm | Methylene blue | 0.0052 | 1.19% | 686.0 nm | 0.00015 | 0.01929 |
 | 650 nm | Cy3 | 0.0000 | 0.00% | no emission | 0.00000 | 0 |
-| 650 nm | Cy5 | 0.2471 | 43.39% | 667.5 nm | 0.06817 | 5.848 |
-| 650 nm | Methylene blue | 0.0550 | 11.90% | 685.5 nm | 0.00138 | 0.183 |
+| 650 nm | Cy5 | 0.2471 | 43.39% | 668.0 nm | 0.06824 | 5.848 |
+| 650 nm | Methylene blue | 0.0550 | 11.90% | 686.0 nm | 0.00138 | 0.183 |
 
 ### 3.1 What is drawn below the excitation wavelength, and how much stray light is left
 

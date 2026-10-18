@@ -112,7 +112,7 @@ shots)?"*, *"Do your observations fit with the results in the literature?"*,
 | ask | current artifact | status |
 | --- | --- | --- |
 | pick one dye | Cy3 | done |
-| sweep λexc 400 → 700 nm | 8 overlaid spectra (450…610 nm) + 151-point sweep (2 nm steps) in `part2_cy3_excitation_sweep.png` | done, but see the artifact below |
+| sweep λexc 400 → 700 nm | six overlaid spectra (470-560 nm) + a 151-point sweep at 2 nm steps across 400-700 nm in `part2_cy3_excitation_sweep.png` | done; the overlay shows only the wavelengths that produce a spectrum, because Cy3 does not absorb at 450, 600 or 650 nm |
 | observations | §2.1 of the report, 4 numbered observations | done |
 | screenshots | none, same gap as R1 | **gap** |
 | fit to literature + reasons | §2.2 of the draft (Kasha's rule, internal conversion vs ns emission, Stokes shift, excitation spectrum vs absorbance) | substance is there; the "exactly mirrors A(λ)" claim and the 620 nm cutoff reasoning must be rewritten (section 5.2) |
@@ -182,7 +182,8 @@ Quantum yields and band widths come from `data/SOURCES.md` (39 sources, 34 URLs)
 | Cy5 | 649 nm | 670 nm | 0.28 (aqueous; range 0.19–0.30) | 250,000 |
 | Methylene blue | 664 nm | 685 nm | 0.02 (water; 0.04 is the ethanol value) | 67,000–107,800 |
 
-The report body still carries the pre-source numbers (MB Φf = 0.04, λem = 686 nm,
+The draft body carried pre-source numbers (MB Φf = 0.04, λem = 686 nm - the report
+now uses 0.02 in water and 685 nm). It also had
 Cy3 emission FWHM ≈ 32 nm) while its own code appendix prints 0.02, 685 nm and
 28.6 nm. Whatever set of numbers the team wants, the text and the code must agree.
 
@@ -292,8 +293,10 @@ These are report-phase edits; the list exists so none of them is missed.
 - **PS2: a single PDF file.** The report is one PDF; everything the marker needs —
   screenshots, figures, references, code appendix — must be inside that file.
   Nothing may be a separate attachment.
-- The PDF must be regenerable: `report/generate_pdf_report.py` needs `reportlab`,
-  which is currently **not** in `pyproject.toml` and **not** in `.venv`.
+- The PDF is regenerable: `reportlab` is declared in the dev group, `uv sync` installs
+  it, and `report/check_pdf.py` gates the built file before upload.
+  Historical note: when this section was written, `reportlab` was undeclared and the
+  PDF could only be built in somebody's ad-hoc environment.
 
 ---
 
@@ -333,7 +336,7 @@ verified (`VERIFICATION.md`).
 - [x] the AI tool and models named in the report header table
 - [x] the instrument diagram added, the three individual dye panels embedded, and an
       absorption-overlay figure added to question 3
-- [x] the report rebuilt from the corrected text and figures (43 pages, 14 appendix
+- [x] the report rebuilt from the corrected text and figures (47 pages, 14 appendix
       files)
 - [x] the PDF carries no external attachments; every DOI printed in it resolves
-      (checked against Crossref on the built file)ide it
+      (checked against Crossref on the built file)

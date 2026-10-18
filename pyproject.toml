@@ -11,5 +11,9 @@ dependencies = [
 [tool.uv]
 package = false
 
+[tool.pytest.ini_options]
+# the package sits at the repository root, so pytest must look there
+pythonpath = ["."]
+
 [dependency-groups]
 dev = ["pytest>=8", "reportlab>=4"]

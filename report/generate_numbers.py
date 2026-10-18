@@ -119,10 +119,13 @@ def build(database_choice="reference"):
     for key in DYE_KEYS:
         record = records[key]
         dye = dyes[key]
-        absorption_peak = band_peak(dye.absorption, *dye.absorption.wavelength_nm[::len(dye.absorption.wavelength_nm) - 1])
+        absorption_grid = dye.absorption.wavelength_nm
+        absorption_peak = band_peak(dye.absorption, absorption_grid[0], absorption_grid[-1])
         emission_peak = band_peak(dye.emission, dye.emission.wavelength_nm[0], dye.emission.wavelength_nm[-1])
         width = band_fwhm(dye.emission, dye.emission.wavelength_nm[0], dye.emission.wavelength_nm[-1])
-        peak_wavelengths[key] = (record["absorption_max_nm"], record["emission_max_nm"], absorption_peak, emission_peak)
+        peak_wavelengths[key] = (
+            record["absorption_max_nm"], record["emission_max_nm"], absorption_peak, emission_peak,
+        )
         add("| {} | {} nm | {} nm | {:g} ({}) | {:,} | {:.1f} nm | {:.1f} nm | {:.1f} nm |".format(
             record["display_name"].split("(")[0].strip(),
             record["absorption_max_nm"], record["emission_max_nm"],
@@ -148,8 +151,10 @@ def build(database_choice="reference"):
     add("| --- | --- | --- |")
     for key in DYE_KEYS:
         dye = dyes[key]
-        add("| {} | {:.3f} | {:.1f} umol/L |".format(
-            dye.name, dye.peak_absorbance, CONCENTRATION_M * 1e6 / dye.peak_absorbance if dye.peak_absorbance else float("nan")))
+        needed = (
+            CONCENTRATION_M * 1e6 / dye.peak_absorbance if dye.peak_absorbance else float("nan")
+        )
+        add("| {} | {:.3f} | {:.1f} umol/L |".format(dye.name, dye.peak_absorbance, needed))
     add("")
     add("Equal concentration does not mean equal absorbance: A_peak = epsilon * c * l, and the "
         "extinction coefficients differ by a factor of {:.1f} between the strongest and the "
@@ -166,7 +171,7 @@ def build(database_choice="reference"):
             dye = dyes[key]
             scan = PLSpectrometer(sample=dye, scatter_fraction=0.0).acquire(
                 lambda_exc_nm=lambda_exc, lambda_min_nm=DETECTION_RANGE_NM[0],
-                lambda_max_nm=DETECTION_RANGE_NM[1], dlambda_nm=0.5)
+                lambda_max_nm=DETECTION_RANGE_NM[1], dlambda_nm=1.0)
             integrated = float(np.trapezoid(scan.emitted_power, scan.wavelengths_nm))
             peak = "{:.1f} nm".format(measured_emission_band(scan).peak_nm) if integrated > 0 else "no emission"
             add("| {:.0f} nm | {} | {:.4f} | {:.2%} | {} | {:.5f} | {:.4g} |".format(
@@ -282,7 +287,8 @@ def build(database_choice="reference"):
     for lambda_exc in (450.0, 550.0, 650.0, 700.0):
         add("| relative xenon lamp power at {:.0f} nm | {:.4g} |".format(lambda_exc, lamp.power_at(lambda_exc)))
     for wavelength in (570.0, 670.0, 686.0):
-        add("| detector responsivity at {:.0f} nm | {:.3f} A/W |".format(wavelength, detector.responsivity(wavelength)))
+        add("| detector responsivity at {:.0f} nm | {:.3f} A/W |".format(
+            wavelength, detector.responsivity(wavelength)))
     add("")
 
     add("## 6. Numbers the report must not copy from the earlier draft")

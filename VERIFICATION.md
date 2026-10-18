@@ -135,7 +135,7 @@ report/generate_pdf_report.py  -> PDF built
 Results (repeated after every change, latest run on the committed tree):
 
 - `report/numbers.md` regenerated **byte-identical** to the committed file;
-- all seven figures regenerated with **mean absolute pixel difference 0.000** and
+- all nine figures regenerated with **mean absolute pixel difference 0.000** and
   identical dimensions, so the committed figures provably come from the committed
   code;
 - the PDF builds from a clean environment with no manual steps;
@@ -165,7 +165,7 @@ test suite (`VERIFICATION.md` sections 4; `TASK.md` section 3).
 
 ## 4b. The figures, audited independently
 
-A separate pass checked all seven figures pixel by pixel against the printed axes
+A separate pass checked the nine figures pixel by pixel against the printed axes
 and against `report/numbers.md`. Every number printed in the figures (A, Φf, λexc,
 concentration) agreed with the generated table. The curves did not always:
 
@@ -230,10 +230,10 @@ repository:
 
 | check | result |
 | --- | --- |
-| pages / size | 43 pages, 3.0 MB |
+| pages / size | 47 pages, 3.1 MB |
 | figures embedded (not linked) | yes — device figures on pages 1-4 at full resolution (3900x1680 diagram, 4800x1440 overview, 3 x 2160x1380 singles, 4350x1680 sweep, part-3 figures) |
 | appendix files present | 14 |
-| every DOI printed in the PDF resolves | 7 of 7 return HTTP 200 from Crossref |
+| every DOI printed in the PDF resolves | 8 of 8 return HTTP 200 from Crossref |
 | the two fabricated DOIs from the earlier draft | absent |
 | one file, no attachments | yes |
 
@@ -256,7 +256,7 @@ about them:
 | --- | --- | --- | --- |
 | text audit | every number, arithmetic claim, caption and factual statement in the PDF, against `numbers.md`, the figures and the code | 17: 1 blocker, 9 must-fix, 7 cosmetic. Blocker: five of the nine references were never cited in the body, which under PS1 reads as irrelevant | all fixed. Each reference now carries a sentence; the causal claim about peak positions, the two wrong statements about the wavelength ends, the order-of-magnitude claim, the missing detection settings and the bandwidth values were rewritten |
 | reference audit | existence of every reference and whether it supports the sentence it is attached to | 10: no reference hallucinated and all DOIs resolve, but ten corrections - a wrong author initial, a mislabelled vendor sheet, an attribution to the wrong PhotochemCAD reference, an internal-conversion figure attributed to Kasha 1950 rather than to the textbook, a 100 nm figure that Kuhn 1949 does not print, a quantum-efficiency formula quoted as responsivity, and a bandwidth limitation stated too absolutely | all applied |
-| end-to-end audit | fresh clone from GitHub, `uv sync`, the full build chain, figure and number comparison, appendix, DOIs, and the six assignment clauses | the chain reproduces exactly: figures byte-identical, `numbers.md` identical, PDF text identical, 7/7 DOIs resolve, all six clauses satisfied | the four defects it found were stale documentation, all corrected |
+| end-to-end audit | fresh clone from GitHub, `uv sync`, the full build chain, figure and number comparison, appendix, DOIs, and the six assignment clauses | the chain reproduces exactly: nine figures byte-identical, `numbers.md` identical, PDF text identical, every DOI resolves, all six clauses satisfied | its documentation defects were corrected. A fourth pass on the frozen commit then found two real ones: `uv run pytest` failed because the root package was not on pytest's path, and references [8] and [9] were still uncited. Both fixed - `pythonpath = ["."]` in pyproject, and both references now cited in the body - and the appendix wrapping was removed so the code in it is verbatim |
 
 The gate that runs on the built file is `report/check_pdf.py`: DOI resolution, appendix
 count, embedded figures, metadata. It passes on the current build (47 pages, 14
