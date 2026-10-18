@@ -55,6 +55,8 @@ The emission band is the measured one: the model applies no extra suppression to
 | Cy5 | 649 nm | 9.21% | 0.4% |
 | Methylene blue | 664 nm | 7.94% | 15.8% |
 
+That fraction is a numerical integral, so it moves with the integration grid: 1.0 nm: 3.21% / 8.22% / 7.26%; 0.5 nm: 3.71% / 9.21% / 7.94%; 0.1 nm: 3.88% / 9.52% / 8.15% (Cy3 / Cy5 / methylene blue). Quote it as "a few per cent", not as a measured number.
+
 The stray-light figure is a model input, not a measurement: the report figures use 0.1 % of the excitation power, which is what a double monochromator with a harmonic filter is expected to leave. With a single monochromator it would be far larger, and methylene blue at 1 umol/L is dim enough that stray light would then dominate its spectrum.
 
 Peak wavelengths are read off the scan on the step-size grid after the detection passband, so they can differ from the tabulated curve peak by about one step (methylene blue reads 685.5 nm on a 0.5 nm grid and 686 nm on a 1 nm grid; the curve itself peaks at 685.0 nm). That is the instrument, not an inconsistency.
@@ -84,7 +86,7 @@ Kasha's rule, measured on the simulated band (Cy3, excitation swept inside the a
 | excitation monochromator bandwidth | 5 nm |
 | detection monochromator bandwidth | 2 nm |
 | harmonic filter | passes above 400 nm, blocks below |
-| stray excitation light | 0.5% of the excitation power reaches the detector |
+| stray excitation light | 0.1% of the excitation power reaches the detector |
 | relative xenon lamp power at 450 nm | 2.634 |
 | relative xenon lamp power at 550 nm | 2.661 |
 | relative xenon lamp power at 650 nm | 2.515 |

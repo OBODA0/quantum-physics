@@ -20,13 +20,17 @@ from plsim.reference import DEFAULT_PATH, load_reference_database
 from plsim.samples import SAMPLE_DATABASE, with_concentration
 from plsim.spectrometer import PLSpectrometer
 
-OUTPUT = Path(__file__).resolve().parent / "numbers.md"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from settings import (  # noqa: E402  (same directory, after sys.path)
+    ASSIGNED_EXCITATION_NM,
+    CONCENTRATION_M,
+    DETECTION_RANGE_NM,
+    DYE_KEYS,
+    PATH_LENGTH_CM,
+    SCATTER_FRACTION,
+)
 
-CONCENTRATION_M = 1.0e-6
-PATH_LENGTH_CM = 1.0
-DETECTION_RANGE_NM = (450.0, 900.0)
-ASSIGNED_EXCITATION_NM = (450.0, 550.0, 650.0)
-DYE_KEYS = ["cy3", "cy5", "methylene-blue"]
+OUTPUT = Path(__file__).resolve().parent / "numbers.md"
 
 # Second-opinion verification of 2026-10-18 (see data/SOURCES.md, section
 # "Second opinion"): the five numbers the report must not get wrong.
@@ -198,6 +202,26 @@ def build(database_choice="reference"):
         add("| {} | {:.0f} nm | {:.2%} | {:.1%} |".format(
             dye.name, lambda_exc, fraction, stray_ratio))
     add("")
+    grid_fractions = {}
+    for step in (1.0, 0.5, 0.1):
+        values = []
+        for key in DYE_KEYS:
+            dye = dyes[key]
+            scan = PLSpectrometer(sample=dye, scatter_fraction=0.0).acquire(
+                lambda_exc_nm=absorption_maximum_nm(key), lambda_min_nm=DETECTION_RANGE_NM[0],
+                lambda_max_nm=DETECTION_RANGE_NM[1], dlambda_nm=step)
+            band = scan.emitted_photocurrent
+            below = scan.wavelengths_nm < absorption_maximum_nm(key)
+            values.append(float(np.trapezoid(band[below], scan.wavelengths_nm[below])
+                                / np.trapezoid(band, scan.wavelengths_nm)))
+        grid_fractions["{} nm".format(step)] = values
+    add("That fraction is a numerical integral, so it moves with the integration grid: "
+        + "; ".join(
+            "{}: {}".format(step, " / ".join("{:.2%}".format(v) for v in values))
+            for step, values in grid_fractions.items()
+        )
+        + " (Cy3 / Cy5 / methylene blue). Quote it as \"a few per cent\", not as a measured number.")
+    add("")
     add("The stray-light figure is a model input, not a measurement: the report figures use 0.1 % "
         "of the excitation power, which is what a double monochromator with a harmonic filter is "
         "expected to leave. With a single monochromator it would be far larger, and methylene blue "
@@ -251,7 +275,8 @@ def build(database_choice="reference"):
     add("| excitation monochromator bandwidth | {:.0f} nm |".format(lamp.monochromator.bandwidth_nm))
     add("| detection monochromator bandwidth | {:.0f} nm |".format(instrument.detection_monochromator.bandwidth_nm))
     add("| harmonic filter | passes above {:.0f} nm, blocks below |".format(lamp.harmonic_filter.cutoff_nm))
-    add("| stray excitation light | {:.1%} of the excitation power reaches the detector |".format(0.005))
+    add("| stray excitation light | {:.1%} of the excitation power reaches the detector |".format(
+        SCATTER_FRACTION))
     for lambda_exc in (450.0, 550.0, 650.0, 700.0):
         add("| relative xenon lamp power at {:.0f} nm | {:.4g} |".format(lambda_exc, lamp.power_at(lambda_exc)))
     for wavelength in (570.0, 670.0, 686.0):

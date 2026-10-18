@@ -31,23 +31,24 @@ from plsim.reference import DEFAULT_PATH, load_reference_database
 from plsim.samples import SAMPLE_DATABASE, with_concentration
 from plsim.spectrometer import PLSpectrometer
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from settings import (  # noqa: E402  (same directory, after sys.path)
+    ABSORPTION_RANGE_NM,
+    ASSIGNED_EXCITATION_NM,
+    CONCENTRATION_M,
+    DETECTION_RANGE_NM,
+    DYE_COLORS,
+    DYE_KEYS,
+    EXCITATION_START_NM,
+    EXCITATION_STEP_NM,
+    EXCITATION_STOP_NM,
+    OVERLAY_EXCITATION_NM,
+    PATH_LENGTH_CM,
+    SCATTER_FRACTION,
+    STRAY_COLOR,
+)
+
 FIG_DIR = Path(__file__).resolve().parent / "report_figures"
-
-CONCENTRATION_M = 1.0e-6
-PATH_LENGTH_CM = 1.0
-SCATTER_FRACTION = 0.001
-DETECTION_RANGE_NM = (450.0, 900.0)
-EXCITATION_START_NM = 400.0
-EXCITATION_STOP_NM = 700.0
-EXCITATION_STEP_NM = 2.0
-# Excitation wavelengths used in the overlay: Cy3 is transparent at 450 and 650 nm,
-# so those curves would be flat lines at zero and would only clutter the legend.
-OVERLAY_EXCITATION_NM = (470.0, 500.0, 520.0, 540.0, 550.0, 560.0)
-ASSIGNED_EXCITATION_NM = (450.0, 550.0, 650.0)
-
-DYE_KEYS = ["cy3", "cy5", "methylene-blue"]
-DYE_COLORS = {"cy3": "#d95f02", "cy5": "#7570b3", "methylene-blue": "#1b9e77"}
-STRAY_COLOR = "#c1440e"
 
 plt.style.use("seaborn-v0_8-whitegrid" if "seaborn-v0_8-whitegrid" in plt.style.available else "default")
 plt.rcParams.update({
@@ -133,7 +134,7 @@ def generate_part1(dyes):
         axis.plot(scan.wavelengths_nm, scan.photocurrent, color=DYE_COLORS[key], lw=2.2,
                   label="detected photocurrent")
         axis.plot(scan.wavelengths_nm, scan.scatter_photocurrent, color=STRAY_COLOR, lw=1.2, ls=":",
-                  label="stray excitation")
+                  label="stray excitation ({:g} % of excitation)".format(SCATTER_FRACTION * 100))
         axis.axvline(scan.lambda_exc_nm, color="gray", ls="--", alpha=0.7,
                      label="excitation {:.0f} nm".format(scan.lambda_exc_nm))
         axis.set_title("{}\nA({:.0f} nm) = {:.3f}, Phi_f = {:g}".format(
@@ -193,6 +194,12 @@ def generate_part2(dyes):
                label="absorbance A(wavelength), normalized")
     right.set_title("PL intensity while the excitation wavelength is swept\n"
                     "measured vs model vs absorbance")
+    right.axvline(ABSORPTION_RANGE_NM["cy3"][1], color="#888888", lw=1.0, ls="-.")
+    right.annotate("the measured Cy3 absorption curve ends at {:.0f} nm:\n"
+                   "past it the model has no data and reads zero".format(ABSORPTION_RANGE_NM["cy3"][1]),
+                   xy=(ABSORPTION_RANGE_NM["cy3"][1], 0.35), xytext=(ABSORPTION_RANGE_NM["cy3"][1] + 35.0, 0.35),
+                   fontsize=8.5, color="#555555",
+                   arrowprops=dict(arrowstyle="->", color="#888888", lw=1.0))
     right.set_xlabel("excitation wavelength (nm)")
     right.set_ylabel("normalized intensity")
     right.legend(loc="upper right")
@@ -242,7 +249,8 @@ def generate_part3(dyes):
             dye = dyes[key]
             scan = scans[(lambda_exc, key)]
             axis.plot(scan.wavelengths_nm, scan.photocurrent, color=DYE_COLORS[key], lw=2.0,
-                      label="{} (A = {:.3f})".format(dye.name, dye.peak_absorbance))
+                      label="{} (A({:.0f} nm) = {:.3f})".format(
+                          dye.name, lambda_exc, dye.absorbance(lambda_exc)))
         axis.axvline(lambda_exc, color="black", ls="--", alpha=0.5)
         axis.set_title("excitation {:.0f} nm".format(lambda_exc))
         axis.set_xlabel("wavelength (nm)")
@@ -260,7 +268,8 @@ def generate_part3(dyes):
                       bbox=dict(boxstyle="round", fc="white", ec="#bbbbbb"))
     axes[0].set_ylabel("photodetector current (relative a.u., shared scale)")
     figure.suptitle("Part 3: emission spectra of the three dyes at the same concentration "
-                    "({:.0f} nM in 1 cm), identical optical conditions".format(CONCENTRATION_M * 1e9),
+                    "({:.0f} nM in 1 cm) and the same path length; stray light is left out of "
+                    "these panels so the dyes can be compared".format(CONCENTRATION_M * 1e9),
                     fontweight="bold")
     figure.savefig(FIG_DIR / "part3_three_dyes_comparison.png", dpi=300)
     plt.close(figure)
@@ -279,7 +288,7 @@ def generate_part3(dyes):
                       ls=style, label="{} at {:.0f} nm".format(dye.name, lambda_exc))
             heights.append("{} at {:.0f} nm: peak {:.4f}".format(dye.name, lambda_exc, scan.photocurrent.max()))
     axis.set_title("Part 3: all nine spectra on one canvas\nsame concentration, three excitation "
-                   "wavelengths (the four visible peaks are the whole answer)")
+                   "wavelengths; the peak current of every curve is printed on the right")
     axis.set_xlabel("wavelength (nm)")
     axis.set_ylabel("photodetector current (relative a.u.)")
     axis.legend(loc="upper right", fontsize=8.5)

@@ -257,6 +257,22 @@ For the sample-database values themselves:
     PhotochemCAD, OMLC, ACS Omega 2020), not [3] or [4].
 ```
 
+### 5.5 Text in the draft that the corrected figures now contradict
+
+Found by re-reading the draft against the regenerated figures and `numbers.md`.
+These are report-phase edits; the list exists so none of them is missed.
+
+| draft text | what the figures/data show now |
+| --- | --- |
+| Figure 2 caption: "varying excitation wavelengths (450–610 nm)" | the overlay draws six curves, 470–560 nm (450/600/650 nm produce no spectrum because Cy3 does not absorb there) |
+| "the emission peak remains strictly anchored at 570 nm" | the simulated peak is 568.0 nm (the digitized curve peaks there; the vendors' 570 nm is the quoted maximum) |
+| "bandwidth (FWHM ≈ 32 nm)" | 28.0 nm measured on the simulated band; 28.6 nm on the raw curve. 32 nm is in no source |
+| "monitoring the full detection window (500–750 nm)" | the figures use 450–900 nm, wide enough to hold the whole emission band |
+| "Cy5 … approximately 7 times more intense than Methylene Blue" | at 650 nm the figure shows 0.0682 vs 0.0014, about 49 times; per absorbed photon it is about 14 times (Φf 0.28 vs 0.02). The 7 in the draft matches neither |
+| "emission is strictly zero at λexc ≥ 620 nm because hν ≤ 2.0 eV falls below the 0-0 gap" | the simulated absorption and therefore the emission go to exactly zero at 590 nm, where the **measured absorption curve ends**; that is a limit of the data, not a physical threshold. The figure now marks this on the axis, and the text must not dress it up as an energy-gap argument |
+| "identical peak optical density / concentration" | the figures now run at equal *concentration*, giving peak absorbances 0.150 / 0.250 / 0.067 — say that |
+| any "A = 0.150" for a curve excited at 550 nm | the figure titles distinguish A(λexc) = 0.143 from A_peak = 0.150 |
+
 ### 5.3 Other audit findings
 
 - **[5] and [6] are never cited in the body**, only listed. Cite them where they
