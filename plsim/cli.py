@@ -84,7 +84,10 @@ def _band_peak(band):
 def main(argv=None):
     parser = build_parser()
     args = parser.parse_args(argv)
-    database, label = choose_database(args.database)
+    try:
+        database, label = choose_database(args.database)
+    except FileNotFoundError as error:
+        parser.error("reference data not found: {}".format(error.filename))
 
     if args.list_samples:
         maxima = reported_maxima() if reference_available() else None

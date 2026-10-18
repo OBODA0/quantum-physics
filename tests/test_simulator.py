@@ -146,6 +146,44 @@ def test_the_reference_database_peaks_where_the_sources_say():
         assert abs(peak - records[key]["emission_max_nm"]) <= 4.0, key
 
 
+def test_the_reference_pack_is_well_formed():
+    """The data file is an input, so its shape and ranges are checked, not assumed."""
+    import json
+
+    from plsim.reference import DEFAULT_PATH
+
+    records = json.loads(DEFAULT_PATH.read_text())
+    assert set(records) == set(SAMPLE_DATABASE)
+    for key, record in records.items():
+        for field in (
+            "absorption_max_nm",
+            "emission_max_nm",
+            "quantum_yield",
+            "quantum_yield_solvent",
+            "extinction_coefficient_per_M_per_cm",
+            "digitized_absorption",
+            "digitized_emission",
+            "notes",
+        ):
+            assert field in record, (key, field)
+        assert 0.0 < record["quantum_yield"] <= 1.0, key
+        assert record["extinction_coefficient_per_M_per_cm"] > 0, key
+        for field, quoted_maximum in (
+            ("digitized_absorption", record["absorption_max_nm"]),
+            ("digitized_emission", record["emission_max_nm"]),
+        ):
+            wavelengths = np.asarray(record[field]["wavelength_nm"], dtype=float)
+            values = np.asarray(record[field]["value"], dtype=float)
+            assert wavelengths.size == values.size > 50, (key, field)
+            assert np.all(np.diff(wavelengths) > 0), (key, field)
+            assert np.all(np.isfinite(values)), (key, field)
+            # digitization leaves a few thousandths below zero on the
+            # methylene blue absorption curve; anything larger is a real fault
+            assert values.min() > -0.01, (key, field, values.min())
+            assert abs(values.max() - 1.0) < 1e-6, (key, field)
+            assert wavelengths[0] < quoted_maximum < wavelengths[-1], (key, field)
+
+
 def test_the_reference_database_runs_through_the_instrument():
     dye = load_reference_database()["cy5"]
     scan = PLSpectrometer(sample=dye, scatter_fraction=0.0).acquire(
