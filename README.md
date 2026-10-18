@@ -55,6 +55,26 @@ uv run python -m plsim --sample cy5 --database model --lambda-exc 649 --range 60
 The figure is written to `out/` unless `--show` is given. `--ideal` removes the
 stray excitation light, so only the PL spectrum is left.
 
+The absorbance the model uses is `A_peak = epsilon * c * l`. `--concentration`
+(mol/L) with `--path-length` (cm) sets it from the dye's extinction coefficient;
+`--peak-absorbance` sets it directly. Equal concentration is *not* equal
+absorbance: at 1 umol/L in a 1 cm cuvette the three dyes sit at A = 0.150, 0.250
+and 0.067, which is why the third question has a non-trivial answer.
+
+## Experiments
+
+```
+uv run python report/generate_assignment_figures.py                  # all three questions
+uv run python report/generate_assignment_figures.py --only part2     # the Cy3 sweep
+uv run python report/generate_numbers.py                             # rewrite report/numbers.md
+```
+
+`report/report_figures/` holds the spectra the assignment asks for, and they are
+the screenshots the report needs: one per dye for question 1, the sweep for
+question 2, the three-dye comparison for question 3. `report/numbers.md` is
+generated from the code and the reference pack, so the report never retypes a
+number by hand and the text cannot drift away from the code.
+
 ## What is modelled, and how real it is
 
 - **Xenon lamp**: smooth approximation of the arc continuum plus the strongest
@@ -63,12 +83,16 @@ stray excitation light, so only the PL spectrum is left.
   excitation monochromator is 5 nm, the detection monochromator 2 nm.
 - **Harmonic filter**: passes wavelengths above 400 nm and blocks what is below,
   which is where the second-order (harmonic) grating output lands.
-- **Sample**: one Gaussian absorption band and one Gaussian emission band per
-  dye. Absorbed fraction from the Beer-Lambert law with an absorbance of 1 at the
-  peak, so the PL intensity is `P_exc * (1 - 10^-A(lambda_exc)) * QY`. No
-  emission is modelled below the excitation wavelength (Stokes shift).
-  Band centres and quantum yields are typical literature values for the free
-  dye in the given solvent; the real bands are asymmetric, these are Gaussians.
+- **Sample**: one absorption band and one emission band per dye, taken from the
+  measured reference pack by default. Absorbed fraction from the Beer-Lambert
+  law, so the PL intensity is `P_exc * (1 - 10^-A(lambda_exc)) * QY`.
+  The emission band does **not** depend on the excitation wavelength: a molecule
+  that has absorbed a photon relaxes to the bottom of S1 before it emits, so
+  sweeping `lambda_exc` changes only how much light is absorbed, never the shape
+  or position of the spectrum (Kasha's rule, the subject of question 2).
+  Anti-Stokes emission is deliberately not modelled: it is weak, and adding a
+  Boltzmann factor on top of a measured band would double-count the vibronic
+  envelope that is already in the measured band shape.
 - **Photodetector**: silicon responsivity shape, weak in the UV, peaking near
   880 nm, cut off past about 1100 nm. Photocurrent `I = R(lambda) * P`.
 - **Stray excitation light**: a small fraction of the excitation beam (1 % by
@@ -108,14 +132,17 @@ open points:
 ## Layout
 
 ```
-plsim/bands.py          Gaussian band shapes
+plsim/bands.py          Gaussian and tabulated band shapes
 plsim/sources.py        xenon lamp, monochromator, harmonic filter
-plsim/samples.py        dye sample database (Gaussian model)
+plsim/samples.py        dye database, concentration, absorbance
 plsim/reference.py      loader for the measured reference pack
-data/                   measured reference pack + sources + raw data
 plsim/detector.py       silicon photodiode
 plsim/spectrometer.py   the instrument, producing a PL scan
+plsim/analysis.py       excitation scans and their model checks
 plsim/plot.py           matplotlib rendering
 plsim/cli.py            command line interface
-tests/                  sanity checks (uv run pytest)
+data/                   measured reference pack + sources + raw source data
+report/                 assignment figures, numbers, and the report itself
+tests/                  the physics the report claims (uv run pytest)
+TASK.md                 the assignment, its requirements and the open items
 ```

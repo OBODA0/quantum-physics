@@ -8,6 +8,7 @@ for the same three dyes.
 
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import dataclass
 
 import numpy as np
@@ -44,16 +45,30 @@ class Dye:
     def emitted_power(self, wavelength_nm, lambda_exc_nm, excitation_power):
         """PL power emitted per wavelength, in relative units.
 
-        Emission below the excitation wavelength is zero (Stokes shift): the
-        sample cannot emit photons it was not given.
+        The emission band shape does not depend on the excitation wavelength.
+        A molecule that has absorbed a photon relaxes to the bottom of S1 before
+        it emits, so every excitation wavelength produces the same spectrum and
+        only the amount of absorbed light changes with it (Kasha's rule, which
+        is the subject of the assignment's second question).
+
+        Two deliberate omissions, both documented here because they are the
+        difference between a simulator that shows Kasha's rule and one that
+        quietly breaks it:
+
+        - No cut of the emission at lambda_exc. An earlier version multiplied the
+          band by a step at lambda_exc, which truncated the band whenever the
+          excitation fell inside it and made the simulated spectrum move with
+          the excitation wavelength.
+        - No anti-Stokes term. Anti-Stokes emission (emitted photon more energetic
+          than the absorbed one) is weak, and adding a Boltzmann factor on top of
+          a measured band double-counts the vibronic envelope that is already in
+          the measured band shape.
         """
-        stokes = np.where(np.asarray(wavelength_nm, dtype=float) >= lambda_exc_nm, 1.0, 0.0)
         return (
             excitation_power
             * self.absorbed_fraction(lambda_exc_nm)
             * self.quantum_yield
             * self.emission_shape(wavelength_nm)
-            * stokes
         )
 
 
@@ -102,6 +117,20 @@ SAMPLE_DATABASE = {
         source="data/SOURCES.md",
     ),
 }
+
+
+def with_concentration(dye, concentration_M, path_length_cm=1.0):
+    """The same dye at a given concentration, with the absorbance that follows.
+
+    A_peak = epsilon * c * l, so the same concentration of two dyes does NOT mean
+    the same peak absorbance unless their extinction coefficients match. Pass the
+    result to the spectrometer when the experiment is "equal concentrations".
+    """
+    if dye.extinction_coefficient is None:
+        raise ValueError("{} has no extinction coefficient, so no concentration can be applied".format(dye.name))
+    return dataclasses.replace(
+        dye, peak_absorbance=dye.extinction_coefficient * concentration_M * path_length_cm
+    )
 
 
 def normalise_key(name):

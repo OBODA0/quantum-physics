@@ -212,6 +212,18 @@ it.** These need a read, not a lookup:
 
 ---
 
+## "Screenshots" — what the announcement means
+
+Decided 2026-10-18 (OBODA): *"Show using screen shots that your PL spectrometer can
+simulate the spectra"* and *"add your screen shots"* mean **the graphs the simulator
+produces**, one per dye for question 1 and the sweep for question 2. The report is a
+PDF of figures plus code in the appendix; the figures *are* the screenshots. Terminal
+captures were built and then dropped: a terminal shows a command, not a spectrum.
+
+Consequence for question 1 (25 %): the three dye spectra must be in the PDF as
+figures, produced by the committed code — which they now are, from the measured
+reference bands. Nothing extra needs capturing.
+
 ## 6. Submission format
 
 - **PS2: a single PDF file.** The report is one PDF; everything the marker needs —

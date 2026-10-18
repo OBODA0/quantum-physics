@@ -148,3 +148,54 @@ maximum at 685 nm). Alternatives kept on disk: `raw/ombc_mb.txt` (OMLC water, ab
     0.28 is now backed by both Interchim's datasheet and a peer-reviewed statement that Cy5 is 0.28 in aqueous solution,
     but individual measurements span 0.19-0.30, so treat 0.28 as a central value, not as a measurement of your sample. Methylene blue 664/686/0.04: 664 nm and ~685-686 nm are
     right, but **0.04 is the ethanol value**; for water the literature value is 0.02.
+
+
+---
+
+## Second opinion (2026-10-18)
+
+An independent pass re-checked every number in `reference_spectra.json` against
+primary sources, without reusing this file. Verdict: **all six digitized curves
+reproduce their sources to rounding** (FPbase records to 3e-8, PhotochemCAD
+PSW009 to 5e-6), and the shipped maxima, quantum yields and extinction
+coefficients agree:
+
+- **Cy3**: Cytiva PA23001 (28951573) gives 550 nm / 150,000 / 570 nm; Lumiprobe
+  gives 555 nm / 150,000 / 570 nm / QY 0.31 for the NHS ester and 548 / 162,000 /
+  563 / 0.10 for sulfo-Cy3. 0.04 is confirmed as the *free dye in buffer* value,
+  quoted in the peer-reviewed literature, not a vendor number. Firm.
+- **Cy5**: Cytiva PA25031 (28954683) gives 649 nm / 250,000 / 670 nm. Quantum
+  yield 0.28 is a cited central value; individual measurements spread 0.18-0.30.
+  Report it as a range if the sentence allows.
+- **Methylene blue**: PhotochemCAD PSW009 states 664 nm with epsilon 67,000
+  (Cary 50, referencing JACS Au); OMLC/Prahl re-parsed gives 74,028 at 664 nm;
+  ACS Omega 2020 gives 107,800 for the deconvoluted monomer. The often-quoted
+  95,000 traced no further than repetition, which is why it is not shipped.
+
+### Five numbers the report must not repeat from the earlier draft
+
+| drafted | what the sources support |
+| --- | --- |
+| methylene blue epsilon "~80,000" | no source; use 67,000, 74,028 or 107,800 and say which |
+| methylene blue emission "686 nm" | 685.0 nm on the shipped curve; 686 nm appears in published work on the same band |
+| Cy3 emission FWHM "~32 nm" | not published anywhere found; measured on the curve: 28.6 nm (outermost crossings) or 30.0 nm (linear interpolation) |
+| "Cy3 absorbs ~90 % at 550 nm" | true only at A = 1.0, about 6.7 umol/L; at 1 umol/L Cy3 absorbs 28 % |
+| Cy3 Stokes shift "20 nm / 638 cm-1" | arithmetic correct for the 550/570 pair; the digitized peaks (554/568) give 14 nm / 445 cm-1 |
+
+### Still unverified after both passes
+
+- a primary source for the methylene blue extinction coefficient of 95,000
+- a primary measurement of the methylene blue quantum yield in water (0.02 is the
+  value used in photodynamic-therapy work; the readable measurement is 0.04 in
+  ethanol, and the classic source is paywalled)
+- any published Cy3 or Cy5 emission bandwidth
+- the provenance of the FPbase dye records (their source field is empty)
+- whether Cy5 in water is 0.18, 0.20 or 0.28
+
+### Absorbance at the three assigned excitation wavelengths
+
+The digitized curves are defined only inside the measured range (Cy3 absorption
+450-590 nm, Cy5 430-734 nm, methylene blue 300-800 nm); outside it the model
+reads zero, so Cy3 shows 0.00 % at 450 nm where the independent check puts it
+near 0.6 %. That does not change the conclusion at 450 nm, where all three dyes
+are transparent, but the report should say "negligible" rather than "exactly zero".

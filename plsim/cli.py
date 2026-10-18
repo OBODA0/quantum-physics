@@ -7,7 +7,7 @@ import dataclasses
 from pathlib import Path
 
 from .reference import available as reference_available, load_reference_database
-from .samples import SAMPLE_DATABASE, get_sample
+from .samples import SAMPLE_DATABASE, get_sample, with_concentration
 from .spectrometer import PLSpectrometer
 
 
@@ -29,6 +29,10 @@ def build_parser():
                         help="step size for PL detection (default: %(default)s)")
     parser.add_argument("--peak-absorbance", type=float, default=None, metavar="A",
                         help="sample absorbance at the absorption peak (default: 1.0)")
+    parser.add_argument("--concentration", type=float, default=None, metavar="MOL_PER_L",
+                        help="dye concentration in mol/L; sets the peak absorbance from the extinction coefficient")
+    parser.add_argument("--path-length", type=float, default=1.0, metavar="CM",
+                        help="cuvette path length used with --concentration (default: %(default)s)")
     parser.add_argument("--scatter", type=float, default=0.01, metavar="FRACTION",
                         help="fraction of excitation light reaching the detector (default: %(default)s)")
     parser.add_argument("--ideal", action="store_true",
@@ -74,15 +78,31 @@ def _curve_peak(band):
 
 
 def main(argv=None):
-    args = build_parser().parse_args(argv)
+    parser = build_parser()
+    args = parser.parse_args(argv)
     database, label = choose_database(args.database)
 
     if args.list_samples:
         print(list_samples(database, label))
         return 0
 
-    sample = get_sample(args.sample, database)
-    if args.peak_absorbance is not None:
+    if args.dlambda <= 0.0:
+        parser.error("--dlambda must be positive")
+    if args.detection_range[1] <= args.detection_range[0]:
+        parser.error("--range needs LAMBDA_MIN < LAMBDA_MAX")
+    if args.concentration is not None and args.peak_absorbance is not None:
+        parser.error("give either --concentration or --peak-absorbance, not both")
+    if args.concentration is not None and args.concentration <= 0.0:
+        parser.error("--concentration must be positive")
+
+    try:
+        sample = get_sample(args.sample, database)
+    except KeyError as error:
+        parser.error(str(error.args[0]))
+
+    if args.concentration is not None:
+        sample = with_concentration(sample, args.concentration, args.path_length)
+    elif args.peak_absorbance is not None:
         sample = dataclasses.replace(sample, peak_absorbance=args.peak_absorbance)
 
     if not args.show:
@@ -116,6 +136,7 @@ def main(argv=None):
             scan.wavelengths_nm[0], scan.wavelengths_nm[-1], args.dlambda, scan.wavelengths_nm.size
         )
     )
+    print("peak absorbance  : {:g} (peak optical density in the cuvette)".format(sample.peak_absorbance))
     print("absorbed fraction: {:.3f} of the excitation light".format(sample.absorbed_fraction(scan.lambda_exc_nm)))
     print("PL peak          : {:.1f} nm".format(scan.emission_peak_nm))
     if scan.excitation_power < 1e-6:

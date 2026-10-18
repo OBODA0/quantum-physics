@@ -1,11 +1,14 @@
-"""Sanity checks: numbers the physics requires, not implementation details."""
+"""Checks on the physics the report claims, not on the implementation."""
 
 import dataclasses
 
 import numpy as np
+import pytest
 
+from plsim.analysis import excitation_scan, measured_emission_band
+from plsim.cli import main
 from plsim.reference import load_reference_database
-from plsim.samples import SAMPLE_DATABASE, get_sample
+from plsim.samples import SAMPLE_DATABASE, get_sample, with_concentration
 from plsim.sources import Monochromator
 from plsim.spectrometer import PLSpectrometer
 
@@ -14,6 +17,9 @@ def fwhm_nm(x, y):
     """Full width at half maximum of a simple peak."""
     above_half = x[y >= y.max() / 2.0]
     return float(above_half[-1] - above_half[0])
+
+
+# --- the instrument ---------------------------------------------------------
 
 
 def test_detection_grid_follows_the_step_size():
@@ -34,14 +40,6 @@ def test_each_dye_emits_at_its_emission_maximum():
         )
         peak = scan.wavelengths_nm[int(np.argmax(scan.emitted_power))]
         assert abs(peak - dye.emission.center_nm) <= 1.0, key
-
-
-def test_a_dye_does_not_emit_far_below_its_excitation_wavelength():
-    scan = PLSpectrometer(sample=get_sample("cy5"), scatter_fraction=0.0).acquire(
-        lambda_exc_nm=649.0, lambda_min_nm=400.0, lambda_max_nm=800.0, dlambda_nm=1.0
-    )
-    far_below = scan.wavelengths_nm < 649.0 - 20.0
-    assert np.all(scan.emitted_power[far_below] == 0.0)
 
 
 def test_the_monochromator_broadens_the_measured_band():
@@ -72,6 +70,9 @@ def test_the_harmonic_filter_blocks_ultraviolet_excitation():
     assert spectrometer.excitation.power_at(300.0) < 1e-3 * spectrometer.excitation.power_at(550.0)
 
 
+# --- the sample -------------------------------------------------------------
+
+
 def test_emitted_power_scales_with_quantum_yield():
     dye = get_sample("cy3")
     dim = dataclasses.replace(dye, quantum_yield=dye.quantum_yield / 2.0)
@@ -79,6 +80,56 @@ def test_emitted_power_scales_with_quantum_yield():
     bright_scan = PLSpectrometer(sample=dye, scatter_fraction=0.0).acquire(**window)
     dim_scan = PLSpectrometer(sample=dim, scatter_fraction=0.0).acquire(**window)
     assert np.isclose(bright_scan.emitted_power.max(), 2.0 * dim_scan.emitted_power.max())
+
+
+def test_cy5_is_the_brighter_dye_at_its_own_optimum():
+    cy3 = PLSpectrometer(sample=get_sample("cy3"), scatter_fraction=0.0)
+    cy5 = PLSpectrometer(sample=get_sample("cy5"), scatter_fraction=0.0)
+    cy3_scan = cy3.acquire(lambda_exc_nm=550.0, lambda_min_nm=560.0, lambda_max_nm=620.0, dlambda_nm=1.0)
+    cy5_scan = cy5.acquire(lambda_exc_nm=649.0, lambda_min_nm=655.0, lambda_max_nm=715.0, dlambda_nm=1.0)
+    assert cy5_scan.emitted_power.max() > cy3_scan.emitted_power.max()
+
+
+def test_emission_is_linear_in_the_absorbed_light():
+    """Doubling what is absorbed doubles the emission, wavelength by wavelength."""
+    dye = get_sample("cy3")
+    grid = np.array([550.0, 570.0, 590.0])
+    once = dye.emitted_power(grid, 550.0, 1.0)
+    twice = dye.emitted_power(grid, 550.0, 2.0)
+    assert np.allclose(twice, 2.0 * once)
+
+
+def test_the_emission_band_does_not_move_with_the_excitation_wavelength():
+    """Kasha's rule: the spectrum is the same whatever excites the sample."""
+    dye = load_reference_database()["cy3"]
+    spectrometer = PLSpectrometer(sample=dye, scatter_fraction=0.0)
+    bands = [
+        measured_emission_band(
+            spectrometer.acquire(
+                lambda_exc_nm=lambda_exc,
+                lambda_min_nm=450.0,
+                lambda_max_nm=800.0,
+                dlambda_nm=0.5,
+            )
+        )
+        for lambda_exc in (480.0, 500.0, 520.0, 540.0)
+    ]
+    peaks = [band.peak_nm for band in bands]
+    widths = [band.fwhm_nm for band in bands]
+    assert max(peaks) - min(peaks) <= 0.5
+    assert max(widths) - min(widths) <= 0.5
+
+
+def test_there_is_no_cut_of_the_emission_at_the_excitation_wavelength():
+    """A step at lambda_exc used to truncate the band; it must not come back."""
+    dye = get_sample("cy5")
+    grid = np.arange(660.0, 701.0, 1.0)
+    emitted = dye.emitted_power(grid, 650.0, 1.0)
+    ratio = emitted[1:] / emitted[:-1]
+    assert ratio.max() < 1.2
+
+
+# --- the measured reference data -------------------------------------------
 
 
 def test_the_reference_database_peaks_where_the_sources_say():
@@ -109,9 +160,57 @@ def test_model_and_reference_agree_on_the_band_width():
     assert abs(fwhm_nm(x, measured.emission(x)) - get_sample("cy3").emission.fwhm_nm) < 2.0
 
 
-def test_cy5_is_the_brighter_dye_at_its_own_optimum():
-    cy3 = PLSpectrometer(sample=get_sample("cy3"), scatter_fraction=0.0)
-    cy5 = PLSpectrometer(sample=get_sample("cy5"), scatter_fraction=0.0)
-    cy3_scan = cy3.acquire(lambda_exc_nm=550.0, lambda_min_nm=560.0, lambda_max_nm=620.0, dlambda_nm=1.0)
-    cy5_scan = cy5.acquire(lambda_exc_nm=649.0, lambda_min_nm=655.0, lambda_max_nm=715.0, dlambda_nm=1.0)
-    assert cy5_scan.emitted_power.max() > cy3_scan.emitted_power.max()
+# --- concentration, which is what the third question turns on --------------
+
+
+def test_equal_concentration_does_not_mean_equal_peak_absorbance():
+    database = load_reference_database()
+    one_micromolar = 1.0e-6
+    absorbances = {
+        key: with_concentration(dye, one_micromolar).peak_absorbance for key, dye in database.items()
+    }
+    assert np.isclose(absorbances["cy3"], 0.150)
+    assert np.isclose(absorbances["cy5"], 0.250)
+    assert np.isclose(absorbances["methylene-blue"], 0.067)
+    assert absorbances["cy5"] > absorbances["cy3"] > absorbances["methylene-blue"]
+
+
+def test_concentration_needs_an_extinction_coefficient():
+    dye = dataclasses.replace(get_sample("cy3"), extinction_coefficient=None)
+    with pytest.raises(ValueError):
+        with_concentration(dye, 1.0e-6)
+
+
+# --- the excitation scan ----------------------------------------------------
+
+
+def test_the_excitation_scan_reproduces_the_model():
+    """The measured sweep must equal P_exc * (1 - 10**-A) * QY * band integral."""
+    for key in ("cy3", "cy5", "methylene-blue"):
+        spectrometer = PLSpectrometer(sample=load_reference_database()[key], scatter_fraction=0.0)
+        sweep = excitation_scan(
+            spectrometer, np.arange(400.0, 701.0, 2.0), detection_range_nm=(450.0, 900.0)
+        )
+        assert sweep.agreement < 1e-6, key
+        assert sweep.band_integral_drift < 1e-9, key
+
+
+def test_the_excitation_scan_peaks_at_the_absorption_maximum():
+    spectrometer = PLSpectrometer(sample=load_reference_database()["cy3"], scatter_fraction=0.0)
+    sweep = excitation_scan(spectrometer, np.arange(450.0, 620.0, 1.0))
+    assert abs(sweep.measured_peak_wavelength_nm - 550.0) <= 5.0
+
+
+# --- the command line -------------------------------------------------------
+
+
+def test_the_cli_rejects_bad_input():
+    for arguments in (
+        ["--sample", "cy3", "--dlambda", "0"],
+        ["--sample", "cy3", "--range", "700", "500"],
+        ["--sample", "not-a-dye"],
+        ["--sample", "cy3", "--concentration", "1e-6", "--peak-absorbance", "1.0"],
+        ["--sample", "cy3", "--concentration", "-1e-6"],
+    ):
+        with pytest.raises(SystemExit):
+            main(arguments)
