@@ -182,6 +182,26 @@ Two further defects were found in the numbers generator itself: it double-conver
 one ratio to a percentage (399 % instead of 4.0 %), and a figure title overflowed
 its canvas. Both fixed.
 
+### Second audit round, after those fixes
+
+The fixed figures were re-audited by an independent pass that also recomputed the
+numbers from the code. Every claimed fix was present, and the recomputed values
+matched the generated table exactly (peak absorbance 0.15000 / 0.25000 / 0.06700;
+absorbed fraction 28.00 / 42.97 / 14.30 %; emission peaks 568.0 / 668.0 / 686.0 nm;
+stray light 3.98 / 0.38 / 15.77 % of the PL peak against 4.0 / 0.4 / 15.8 % claimed;
+the below-λexc fractions 3.71 / 9.21 / 7.94 %). It found four more problems, all fixed:
+
+| finding | fix |
+| --- | --- |
+| `numbers.md` still declared 0.5 % stray light while the figures used 0.1 % — a report copying the instrument table would state a value its own figures do not use | the optical conditions now live in one module, `report/settings.py`, imported by both generators |
+| part 3 legends showed the *peak* absorbance beside an annotation about that dye absorbing nothing at that wavelength | legends quote A(λexc) for the panel they are in |
+| the question-2 title said "only 470–560 nm produces a visible spectrum", contradicted by its own right panel (non-zero from 452 nm) | reworded: Cy3 does not absorb at 450/600/650 nm because its measured absorption band stops at 590 nm |
+| zero absorption past 590 nm is a **data limit**, not the 0–0 energy gap the draft's prose invokes | the panel marks the end of the measured range and says so; `TASK.md` §5.5 tells the report not to explain it as physics |
+
+It also noted that the below-λexc fraction is grid-dependent (3.21 / 3.88 % for Cy3
+at 1 nm / 0.1 nm), which `numbers.md` now states, and listed the draft sentences the
+corrected figures contradict — collected in `TASK.md` §5.5.
+
 ### Deliberate non-fix: emission drawn below the excitation wavelength
 
 The audit flagged that 4–9 % of the emitted band integral lies below λexc, which is

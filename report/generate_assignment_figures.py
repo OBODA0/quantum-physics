@@ -82,11 +82,11 @@ def report(rows):
         print(row)
 
 
-def description(dye, lambda_exc):
+def description(dye, lambda_exc, with_name=True):
     """The numbers a reader needs to interpret one curve."""
-    return "{}, {:.0f} nM in 1 cm, A({:.0f} nm) = {:.3f}, A_peak = {:.3f}, Phi_f = {:g}".format(
-        dye.name, CONCENTRATION_M * 1e9, lambda_exc, dye.absorbance(lambda_exc),
-        dye.peak_absorbance, dye.quantum_yield)
+    return "{}{:.0f} nM in 1 cm, A({:.0f} nm) = {:.3f}, A_peak = {:.3f}, Phi_f = {:g}".format(
+        dye.name + ", " if with_name else "", CONCENTRATION_M * 1e9, lambda_exc,
+        dye.absorbance(lambda_exc), dye.peak_absorbance, dye.quantum_yield)
 
 
 # --- question 1 -------------------------------------------------------------
@@ -116,8 +116,8 @@ def generate_part1(dyes):
                   label="stray excitation light ({:g} % of excitation)".format(SCATTER_FRACTION * 100))
         axis.axvline(scan.lambda_exc_nm, color="gray", ls="--", alpha=0.7,
                      label="excitation {:.0f} nm".format(scan.lambda_exc_nm))
-        axis.set_title("Simulated PL spectrum of {}\n{}".format(dye.name, description(dye, lambda_exc)),
-                       fontsize=11)
+        axis.set_title("Simulated PL spectrum of {}\n{}".format(
+            dye.name, description(dye, lambda_exc, with_name=False)), fontsize=11)
         axis.set_xlabel("wavelength (nm)")
         axis.set_ylabel("photodetector current (relative a.u.)")
         axis.legend(loc="upper right")
@@ -204,9 +204,11 @@ def generate_part2(dyes):
     right.set_ylabel("normalized intensity")
     right.legend(loc="upper right")
 
-    figure.suptitle("Part 2: excitation wavelength sweep of Cy3 ({:.0f}-{:.0f} nm); Cy3 is "
-                    "transparent at 450 and 650 nm, so only 470-560 nm produces a visible "
-                    "spectrum".format(EXCITATION_START_NM, EXCITATION_STOP_NM), fontweight="bold")
+    figure.suptitle("Part 2: excitation wavelength sweep of Cy3 ({:.0f}-{:.0f} nm). The overlay "
+                    "shows 470-560 nm because Cy3 does not absorb at 450, 600 or 650 nm - its "
+                    "measured absorption band stops at {:.0f} nm".format(
+                        EXCITATION_START_NM, EXCITATION_STOP_NM, ABSORPTION_RANGE_NM["cy3"][1]),
+                    fontweight="bold")
     figure.savefig(FIG_DIR / "part2_cy3_excitation_sweep.png", dpi=300)
     plt.close(figure)
 
@@ -259,12 +261,13 @@ def generate_part3(dyes):
         if panel_tallest < 0.02 * tallest:
             axis.text(0.5, 0.5,
                       "all three dyes are nearly transparent here\n"
-                      "absorbed {:.2f} % (Cy3), {:.2f} % (Cy5), {:.2f} % (methylene blue)\n"
+                      "absorbed: {:.2f} % (Cy5), {:.2f} % (methylene blue),\n"
+                      "negligible for Cy3 - its measured absorption\n"
+                      "curve starts at 450 nm\n"
                       "this is why the panel looks empty".format(
-                          100 * dyes["cy3"].absorbed_fraction(lambda_exc),
                           100 * dyes["cy5"].absorbed_fraction(lambda_exc),
                           100 * dyes["methylene-blue"].absorbed_fraction(lambda_exc)),
-                      transform=axis.transAxes, ha="center", va="center", fontsize=9,
+                      transform=axis.transAxes, ha="center", va="center", fontsize=8.5,
                       bbox=dict(boxstyle="round", fc="white", ec="#bbbbbb"))
     axes[0].set_ylabel("photodetector current (relative a.u., shared scale)")
     figure.suptitle("Part 3: emission spectra of the three dyes at the same concentration "
