@@ -215,15 +215,47 @@ before submission.
 
 | claim in the draft | cited to | what the audit found | fix |
 | --- | --- | --- | --- |
+| "Kasha's rule: the emission spectrum does not depend on the excitation wavelength" | [1, 2] | the *idea* is verified, but [1] states it in terms of **states** ("the emitting level … is the lowest excited level of that multiplicity", p.14–15) and the word "wavelength" never appears in [1]. The explicit wavelength-independence sentence is [2] §1.3.2, "Emission Spectra Are Typically Independent of the Excitation Wavelength", p.7 | cite [1] for Kasha's rule and [2] §1.3.2 for the wavelength form the assignment asks about |
 | Cy3 fluorescence lifetime ≈ 0.3–1.0 ns | [3] | [3] is a dye-synthesis paper; its abstract has no lifetime and no time-resolved data | cite a Cy3 photophysics measurement, e.g. Berrocal-Martin et al., *J. Phys. Chem. B* 2025, DOI 10.1021/acs.jpcb.5c03845 (open access; reports ~0.2 ns free sCy3 and 0.6–1.1 ns components) |
-| internal conversion / vibrational relaxation take 100 fs – 1 ps | [1, 2] | [1] bounds IC as "at least 10⁴ times faster" than the ~10⁻⁷ s radiative lifetime and never states 1e-13–1e-12 s | keep [1] for "ultrafast", cite [2] for the specific window, or drop the window |
+| internal conversion / vibrational relaxation take 100 fs – 1 ps | [1, 2] | [1] p.16 prints only an *upper bound* on IC (~10⁻¹²–10⁻¹³ s, from an intensity ratio, superscript partly unreadable) and puts the real limit at "the time of a vibrational period"; the words "vibrational relaxation" never appear in [1]. The measured 100 fs–1 ps window is [2] §1.4.2 "Timescale of Molecular Processes in Solution", p.12 | keep [1] for the "ultrafast, faster than emission" statement; cite [2] §1.4.2 for the numbers |
 | Beer–Lambert + `I_PL = I_abs · Φf` | [3] | textbook fluorescence, not in a dye-synthesis paper | cite [2] (or [5]) |
 | `π–π*` assignment for the cyanine S0→S1 band | [3] | [3] names Cy3 and its laser lines (546 nm) but never says 550 nm or `π–π*`; 550 nm is the vendor value | keep [3] for the chromophore, cite [1]/[2] for the assignment, and attribute 550 nm to the Cytiva datasheet |
 | emission vanishes at λexc ≥ 620 nm because hν < the 0–0 gap | [1–3] | no source states a Cy3 0–0 gap or a 620 nm cutoff; Cy3's 0–0 is ~570 nm, and the simulator itself does not cut emission at λexc — the signal dies because the absorption tail dies | state it as a consequence of the vanishing absorption, drop the citation |
-| ~96 % of excited methylene blue decays non-radiatively, "specifically by intersystem crossing to T1" | [4] | 96 % is the *total* non-radiative share (1 − Φf); MB's triplet yield is roughly half of it, the rest being internal conversion. Also [4]'s full text could not be read anywhere | reword to "of the ~96 % that does not fluoresce, roughly half crosses to T1 by intersystem crossing and roughly half returns to S0 by internal conversion", and cite a phenothiazine review that states the yields |
+| ~96 % of excited methylene blue decays non-radiatively, "specifically by intersystem crossing to T1" | [4] | 96 % is the *total* non-radiative share (1 − Φf) and is fine as such, but Φ_ISC for methylene blue is ≈0.50–0.52, not 0.96: roughly half goes to T1 and half returns to S0 by internal conversion (Morgounova, *J. Biomed. Opt.* 2013, 056004; Moreira, InTech 2012, p.395, which names internal conversion *and* triplet formation). [4]'s full text is unreadable by every route tried | reword to the half/half statement and cite one of those sources, not [4] |
 | narrow HOMO–LUMO gap by 0.33 eV, "free-electron particle-in-a-box model" | [3] | [3] does no such calculation; the free-electron model of cyanines is Kuhn 1949, 44 years earlier | cite Kuhn, *J. Chem. Phys.* 1949, 17, 1198, DOI 10.1063/1.1747143 (the arithmetic itself is right: 550→649 nm is 0.344 eV) |
-| silicon responsivity "scales as λ/1.24 µm" | nothing | correct relation, no citation given | cite Hamamatsu, *Si photodiodes*, technical note KSPD9001E04, §2-3 eq. (2-3) |
+| silicon "quantum efficiency scales as λ/1.24 µm" | nothing | the relation is right but misnamed: λ/1.24 is the **responsivity** factor, `R [A/W] = η·λ[µm]/1.24`. The quantum-efficiency form is `QE = [S·1240/λ]·100 %` | reword to responsivity and cite Hamamatsu, *Si photodiodes*, tech. note KSPD9001E04, §2-3 p.6 eq. (2-3); RP Photonics, "Responsivity", DOI 10.61835/xal |
 | methylene blue is a "tricyclic phenothiazine with distinct electronic symmetry and selection rules" | [4] | [4]'s abstract does not mention structure, symmetry or selection rules; 18 citing papers use it for DNA binding and photosensitised oxidation | cite a phenothiazinium dye review for the structure, or drop the symmetry clause |
+
+### 5.4 Corrected citation strings, ready to paste
+
+Verified during the audit (existence checked against Crossref/doi.org, and the
+supporting passage read where it could be reached):
+
+```
+[4] Tuite, E. M.; Kelly, J. M. J. Photochem. Photobiol. B 1993, 21 (2-3), 103-124.
+    DOI 10.1016/1011-1344(93)80173-7        (the DOI in the draft, ...80169-M, does not exist)
+[5] Albani, J. R. Principles and Applications of Fluorescence Spectroscopy;
+    Blackwell: Oxford, 2007. ISBN 978-1-4051-3891-8.
+    DOI 10.1002/9780470692059               (the DOI in the draft, ...0691274, does not exist)
+
+For C3 (Cy3 lifetime), replacing [3]:
+    Berrocal-Martin, A. et al. J. Phys. Chem. B 2025, 129, 11626-11635. DOI 10.1021/acs.jpcb.5c03845
+    Sanborn, M. E. et al. J. Phys. Chem. B 2007. DOI 10.1021/jp072912u
+For C8 (methylene blue triplet yield ~0.5):
+    Morgounova, E. et al. J. Biomed. Opt. 2013, 18, 056004.
+    Moreira, L. M. et al. "Phenothiazinium Dyes as Photosensitizers in PDT", InTech 2012, p. 395.
+    DOI 10.5772/48087
+For C9 (detector):
+    Hamamatsu Photonics, "Si photodiodes", technical note KSPD9001E04, sec. 2-3, eq. (2-3).
+    RP Photonics Encyclopedia, "Responsivity". DOI 10.61835/xal
+For C10 (cyanine chain length, replacing the particle-in-a-box attribution to [3]):
+    Kuhn, H. J. Chem. Phys. 1949, 17, 1198-1212. DOI 10.1063/1.1747143
+    Vahdani, A. et al. J. Am. Chem. Soc. 2024, 146, 19756-19767. DOI 10.1021/jacs.4c02171
+    Neme, N. et al. Phys. Chem. Chem. Phys. 2024. DOI 10.1039/D3CP05219B
+For the sample-database values themselves:
+    cite the primary sources listed in data/SOURCES.md (vendor datasheets,
+    PhotochemCAD, OMLC, ACS Omega 2020), not [3] or [4].
+```
 
 ### 5.3 Other audit findings
 
