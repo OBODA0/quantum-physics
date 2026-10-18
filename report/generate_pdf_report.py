@@ -16,7 +16,8 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import (
-    SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, PageBreak, Preformatted
+    SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, PageBreak, Preformatted,
+    KeepTogether,
 )
 from reportlab.pdfgen import canvas
 
@@ -84,8 +85,19 @@ def styles():
                               fontSize=8.5, leading=12.5, textColor=colors.HexColor("#2d3748"),
                               leftIndent=20, firstLineIndent=-20, spaceAfter=5),
         "code": ParagraphStyle("Code_Custom", parent=base["Normal"], fontName="Courier",
-                               fontSize=7.2, leading=9.2, textColor=colors.HexColor("#1a202c")),
+                               fontSize=7.0, leading=8.8, textColor=colors.HexColor("#1a202c")),
     }
+
+
+def wrapped_source(text, width=110):
+    """Wrap long source lines so a line cannot reach the page edge or split oddly."""
+    lines = []
+    for line in text.splitlines():
+        while len(line) > width:
+            lines.append(line[:width])
+            line = "    " + line[width:]
+        lines.append(line)
+    return "\n".join(lines)
 
 
 def figure(name, width, height):
@@ -98,7 +110,11 @@ def figure(name, width, height):
 def build_pdf():
     s = styles()
     doc = SimpleDocTemplate(str(PDF_PATH), pagesize=letter, leftMargin=54, rightMargin=54,
-                            topMargin=54, bottomMargin=54)
+                            topMargin=54, bottomMargin=54,
+                            title="Assignment 1: Photoluminescence (PL) Spectroscopy Simulation",
+                            subject="PL spectrometer simulation: design, excitation sweep, multi-dye "
+                                    "comparison",
+                            author="Nanotechnology & Quantum Physics - Assignment 1")
     story = []
 
     # ---------------------------------------------------------------- title
@@ -145,7 +161,10 @@ def build_pdf():
         "code: the lamp spectrum (<i>sources.py</i>), the monochromators and harmonic filter "
         "(<i>sources.py</i>), the dye database (<i>samples.py</i>, <i>reference.py</i>), the detector "
         "(<i>detector.py</i>) and the scan that connects them (<i>spectrometer.py</i>). The three user "
-        "settings act where the drawing shows them.", s["caption"]))
+        "settings act where the drawing shows them. The instrument, the model and the analysis code "
+        "were built with the AI tools named on the title page, working from the block diagram of the "
+        "class session; every physical assumption, source datum and check is documented in the "
+        "repository.", s["caption"]))
 
     story.append(Paragraph("<b>1.1 The design.</b>", s["h2"]))
     story.append(Paragraph(
@@ -157,8 +176,9 @@ def build_pdf():
         "2 nm passband, across the detection range [&lambda;<sub>min</sub>, &lambda;<sub>max</sub>] in "
         "steps of &Delta;&lambda;, and detected by a silicon photodiode whose responsivity "
         "<i>R</i>(&lambda;) grows through the visible and cuts off near 1100 nm. A small fraction of the "
-        "excitation light reaches the detector as stray light; the figures use 0.1 % of the excitation "
-        "power, which is what a double monochromator with a harmonic filter is expected to leave. "
+        "excitation light reaches the detector as stray light; the figures that include it use 0.1 % of "
+        "the excitation power, which is what a double monochromator with a harmonic filter is expected "
+        "to leave. "
         "Intensities are relative: the model reproduces spectra and relative intensities, not absolute "
         "radiometric values.", s["body"]))
     story.append(Paragraph(
@@ -172,13 +192,21 @@ def build_pdf():
 
     story.append(Paragraph("<b>1.2 Sample database and baseline spectra.</b>", s["h2"]))
     story.append(Paragraph(
-        "The database holds the three dyes named in the task, at the same concentration "
+        "Cy3 and Cy5 are the sulfoindocyanine dyes introduced as fluorescent labelling reagents, "
+        "and their excitation ranges (546 nm for Cy3, 633-647 nm for Cy5) are the ones the model "
+        "reproduces [3]. Methylene blue is a phenothiazinium dye whose excited state is quenched "
+        "both by internal conversion and by intersystem crossing [4, 6], which is why its quantum "
+        "yield is the lowest of the three. The database holds the three dyes named in the task, at "
+        "the same concentration "
         "(1 &micro;mol/L in a 1 cm cuvette, so <i>A</i> = &epsilon;<i>c</i><i>l</i> differs between "
         "them: 0.150 for Cy3, 0.250 for Cy5, 0.067 for methylene blue). Each dye was excited at its own "
         "absorption maximum. The spectra below are the instrument output, not idealised curves: they "
         "carry the lamp and monochromator throughput, the 2 nm detection passband and the detector "
-        "responsivity, which is why the peaks fall at 568 nm, 668 nm and 686 nm rather than exactly on "
-        "the vendors' quoted maxima of 570 nm, 670 nm and 685 nm.", s["body"]))
+        "responsivity. Their peaks fall where the measured bands peak - 568.0 nm for Cy3, 668.0 nm for "
+        "Cy5 and 685.0 nm for methylene blue on the digitized curves, read as 686 nm on the 1 nm scan "
+        "grid - which is a few nanometres away from the vendors' quoted maxima of 570, 670 and 685 nm. "
+        "That difference is in the source data, not in the instrument: a symmetric passband cannot "
+        "shift a band, it only widens it.", s["body"]))
     story.append(figure("part1_combined_overview.png", 504, 151))
     story.append(Paragraph(
         "<b>Figure 2:</b> simulated PL spectra of Cy3 (&lambda;<sub>exc</sub> = 550 nm), Cy5 "
@@ -189,7 +217,8 @@ def build_pdf():
                         ("part1_methylene-blue.png", "methylene blue")):
         story.append(figure(name, 330, 211))
     story.append(Paragraph(
-        "<b>Figure 3:</b> the same three measurements at full scale, one per dye: "
+        "<b>Figure 3:</b> the same three measurements at full scale, one per dye (these are the "
+        "screen captures of the simulator output for question 1): "
         "<i>A</i>(&lambda;<sub>exc</sub>) and <i>A</i><sub>peak</sub> and &Phi;<sub>f</sub> are printed "
         "in each title. Peak currents: Cy3 5.2 &times; 10<sup>-3</sup>, Cy5 6.8 &times; "
         "10<sup>-2</sup>, methylene blue 1.6 &times; 10<sup>-3</sup> (relative units).", s["caption"]))
@@ -201,7 +230,8 @@ def build_pdf():
         "<b>2.1 What was done.</b> Cy3 was chosen because its absorption (550 nm) and emission "
         "(570 nm) both sit comfortably inside the detector's useful range and it is the best documented "
         "of the three dyes. The excitation wavelength was swept from 400 nm to 700 nm in 2 nm steps "
-        "while the whole emission band was recorded, and the plotted intensity is the integral of the "
+        "while the whole emission band was recorded with the detection monochromator set to "
+        "450-900 nm in 1 nm steps, and the plotted intensity is the integral of the "
         "emitted band over the detection range, not the height at one fixed wavelength: a fixed window "
         "stops watching the dye and starts watching the window as soon as &lambda;<sub>exc</sub> moves "
         "past it.", s["body"]))
@@ -220,14 +250,19 @@ def build_pdf():
     story.append(Paragraph("<b>2.2 What is observed.</b>", s["h2"]))
     story.append(Paragraph(
         "1. <b>The emission band does not move.</b> Across every excitation wavelength that produces a "
-        "signal (470-560 nm) the peak stays at 568.0 nm and the FWHM at 28.0 nm. Only the height "
-        "changes. This is Kasha's rule in the data rather than in prose.<br/>"
+        "signal the peak stays at 568.0 nm and the FWHM at 28.0 nm on the 1 nm scan grid, 28.6 nm on "
+        "the digitized band, and this is Kasha's rule in the "
+        "data rather than in prose. The overlay in Figure 4 shows six spectra between 470 nm and "
+        "560 nm; the sweep itself is non-zero from about 452 nm to 588 nm.<br/>"
         "2. <b>The height follows the absorbed light.</b> The measured integrated intensity equals "
         "<i>P</i><sub>exc</sub>(&lambda;)[1 &minus; 10<sup>&minus;A(&lambda;)</sup>]&Phi;<sub>f</sub> "
         "to within 10<sup>-16</sup> of full scale, the numerical noise of the comparison. The curve "
         "rises towards the absorption maximum and collapses when the absorption does.<br/>"
-        "3. <b>Below about 450 nm there is nothing to see</b>, for two independent reasons: the dye "
-        "barely absorbs there, and the harmonic filter blocks excitation light below 400 nm.<br/>"
+        "3. <b>Below about 450 nm the simulation has nothing to work with</b>: the digitized Cy3 "
+        "absorption curve begins at 450 nm, so the model reads zero absorption below it. (The 400 nm "
+        "harmonic filter does not enter here - it only blocks wavelengths below 400 nm, which the "
+        "sweep does not use.) At 450 nm the dye genuinely absorbs very little; the pole of this limit "
+        "is the tabulated range, not the physics.<br/>"
         "4. <b>Above about 590 nm the simulation returns exactly zero.</b> This is a limit of the data, "
         "not of the physics: the digitized Cy3 absorption curve was measured from 450 nm to 590 nm, and "
         "the model reads zero outside that range. The measured methanol spectrum of the same "
@@ -242,14 +277,23 @@ def build_pdf():
     story.append(Paragraph(
         "<b>Yes, and the reason is a separation of timescales.</b> Absorption promotes the molecule to "
         "higher vibrational levels of the first excited singlet state, or to higher electronic states. "
-        "Internal conversion and vibrational relaxation then remove that excess energy in "
-        "10<sup>-13</sup>-10<sup>-12</sup> s [1, 2], while fluorescence from Cy3 takes of order "
-        "0.2-2 ns [5]. Because emission is six orders of magnitude slower than the relaxation, every "
+        "Internal conversion and vibrational relaxation then remove that excess energy in about "
+        "10<sup>-13</sup>-10<sup>-12</sup> s: Kasha 1950 puts an estimated upper bound of "
+        "10<sup>-13</sup> s on the internal-conversion step from an intensity-ratio argument [1, p. 16], "
+        "and that window is the modern textbook range for internal conversion and vibrational "
+        "relaxation [2, &sect;1.4.2], while fluorescence from Cy3 takes of order "
+        "0.2-2 ns [5]. Emission is therefore two to four orders of magnitude slower than the "
+        "relaxation, so every "
         "excited molecule emits from the same thermalized level, S<sub>1</sub>(v = 0), whatever photon "
         "it absorbed. The emission spectrum is therefore fixed in shape, position and width, and only "
         "the number of excited molecules - that is, the absorbed light - changes with "
-        "&lambda;<sub>exc</sub>. That is Kasha's rule as Kasha stated it for states [1] and as "
-        "Lakowicz states it for wavelength, in a section titled exactly that [2, &sect;1.3.2].", s["body"]))
+        "&lambda;<sub>exc</sub>. The two dyes in our own database illustrate the same chain-length "
+        "argument: Cy3 is a trimethine cyanine absorbing at 550 nm and Cy5 a pentamethine at 649 nm, so "
+        "two extra methine units shift the band by 99 nm in our own data, which is the free-electron "
+        "model of the cyanine chain in practice [3, 7]. That is Kasha's rule as Kasha stated it for "
+        "states [1] and as "
+        "Lakowicz states it for wavelength, in the section whose title says exactly that [2, "
+        "&sect;1.3.2].", s["body"]))
     story.append(Paragraph(
         "<b>The intensity behaviour is the excitation spectrum, with one honest caveat.</b> The "
         "absorbed photon rate follows Beer-Lambert, so "
@@ -293,7 +337,7 @@ def build_pdf():
     story.append(figure("part3_three_dyes_comparison.png", 504, 164))
     story.append(Paragraph(
         "<b>Figure 6:</b> the same graph for each excitation wavelength - 450 nm (left), 550 nm "
-        "(centre), 650 nm (right) - on one shared absolute intensity scale, which is what makes the "
+        "(centre), 650 nm (right) - on one shared scale in relative units, which is what makes the "
         "comparison meaningful. The legend gives <i>A</i>(&lambda;<sub>exc</sub>) for each curve in that "
         "panel.", s["caption"]))
     story.append(figure("part3_single_canvas_overlay.png", 470, 266))
@@ -321,7 +365,9 @@ def build_pdf():
         "<b>(3) The detector's wavelength dependence.</b> The silicon responsivity is about a third "
         "higher at methylene blue's emission (686 nm) than at Cy3's (568 nm), so equal emitted power at "
         "those two wavelengths does not give equal photocurrent.<br/>"
-        "<b>(4) The width of the emission band.</b> The three bands are 28, 32 and 47 nm wide. For the "
+        "<b>(4) The width of the emission band.</b> Measured on the digitized bands, Cy3, Cy5 and "
+        "methylene blue are 28.6, 33.4 and 48.6 nm wide (the simulated curves read 28, 32 and 47 nm "
+        "on a 1 nm grid). For the "
         "same emitted power, a broader band means a lower peak, which penalises methylene blue a second "
         "time on top of its low quantum yield.", s["body"]))
     story.append(Paragraph(
@@ -339,10 +385,11 @@ def build_pdf():
     # ============================================================ references
     story.append(Paragraph("4. References", s["h1"]))
     story.append(Paragraph(
-        "Every item below was checked to resolve; the two DOIs that do not exist in common secondary "
-        "sources for the Tuite and Albani entries are given here in their corrected form. Where a claim "
-        "rests on a closed-access text that could not be read, the claim is phrased as standard textbook "
-        "content rather than as a quotation.", s["body"]))
+        "Every entry below was checked to resolve, and each claim is attached to the work that carries "
+        "it. Where a DOI circulates in a wrong form, the corrected one is given. Where a work is "
+        "closed-access and could not be read beyond its table of contents, the citation points to the "
+        "section whose stated subject carries the claim, and the claim is phrased as textbook content "
+        "rather than as a quotation from a page that was not read.", s["body"]))
 
     references = [
         "[1] M. Kasha, \"Characterization of electronic transitions in complex molecules\", "
@@ -364,7 +411,7 @@ def build_pdf():
         "Biology</i> <b>21</b> (1993) 103-124. DOI 10.1016/1011-1344(93)80173-7. (Excited-state "
         "behaviour of methylene blue.)",
 
-        "[5] A. Berrocal-Martin et al., <i>Journal of Physical Chemistry B</i> <b>129</b> (2025) "
+        "[5] R. Berrocal-Martin et al., <i>Journal of Physical Chemistry B</i> <b>129</b> (2025) "
         "11626-11635. DOI 10.1021/acs.jpcb.5c03845. (Fluorescence lifetimes of Cy3 in solution: about "
         "0.2 ns free dye, components of 0.6-1.1 ns and 1.5-2.5 ns.)",
 
@@ -377,13 +424,18 @@ def build_pdf():
         "10.1063/1.1747143. (Free-electron model of the cyanine chain: why two extra methine units "
         "shift the band about 100 nm to the red.)",
 
-        "[8] Hamamatsu Photonics, \"Si photodiodes\", technical note KSPD9001E04, sec. 2-3, eq. (2-3). "
-        "(Silicon responsivity, R = &eta;&lambda;/1.24.)",
+        "[8] Hamamatsu Photonics, \"Si photodiodes\", technical note KSPD9001E04, sec. 2-3, eq. (2-3), "
+        "which prints the quantum-efficiency form QE = (S &times; 1240 / &lambda;) &times; 100 %; "
+        "equivalently the responsivity of a detector of quantum efficiency &eta; is "
+        "&eta;&lambda;[&micro;m]/1.24 A/W.",
 
-        "[9] Dye spectra and molar extinction coefficients: Cytiva/GE Healthcare spec sheets PA23001 "
-        "(Cy3) and PA25031 (Cy5); PhotochemCAD records (Taniguchi and Lindsey, 2018) and the "
-        "OMLC/Prahl measured spectra for methylene blue. The full source table, with a confidence for "
-        "each value and the raw files, is in <i>data/SOURCES.md</i> and <i>data/raw/</i>.",
+        "[9] Dye spectra and molar extinction coefficients: the Cytiva/GE Healthcare Cy3 "
+        "amine-reactive sheet 28951573 (catalogue PA23001: 550 nm, 150 000, 570 nm) and the Cy5 "
+        "maleimide sheet 28954683 (PA25031: 649 nm, 250 000, 670 nm; the amine-reactive code is "
+        "PA25001); for methylene blue the PhotochemCAD record PSW009, whose own reference is "
+        "JACS Au (DOI 10.1021/jacsau.5c01463), and the OMLC/Prahl measured spectrum. The full source "
+        "table, with a confidence for each value and the raw files, is in <i>data/SOURCES.md</i> and "
+        "<i>data/raw/</i>.",
     ]
     for reference in references:
         story.append(Paragraph(reference, s["ref"]))
@@ -393,9 +445,10 @@ def build_pdf():
         "blue extinction coefficient of 95,000 M<sup>-1</sup>cm<sup>-1</sup>, so it is not used: the "
         "pack carries 67,000 (PhotochemCAD, water), 74,028 (OMLC) and 107,800 for the deconvoluted "
         "monomer. The quantum yield of methylene blue in water, 0.02, is the value used in "
-        "photodynamic-therapy work; the readable measurement in the literature is 0.04 in ethanol. No "
-        "published emission bandwidth was found for Cy3 or Cy5, so the FWHMs quoted here are measured "
-        "on the digitized curves. The FPbase records from which the Cy3 and Cy5 bands are digitized do "
+        "photodynamic-therapy work; the readable measurement in the literature is 0.04 in ethanol. The "
+        "emission bandwidths quoted here are measured on the digitized bands rather than taken from the "
+        "literature; a published Cy5 emission FWHM of 37.4 nm exists (Biosensors 2023, 13, 876, "
+        "Table 2) against our 33.4 nm, and for Cy3 no published value was found at all. The FPbase records from which the Cy3 and Cy5 bands are digitized do "
         "not state their provenance; the fully documented curves for the same chromophores are the "
         "PhotochemCAD methanol spectra kept in <i>data/raw/</i>.", s["body"]))
     story.append(PageBreak())
@@ -428,7 +481,15 @@ def build_pdf():
         if not full_path.exists():
             raise FileNotFoundError(f"appendix source missing: {full_path}")
         story.append(Paragraph(f"<b>File: {rel_path}</b> - <i>{desc}</i>", s["h2"]))
-        story.append(Preformatted(full_path.read_text(encoding="utf-8"), s["code"]))
+        # Chunks keep a page break from leaving one or two lines stranded on a page
+        # of their own; short tails are merged into the previous chunk.
+        lines = wrapped_source(full_path.read_text(encoding="utf-8")).split("\n")
+        chunk_size = 55
+        chunks = [lines[i:i + chunk_size] for i in range(0, len(lines), chunk_size)]
+        if len(chunks) > 1 and len(chunks[-1]) < 6:
+            chunks[-2].extend(chunks.pop())
+        for chunk in chunks:
+            story.append(KeepTogether(Preformatted("\n".join(chunk), s["code"])))
         story.append(Spacer(1, 10))
 
     doc.build(story, canvasmaker=NumberedCanvas)

@@ -44,13 +44,13 @@ Reported values (see `reference_spectra.json` for the authoritative copy):
 
 | Quantity | Value reported | Source | Confidence |
 |---|---|---|---|
-| absorption max | **550 nm** | Cytiva/Amersham Cy3 Mono-Reactive Dye Pack PA23001 spec sheet 28951573 (vendor datasheet) | High for the commercial Cy3 in buffer. Spread across sources: 544.25 (methanol, PhotochemCAD K10), 548 (sulfo-Cy3), 550 (Cytiva), 554 (Thermo guide, FPbase), 555 (Lumiprobe, Interchim non-sulfonated) |
-| emission max | **570 nm** | Cytiva spec sheet 28951573 (vendor datasheet) | High. Spread: 563 (sulfo-Cy3), 566 (Thermo, FPbase), 570 (Cytiva, Lumiprobe, Interchim); methanol PhotochemCAD record gives 557 |
+| absorption max | **550 nm** | Cytiva/Amersham Cy3 Mono-Reactive Dye Pack PA23001 (vendor datasheet; the PDF copy kept here was corrupt and has been removed - the values are corroborated by the readable Cytiva Cy3 documents, Lumiprobe, Interchim and Thermo) | High for the commercial Cy3 in buffer. Spread across sources: 544.25 (methanol, PhotochemCAD K10), 548 (sulfo-Cy3), 550 (Cytiva), 554 (Thermo guide, FPbase), 555 (Lumiprobe, Interchim non-sulfonated) |
+| emission max | **570 nm** | Cytiva Cy3 documentation PA23001 (vendor datasheet; see the note on the removed copy) | High. Spread: 563 (sulfo-Cy3), 566 (Thermo, FPbase), 570 (Cytiva, Lumiprobe, Interchim); methanol PhotochemCAD record gives 557 |
 | absorption FWHM | **45.0 nm** | measured on the FPbase Cy3 absorption curve shipped here | Medium (provenance of the FPbase record is not stated). PhotochemCAD methanol record: 53.9 nm envelope / ~39 nm main band |
 | emission FWHM | **28.6 nm** | measured on the FPbase Cy3 emission curve shipped here | Medium. PhotochemCAD methanol record: 40.7 nm. Emission FWHM is instrument-bandwidth dependent |
 | quantum yield | **0.04 in PBS, pH 7.4** (free dye) | PMC13210223 full text ("Cy3 in PBS buffer: 0.04"); J. Fluoresc. 2023 abstract (Cy3 = 0.04 in non-viscous aqueous solution); original measurement attributed to Stennett et al. 2015 | Medium-high for the *free dye in buffer*; the original 2015 paper itself is paywalled and was not read directly |
 | quantum yield, other conditions | 0.07 (methanol, PhotochemCAD K10, measured); >0.15 (Cytiva, labelled protein at D/P = 2); 0.10 (sulfo-Cy3, Lumiprobe) and 0.15 (di-sulfo-Cy3, Interchim; Lumiprobe QY table also gives 0.15); 0.31 (non-sulfonated Cy3 NHS ester: Lumiprobe, Interchim) | vendor datasheets + PhotochemCAD | High as a qualitative statement: Cy3 quantum yield is strongly environment dependent |
-| extinction coefficient | **150,000 M-1cm-1** | Cytiva spec sheet 28951573 (also used at 552 nm inside their D/P formula); Lumiprobe; Interchim | High. Variants: 162,000 (sulfo-Cy3: Lumiprobe, Interchim, PMC11721635), 136,000 (FPbase), 133,000 (parent indocarbocyanine in methanol, PhotochemCAD K10, scaled to Sims 1974) |
+| extinction coefficient | **150,000 M-1cm-1** | Cytiva Cy3 documents PA23001 and the readable instruction sheets in this directory, which use 150,000 at 552 nm inside their labelling formula; Lumiprobe; Interchim | High. Variants: 162,000 (sulfo-Cy3: Lumiprobe, Interchim, PMC11721635), 136,000 (FPbase), 133,000 (parent indocarbocyanine in methanol, PhotochemCAD K10, scaled to Sims 1974) |
 | Stokes shift | **20 nm** | computed from the two reported maxima | High (trivially derived); 14 nm if computed from the FPbase curve peaks (554/568) |
 | pH dependence | pH-insensitive over about pH 4-10 | GoldBio product page (vendor claim only) | Low - vendor marketing claim, not independently verified |
 
@@ -166,7 +166,7 @@ why they are kept: each curve can be re-derived rather than trusted.
 | `I12_abs.txt`, `I12_ems.txt` | PhotochemCAD record I12, methylene blue in ethanol (the solvent of the 0.04 quantum yield). |
 | `ombc_mb.txt` | OMLC/Prahl measured methylene blue spectrum in water; the independent check on the 664 nm extinction coefficient (74,028). |
 | `fpbase_Cy3.json`, `fpbase_Cy5.json` | The FPbase dye records that the shipped Cy3 and Cy5 curves are digitized from. FPbase does not state the provenance of these records; that is recorded as a limitation. |
-| `cy3_monoreactive_28951573.pdf` | Cytiva PA23001 spec sheet for Cy3: 550 nm / 150,000 / 570 nm, and the ">0.15 for labelled protein" quantum yield. |
+| *(removed)* `cy3_monoreactive_28951573.pdf` | The Cytiva Cy3 amine-reactive pack sheet (PA23001) was fetched and read during the verification pass, but the copy that arrived in this repository was corrupt: `pdftotext` returns nothing and `qpdf --check` reports a damaged file with an unrecoverable page tree. It has been deleted rather than kept as unreadable evidence. The values it carries (550 nm, 150,000 M<sup>-1</sup>cm<sup>-1</sup>, 570 nm) are corroborated by the two readable Cytiva Cy3 documents in this directory - which give the 150,000 extinction coefficient at 552 nm - and by the Lumiprobe, Interchim and Thermo pages listed above. |
 | `cy5_28954683.pdf` | Cytiva PA25031 spec sheet for Cy5: 649 nm / 250,000 / 670 nm. |
 | `cy3_ifu.pdf`, `cy3_maleimide_28954681.pdf` | Further Cytiva Cy3 documents (instructions for use, maleimide derivative), used to check the conjugate quantum yields and the 552 nm extinction value. |
 | `rs_cyanine.pdf`, `rs_cyanine.txt` | Review article on cyanine photophysics, used for the sulfo-Cy3/sulfo-Cy5 extinction coefficients and the 0.10-0.31 conjugate quantum-yield spread. |
@@ -182,7 +182,7 @@ reproduce their sources to rounding** (FPbase records to 3e-8, PhotochemCAD
 PSW009 to 5e-6), and the shipped maxima, quantum yields and extinction
 coefficients agree:
 
-- **Cy3**: Cytiva PA23001 (28951573) gives 550 nm / 150,000 / 570 nm; Lumiprobe
+- **Cy3**: Cytiva PA23001 gives 550 nm / 150,000 / 570 nm (read during that pass; the copy kept in this repository arrived corrupt and was removed); Lumiprobe
   gives 555 nm / 150,000 / 570 nm / QY 0.31 for the NHS ester and 548 / 162,000 /
   563 / 0.10 for sulfo-Cy3. 0.04 is confirmed as the *free dye in buffer* value,
   quoted in the peer-reviewed literature, not a vendor number. Firm.

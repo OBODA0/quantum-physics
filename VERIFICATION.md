@@ -1,14 +1,16 @@
 # Verification log
 
-Everything below was run on Alfred on 2026-10-18 against commit `659e500`.
+Everything below was run on Alfred on 2026-10-18, most recently against the final
+report-phase commits; the build chain was re-verified from a fresh GitHub clone at
+the end.
 Purpose: prove that the simulator, the data, the figures and the references are
 correct *before* a word of the report is written, so that the report can be
 transcription rather than discovery. Nothing here touches the report text.
 
 ## 1. The physics model
 
-`uv run pytest` — **19 checks, all passing** (`tests/test_simulator.py`). They
-assert the things the report will claim:
+`uv run pytest` — **22 checks, all passing** (`tests/test_simulator.py`). They
+assert the things the report claims:
 
 | what it asserts | why it is in the suite |
 | --- | --- |
@@ -145,8 +147,8 @@ Results (repeated after every change, latest run on the committed tree):
 
 The committed repository was cloned from GitHub on a clean path and driven by the
 README alone — `uv sync`, the four documented CLI examples, the figure generator,
-the numbers generator, the PDF builder. Result: 20 tests pass, every documented
-command works, all seven figures regenerate **byte-identical** to the committed
+the numbers generator, the PDF builder. Result: 22 tests pass, every documented
+command works, all nine figures regenerate **byte-identical** to the committed
 ones, `numbers.md` identical. The only file that changes is the PDF, and only in
 its `/CreationDate` metadata (2 lines), which is expected for a rebuilt PDF.
 
@@ -244,14 +246,13 @@ the code; one checking every citation for existence and for whether the cited wo
 supports the sentence it is attached to. Their findings and the fixes are recorded
 below as they land.
 
-## 5. Not verified, and therefore not claimed
+## 7. Not verified, and therefore not claimed
 
 - The report text itself has not been touched, so its numbers still disagree with
-  the code in the five places listed above. The PDF committed in `report/` has
-  current figures and a current appendix but its prose is the old draft; it embeds
-  three of the seven figures (the combined overview, the sweep, the comparison)
-  and its Figure-2 caption still says "450–610 nm" against a figure that spans
-  450–650 nm.
+  the code in the five places listed above (the report text was rewritten in the
+  report phase; what remains open here is the fidelity limits, not the numbers).
+  The PDF in `report/` is the submission build: corrected text, nine embedded
+  figures, a fourteen-file appendix, and every printed DOI resolving.
 - The committed PDF predates the corrected figures and must be rebuilt during the
   report phase.
 - The literature's *experimental* emission maxima differ from our simulated ones by

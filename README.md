@@ -35,7 +35,8 @@ water. Always quote the number together with the solvent.
 
 Two databases are available:
 
-- `--database reference` (default): measured absorption and emission bands from
+- `--database reference` (the figures use this; the CLI default is `auto`, which
+  falls back to the model if the pack is missing): measured absorption and emission bands from
   `data/reference_spectra.json` — digitized vendor/database/paper curves, so the
   simulated spectrum has the real band shape, including the cyanine vibronic
   shoulder.

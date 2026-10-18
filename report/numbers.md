@@ -33,17 +33,17 @@ Equal concentration does not mean equal absorbance: A_peak = epsilon * c * l, an
 
 ## 3. The assigned experiment: 450, 550 and 650 nm
 
-| excitation | dye | A(lambda_exc) | absorbed fraction | emission peak | integrated PL (relative) |
-| --- | --- | --- | --- | --- | --- |
-| 450 nm | Cy3 | 0.0000 | 0.00% | no emission | 0 |
-| 450 nm | Cy5 | 0.0010 | 0.24% | 667.5 nm | 0.03409 |
-| 450 nm | Methylene blue | 0.0009 | 0.20% | 685.5 nm | 0.003153 |
-| 550 nm | Cy3 | 0.1427 | 28.00% | 568.0 nm | 0.555 |
-| 550 nm | Cy5 | 0.0124 | 2.81% | 667.5 nm | 0.4007 |
-| 550 nm | Methylene blue | 0.0052 | 1.19% | 685.5 nm | 0.01929 |
-| 650 nm | Cy3 | 0.0000 | 0.00% | no emission | 0 |
-| 650 nm | Cy5 | 0.2471 | 43.39% | 667.5 nm | 5.848 |
-| 650 nm | Methylene blue | 0.0550 | 11.90% | 685.5 nm | 0.183 |
+| excitation | dye | A(lambda_exc) | absorbed fraction | emission peak | peak current | integrated PL |
+| --- | --- | --- | --- | --- | --- | --- |
+| 450 nm | Cy3 | 0.0000 | 0.00% | no emission | 0.00000 | 0 |
+| 450 nm | Cy5 | 0.0010 | 0.24% | 667.5 nm | 0.00040 | 0.03409 |
+| 450 nm | Methylene blue | 0.0009 | 0.20% | 685.5 nm | 0.00002 | 0.003153 |
+| 550 nm | Cy3 | 0.1427 | 28.00% | 568.0 nm | 0.00522 | 0.555 |
+| 550 nm | Cy5 | 0.0124 | 2.81% | 667.5 nm | 0.00467 | 0.4007 |
+| 550 nm | Methylene blue | 0.0052 | 1.19% | 685.5 nm | 0.00015 | 0.01929 |
+| 650 nm | Cy3 | 0.0000 | 0.00% | no emission | 0.00000 | 0 |
+| 650 nm | Cy5 | 0.2471 | 43.39% | 667.5 nm | 0.06817 | 5.848 |
+| 650 nm | Methylene blue | 0.0550 | 11.90% | 685.5 nm | 0.00138 | 0.183 |
 
 ### 3.1 What is drawn below the excitation wavelength, and how much stray light is left
 
@@ -69,7 +69,7 @@ The digitized curves are defined only inside the range where they were measured 
 - **Cy5**: strongest PL at 652.0 nm; measured curve equals P_exc*(1-10^-A)*Phi_f to 2.2e-16 of full scale; band integral constant to 0.0e+00.
 - **Methylene blue**: strongest PL at 664.0 nm; measured curve equals P_exc*(1-10^-A)*Phi_f to 5.6e-16 of full scale; band integral constant to 0.0e+00.
 
-Kasha's rule, measured on the simulated band (Cy3, excitation swept inside the absorption band, the region where a moving spectrum would show up):
+Kasha's rule, measured on the simulated band (Cy3, excitation swept inside the absorption band, the region where a moving spectrum would show up). The width reading depends on the scan grid: this table uses a 0.5 nm step, the report figure a 1 nm step, which is why the same band reads 28.5 nm here and 28.0 nm there. The digitized band itself is 28.6 nm wide.
 
 | excitation | measured emission peak | measured emission FWHM |
 | --- | --- | --- |

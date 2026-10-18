@@ -1,5 +1,13 @@
 # Reference audit - Assignment 1, PL spectroscopy simulator
 
+> **Status note (added after the report was rewritten).** This audit was run against
+> the *earlier draft*. Its findings were applied in the rewrite: the two DOIs that do
+> not exist were replaced, the mis-cited claims were re-pointed to sources that carry
+> them, and the uncited references were either cited where they belong or dropped.
+> What the shipped PDF contains now is listed in `TASK.md` section 5.4 and verified in
+> `VERIFICATION.md` section 6. Read the rest of this file as the evidence behind those
+> changes, not as a description of the current reference list.
+
 Audited: `report/generate_pdf_report.py` (the PDF's source of record) and `data/SOURCES.md`,
 `data/reference_spectra.json` in the assignment repo on Alfred
 (`/home/oboda/Projects/Nano capsule/quantum physics/pl-spectrometer-simulator/`).

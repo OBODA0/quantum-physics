@@ -159,8 +159,8 @@ def build(database_choice="reference"):
 
     add("## 3. The assigned experiment: 450, 550 and 650 nm")
     add("")
-    add("| excitation | dye | A(lambda_exc) | absorbed fraction | emission peak | integrated PL (relative) |")
-    add("| --- | --- | --- | --- | --- | --- |")
+    add("| excitation | dye | A(lambda_exc) | absorbed fraction | emission peak | peak current | integrated PL |")
+    add("| --- | --- | --- | --- | --- | --- | --- |")
     for lambda_exc in ASSIGNED_EXCITATION_NM:
         for key in DYE_KEYS:
             dye = dyes[key]
@@ -169,9 +169,9 @@ def build(database_choice="reference"):
                 lambda_max_nm=DETECTION_RANGE_NM[1], dlambda_nm=0.5)
             integrated = float(np.trapezoid(scan.emitted_power, scan.wavelengths_nm))
             peak = "{:.1f} nm".format(measured_emission_band(scan).peak_nm) if integrated > 0 else "no emission"
-            add("| {:.0f} nm | {} | {:.4f} | {:.2%} | {} | {:.4g} |".format(
+            add("| {:.0f} nm | {} | {:.4f} | {:.2%} | {} | {:.5f} | {:.4g} |".format(
                 lambda_exc, dye.name, dye.absorbance(lambda_exc), dye.absorbed_fraction(lambda_exc),
-                peak, integrated))
+                peak, scan.photocurrent.max(), integrated))
     add("")
 
     add("### 3.1 What is drawn below the excitation wavelength, and how much stray light is left")
@@ -251,7 +251,9 @@ def build(database_choice="reference"):
                 sweep.band_integral_drift))
     add("")
     add("Kasha's rule, measured on the simulated band (Cy3, excitation swept inside the absorption "
-        "band, the region where a moving spectrum would show up):")
+        "band, the region where a moving spectrum would show up). The width reading depends on the scan "
+        "grid: this table uses a 0.5 nm step, the report figure a 1 nm step, which is why the same band "
+        "reads 28.5 nm here and 28.0 nm there. The digitized band itself is 28.6 nm wide.")
     add("")
     add("| excitation | measured emission peak | measured emission FWHM |")
     add("| --- | --- | --- |")
