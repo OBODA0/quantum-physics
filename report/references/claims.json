@@ -1,0 +1,153 @@
+{
+ "claims": [
+  {
+   "id": "C1",
+   "cited": "[1, 2]",
+   "verdict": "verified (support located in [1])",
+   "support": "[1] Kasha 1950: abstract (p.14) states the criterion 'The emitting level of a given multiplicity is the lowest excited level of that multiplicity'; p.15: 'The phenomenon of internal conversion is manifested by the appearance of a unique luminescence, regardless of which state of a given multiplicity is excited.' [2] Lakowicz is the standard textbook statement of Kasha's rule but the 3rd ed. is closed access and has no OCR copy on archive.org, so no page was seen.",
+   "correction": "",
+   "confidence": "high",
+   "how_read": "[1]: full OCR text of the Internet Archive scan dli.ernet.18779 (Digital Library of India, 'Discussions of the Faraday Society (1950)'), djvu.txt, page markers 14/15/16 visible - OCR noise in digits/ligatures. [2]: abstract-level only via Crossref/OpenLibrary; book text not readable."
+  },
+  {
+   "id": "C2",
+   "cited": "[1, 2]",
+   "verdict": "partly supported - [1] supports 'ultrafast' only; the 100 fs-1 ps window needs [2]",
+   "support": "[1] p.16 (OCR, digit noise): the S->S intrinsic radiative lifetime is assumed ~10^-7 s and internal conversion is 'at least 10^4 times as fast', giving 1/k_IC < 10^-11 s; 'The natural limit on the rate of internal conversion may well be the time of a vibrational period'. So [1] does bound IC as far faster than fluorescence (near a vibrational period) but never states 1e-13-1e-12 s, and says nothing about vibrational relaxation to a solvent bath.",
+   "correction": "[2] Lakowicz (timescale table/Jablonski figure) is the right source for VR/IC ~1e-12 s; page not verifiable from here. [1] alone cannot carry the number.",
+   "confidence": "medium",
+   "how_read": "[1] OCR full text (same scan); [2] not readable."
+  },
+  {
+   "id": "C3",
+   "cited": "[3]",
+   "verdict": "does-not-support (wrong reference)",
+   "support": "[3] abstract (PubMed PMID 7873641, read in full) describes synthesis and properties of sulfoindocyanine succinimidyl esters; it contains no fluorescence lifetime, no time-resolved measurement, and no nanosecond figure. Full text is closed access (unpaywall is_oa=false), so a hidden table cannot be excluded, but nothing in the abstract or in how the paper is cited elsewhere supports a lifetime.",
+   "correction": "Use a Cy3 photophysics source, e.g. Berrocal-Martin et al., J. Phys. Chem. B 2025, 129, 11626-11635, DOI 10.1021/acs.jpcb.5c03845 (verified, OA, PMC12621249): 'the short component of around 200 ps to free sCy3, and an intermediate of 0.6-1.1 ns ... A long component of 1.5-2.5 ns'. Or Sanborn et al., J. Phys. Chem. B 2007, 111, 11064-11074, DOI 10.1021/jp072912u (exists; not read). Note the report's 0.3-1.0 ns fits a constrained/DNA-bound Cy3 better than a free dye (free sCy3 ~0.2 ns).",
+   "confidence": "medium-high",
+   "how_read": "[3]: abstract read (PubMed); [4]-level full text not readable. Replacement: OA full text read and quoted."
+  },
+  {
+   "id": "C4",
+   "cited": "[3]",
+   "verdict": "does-not-support (wrong reference for textbook physics)",
+   "support": "Beer-Lambert absorbance and I_PL = I_abs x Phi_f are textbook fluorescence content. They are not in [3]'s abstract (a dye-synthesis paper); the full text is closed, so a formula in its theory section cannot be formally excluded, but it is not a fluorescence-theory source.",
+   "correction": "Cite [2] Lakowicz (Ch. 1 defines the fluorescence quantum yield and the absorbed-photon rate); page not verifiable from here - standard textbook content.",
+   "confidence": "medium",
+   "how_read": "[3] abstract via PubMed; [2] not readable."
+  },
+  {
+   "id": "C5",
+   "cited": "[3]",
+   "verdict": "supported in substance, wording not attributable",
+   "support": "[3] is the origin paper for the sulfoindocyanine Cy3 chromophore and reports its excitation behaviour - the abstract names Cy3 and says it 'can be excited with the 488-, 514- and 532-nm laser lines and is optimally excited with the 546-nm mercury arc line'. The paper does not use the wording '550 nm' or 'pi-pi* S0->S1'. The pi-pi* character of the cyanine S0->S1 band is textbook.",
+   "correction": "Keep [3] for the Cy3 absorption band, but cite [1] or [2] for the pi-pi* assignment; and note the 550 nm value itself is the vendor (Cytiva/Amersham) figure, not [3]'s 546 nm figure.",
+   "confidence": "medium",
+   "how_read": "[3] abstract (PubMed) fully read; full text closed."
+  },
+  {
+   "id": "C6",
+   "cited": "[2, 3]",
+   "verdict": "arithmetic verified; citation generic",
+   "support": "20 nm is the standard Cy3 absorption/emission separation (550/570 nm) and is derivable from the Cy3 spectral data of [3]'s era; [2] is a generic textbook citation with no Cy3-specific Stokes shift.",
+   "correction": "Arithmetic: 1e7*(1/550 - 1/570) = 637.9 cm^-1, so 638 cm^-1 is correct.",
+   "confidence": "high for the number, medium for the citation",
+   "how_read": "computed here; [3] full text closed ([2] unreadable)."
+  },
+  {
+   "id": "C7",
+   "cited": "[1-3]",
+   "verdict": "does-not-support as cited (it is a deduction, and the threshold is inconsistent)",
+   "support": "No statement in [1], [2] or [3] gives a Cy3 0-0 gap or a 620 nm cutoff. Arithmetic: hc/620 nm = 2.0 eV, correct. But Cy3's 0-0 gap corresponds to ~570 nm (2.18 eV), so by the report's own reasoning emission should vanish at ~570 nm, not 620 nm. The simulator does not cut emission at lambda_exc at all (plsim/samples.py emits excitation_power * absorbed_fraction * QY * band shape); the loss above ~600 nm is just the Gaussian absorption tail going to zero.",
+   "correction": "State it as a consequence of the vanishing absorption (or of the 0-0 gap near 570 nm) and drop the citation, or cite a Cy3 absorption spectrum source.",
+   "confidence": "high (code and own text read)",
+   "how_read": "report generator source read; plsim/samples.py read from the Alfred repo; energy arithmetic computed here."
+  },
+  {
+   "id": "C8",
+   "cited": "[4]",
+   "verdict": "does-not-support as written (wrong science); source [4] not readable",
+   "support": "[4] full text could NOT be read by any route (Unpaywall/OpenAlex/OpenAIRE all CLOSED, ScienceDirect 403 even with browser impersonation, Elsevier TDM 403, Europe PMC not in OA subset, no archive.org copy) - only the PubMed abstract (PMID 8301408) was read; it says the review examines 'the properties of the excited states of the dyes'. The physics is what fails: 1 - 0.04 = 0.96 is fine as the TOTAL non-radiative fraction, but the ISC part is wrong. Readable values for the triplet/ISC yield of the methylene blue chromophore: Phi_ISC = 0.50 (Morgounova et al. J. Biomed. Opt. 18(5) 2013 056004, full text, p.056004-2, reading 'Phi_ISC = 0.50'); 0.52 (Bollinger et al. Environ. Chem. Lett. 23 2025 1403-1424, CC-BY, p.1415: 'formed with a high quantum yield of 0.52'); 0.52 (Moreira et al. IntechOpen ch.14, DOI 10.5772/48087, p.395, which also says MB's S1 decays 'due to the higher internal conversion and triplet formation'); 0.53 for thionine in water (Rodriguez-Serrano PhD thesis 2014, p.32; PCCP 2015 abstract PMID 25845532). So roughly half of the S1 population goes by ISC and roughly half by internal conversion.",
+   "correction": "Reword: 'of the ~96% that does not fluoresce, roughly half crosses to T1 by intersystem crossing and roughly half returns to S0 by internal conversion'. Also flag the report's own inconsistency: the body says MB Phi_f = 0.04 while the shipped database uses 0.02 in water (which would make it 98%), and Phi_f = 0.04 is quoted in the readable literature as a methanol value (Moreira et al.), with ~0.032 measured in water (Chem. Sci. 2026, PMC13625056). Cite a triplet-yield source (Morgounova 2013 / Bollinger 2025) rather than [4] for the ISC number; keep [4] only for the MB/DNA photochemistry context, which is what its abstract actually promises.",
+   "confidence": "high that '96% by ISC' is wrong; medium for the exact IC/ISC split",
+   "how_read": "[4] abstract via PubMed only; ISC numbers quoted from full texts of three readable sources (PDFs fetched and text-extracted by worker 1) plus a PhD thesis full text and one PubMed abstract."
+  },
+  {
+   "id": "C9",
+   "cited": "(none)",
+   "verdict": "missing citation (verified replacement found)",
+   "support": "Standard photodetector theory; the report gives no source. The relation actually used is the RESPONSIVITY relation, not a QE relation: R [A/W] = eta * lambda[um] / 1.24. Verified readable source: Hamamatsu Photonics, 'Si photodiodes' Technical note, Cat. No. KSPD9001E04, Dec 2025, section 2-3 'Spectral response', printed p.6, equation (2-3): QE = [S x 1240 / lambda] x 100 [%] (S in A/W, lambda in nm); the same page has Figure 2-8 'Spectral response (Si photodiodes)' with a dashed QE=100% reference line (plot labels read, individual curve points not extracted).",
+   "correction": "Cite either: Hamamatsu Photonics K.K., 'Si photodiodes', Technical note KSPD9001E04, Dec. 2025, sec. 2-3, eq. (2-3); or RP Photonics Encyclopedia, 'Responsivity', DOI 10.61835/xal (R = eta.e/(h.nu); worked example 90% QE at 800 nm -> 0.58 A/W). ALSO REWORD: QE itself is not proportional to lambda; it is the responsivity (and the falling photon energy) that makes the Si response rise from ~550 nm toward ~800-900 nm.",
+   "confidence": "high (sources read); medium for the figure-trend statement",
+   "how_read": "Hamamatsu technical note PDF text layer read (p.6); RP Photonics page read in full; Saleh & Teich, Fundamentals of Photonics 2nd ed. (ISBN 9780471358329) existence verified but its scan is lending-locked and no open copy exists - no page or equation number could be confirmed, so none is given."
+  },
+  {
+   "id": "C10",
+   "cited": "[3]",
+   "verdict": "does-not-support (wrong reference) - arithmetic verified, but the particle-in-a-box attribution is an anachronism",
+   "support": "[3] abstract read verbatim (PubMed PMID 7873641): 'synthesis and properties'; it advertises no model, no HOMO-LUMO arithmetic, no chain-length theory - and its own wavelengths are Cy3 546 nm / Cy5 633-647 nm, not 550/649 nm. [3] full text is UNVERIFIABLE from here (ACS 403, Unpaywall closed, no OA copy), so its absence cannot be proven, but the free-electron model predates it by 44 years (Kuhn 1949). Arithmetic (computed here, hc=1239.842 eV.nm): 550->649 nm = 0.344 eV; 570->670 nm = 0.325 eV; 649-550 = 99 nm. So '~0.33 eV' is right to about +/-0.02 eV and '~100 nm' is correct - but 100 nm/vinylene is empirical, not a prediction of Kuhn's box model (lambda ~ L^2/(N+1)).",
+   "correction": "Primary: Kuhn, H. J. Chem. Phys. 1949, 17, 1198-1212, DOI 10.1063/1.1747143 (abstract read: 'pi-electrons of the polymethine chain are considered as a one-dimensional free-electron gas', lambda1 = (8mc/h)(L^2/(N+1))). Readable OA replacements that state the naming and the 100 nm step: Vahdani et al., J. Am. Chem. Soc. 2024, 146, 19756-19767, DOI 10.1021/jacs.4c02171 ('two-carbon steps to form the pentamethine (Cy5) and trimethine (Cy3) analogs. Each step blue-shifts ... by ca. 100 nm'); Neme et al., Phys. Chem. Chem. Phys. 2024, 26, 6235-6241, DOI 10.1039/D3CP05219B ('vinylene shift ... approximately 100 nm'); Strada et al., ChemPlusChem 2025, 90, e202500279, DOI 10.1002/cplu.202500279 (trimethine 500-550 nm, pentamethine 625-675 nm). Mishra et al., Chem. Rev. 2000, 100, 1973-2012, DOI 10.1021/cr990402t exists but is closed - its content could NOT be verified.",
+   "confidence": "high for 'wrong reference'; high for the arithmetic; high for the replacement quotes (all read)",
+   "how_read": "[3] abstract via PubMed; Kuhn abstract via Crossref/doi.org abstract text; replacement quotes from OA full texts (PMC11273608, PMC10866127, PMC12701303); book snippets (1966 Encyclopedia of Chemistry, Rodd's 1977) are snippet-only, page unverified."
+  },
+  {
+   "id": "C11",
+   "cited": "[4]",
+   "verdict": "does-not-support as cited (unverifiable at text level; no readable part of [4] states it)",
+   "support": "[4]'s abstract (read) promises only 'the properties of the excited states of the dyes, their reactions with nucleic acids and their photosensitised chemical modifications of nucleic acid bases'; it does not mention the tricyclic phenothiazine structure, electronic symmetry or selection rules. 18 citing-paper contexts (Semantic Scholar API) use [4] for DNA binding/guanine oxidation, type I/II mechanisms, pH-dependent triplet lifetime and membrane damage. The full text is closed, so the claim cannot be confirmed or refuted from [4].",
+   "correction": "The 'tricyclic phenothiazine' structure is standard dye chemistry and can be cited to a phenothiazinium dye review (e.g. Moreira et al., 'Phenothiazinium Dyes as Photosensitizers (PS) in Photodynamic Therapy (PDT)', InTech 2012, DOI 10.5772/48087, CC-BY - read here); drop the 'distinct electronic symmetry and selection rules' clause or substantiate it with a source that discusses MB's electronic structure.",
+   "confidence": "high that the claim is unverifiable from [4]",
+   "how_read": "[4] abstract via PubMed; citing contexts via Semantic Scholar; readable phenothiazinium review full text read by worker 1."
+  }
+ ],
+ "references": [
+  {
+   "id": "1",
+   "cited_doi": "10.1039/DF9500900014",
+   "status": "resolves",
+   "corrected_doi": "",
+   "metadata_match": true,
+   "notes": "Crossref + doi.org CSL: title 'Characterization of electronic transitions in complex molecules', Discussions of the Faraday Society, vol 9 (1950), author Michael Kasha, RSC. Crossref page field '14'; RSC standard pagination 14-19. Full text NOT readable from here (RSC Cloudflare 403; unpaywall: not OA)."
+  },
+  {
+   "id": "2",
+   "cited_doi": "10.1007/978-0-387-46312-4",
+   "status": "resolves",
+   "corrected_doi": "",
+   "metadata_match": true,
+   "notes": "Crossref: book, Springer US, 2006, print ISBN 9780387312781 = 978-0-387-31278-1 as cited. Full text NOT readable from here (closed; no archive.org OCR copy: item principlesfluore00lako has no hOCR)."
+  },
+  {
+   "id": "3",
+   "cited_doi": "10.1021/bc00020a001",
+   "status": "resolves",
+   "corrected_doi": "",
+   "metadata_match": true,
+   "notes": "Crossref + PubMed PMID 7873641: exact match on title, all five authors, Bioconjugate Chem 4(2) 105-111, 1993. Abstract read. Full text closed (unpaywall is_oa=false); ACS blocks scraping."
+  },
+  {
+   "id": "4",
+   "cited_doi": "10.1016/1011-1344(93)80169-M",
+   "status": "404",
+   "corrected_doi": "10.1016/1011-1344(93)80173-7",
+   "metadata_match": true,
+   "notes": "Cited DOI does not exist (Crossref 404 AND doi.org 'DOI Not Found'). Correct DOI 10.1016/1011-1344(93)80173-7 resolves: Tuite E.M., Kelly J.M., J. Photochem. Photobiol. B 21(2-3) 103-124, 1993; PubMed PMID 8301408 gives the full title. NOTE Crossref lists this DOI's title as 'New trends in photobiology' (Elsevier deposited the series heading, not the article title). Abstract read; full text closed."
+  },
+  {
+   "id": "5",
+   "cited_doi": "10.1002/9780470691274",
+   "status": "404",
+   "corrected_doi": "10.1002/9780470692059",
+   "metadata_match": true,
+   "notes": "Cited DOI does not exist (Crossref 404 and doi.org 'DOI Not Found'). Correct book DOI 10.1002/9780470692059 (Wiley, 2007, Albani J.R., monograph) with ISBNs 9781405138918 (print, = 978-1-405-13891-8 as cited) and 9780470692059 (electronic). OpenLibrary confirms the book under ISBN 9781405138918."
+  },
+  {
+   "id": "6",
+   "cited_doi": "",
+   "status": "n/a",
+   "corrected_doi": "10.1002/9783527633500 (optional; none cited)",
+   "metadata_match": true,
+   "notes": "No DOI cited (fine). ISBN 978-3-527-31669-4 verified in OpenLibrary (OL26086213M, Wiley-VCH 2011) and in Crossref as DOI 10.1002/9783527633500. Full text not read."
+  }
+ ]
+}

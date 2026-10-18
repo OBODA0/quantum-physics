@@ -121,16 +121,20 @@ shots)?"*, *"Do your observations fit with the results in the literature?"*,
 The sweep as implemented: detection window 500–750 nm; the "PL peak intensity"
 curve is sampled in a fixed **565–575 nm** window.
 
-**Known artifact (must be fixed or explained):** because the model emits nothing
-below λexc (Stokes cut), the fixed 565–575 nm window goes dark as soon as
-λexc > 570 nm. The intensity curve therefore collapses to zero at 570 nm — that is
-the detection window, not the dye's absorption edge. The committed figure's own
-right-hand panel shows this: the simulated intensity dies at 570 nm while the
-overlaid A(λ) curve continues rising into the 580–600 nm region. The report text
-nonetheless claims the excitation spectrum "exactly mirrors" A(λ). Two fixes are
-possible: integrate the whole emission band above λexc instead of a fixed window,
-and/or normalize by the lamp power at λexc before comparing with A(λ) (the current
-curve carries the xenon spectrum as a weight).
+**Artifact found and FIXED (2026-10-18).** The draft measured the "PL peak
+intensity" in a fixed 565–575 nm window. Because no emission is produced below
+λexc, that window went dark as soon as λexc passed 570 nm, so the curve fell off a
+cliff at 570 nm — the detection window, not the dye's absorption edge. The draft
+read that cliff as physics.
+
+The sweep now integrates the whole emitted band inside the detection range
+(`plsim/analysis.py`), and the same function computes `P_exc·(1−10^−A)·Φf` beside
+it: the two agree to ~1e-16 of full scale for all three dyes, and the band integral
+is constant across the sweep (`VERIFICATION.md`, section 1). The remaining honest
+nuance to write up: the measured intensity carries the xenon lamp spectrum as a
+weight, so it tracks `P_exc(λ)·(1−10^−A(λ))`, which is *close to but not identical
+with* A(λ) — the corrected figure shows both curves, so the text must not claim an
+exact mirror.
 
 ### R3 — three dyes, one graph, at 450 / 550 / 650 nm (25%)
 
@@ -154,9 +158,15 @@ the safe move; the PDF should say which is which.
 That last point matters and is easy to get wrong in front of a marker: with equal
 concentration `c` and path length `l`, the peak absorbance differs per dye because
 ε differs (150,000 vs 250,000 vs 67,000 M⁻¹cm⁻¹). Equal *concentration* and equal
-*absorbance* are different experiments and give different peak heights. The report
-currently says "identical peak optical density / concentration", which conflates
-the two.
+*absorbance* are different experiments and give different peak heights. The draft
+says "identical peak optical density / concentration", which conflates the two.
+
+**IMPLEMENTED (2026-10-18).** `plsim.samples.with_concentration()` sets
+`A_peak = ε·c·l`, and every figure now runs at 1 µmol/L in a 1 cm cuvette. The
+resulting peak absorbances are 0.150 (Cy3), 0.250 (Cy5) and 0.067 (methylene blue):
+same concentration, three different absorbances, which is the answer question 3 is
+fishing for. Absorbed fractions at the three assigned wavelengths are in
+`report/numbers.md`, section 3.
 
 ---
 
@@ -178,51 +188,56 @@ Cy3 emission FWHM ≈ 32 nm) while its own code appendix prints 0.02, 685 nm and
 
 ---
 
-## 5. Reference audit (run 2026-10-18 against Crossref / doi.org / OpenLibrary)
+## 5. Reference audit
 
 PS1 makes this the highest-stakes item in the assignment: hallucinated or
-irrelevant references ⇒ 0 for everything.
+irrelevant references ⇒ 0 for everything. Two audits were run on 2026-10-18
+against Crossref, doi.org, OpenLibrary, PubMed and Europe PMC, and the full
+detail is in `report/references/AUDIT.md` with machine-readable verdicts in
+`report/references/claims.json`.
 
-| # | cited work | cited DOI/ISBN | verdict |
+### 5.1 Existence: two DOIs in the draft do not exist
+
+| # | cited work | DOI in the draft | verdict |
 | --- | --- | --- | --- |
-| [1] | Kasha 1950, *Discussions of the Faraday Society* 9, 14–19 | 10.1039/DF9500900014 | **verified** — title, author, journal, volume, year all match |
-| [2] | Lakowicz 2006, *Principles of Fluorescence Spectroscopy* (3rd ed.) | 10.1007/978-0-387-46312-4; ISBN 978-0-387-31278-1 | **verified** — DOI resolves to the 2006 book; ISBN matches the 3rd edition |
-| [3] | Mujumdar et al. 1993, *Bioconjugate Chemistry* 4(2), 105–111 | 10.1021/bc00020a001 | **verified** — title, authors, journal, volume, pages all match |
-| [4] | Tuite & Kelly 1993, *J. Photochem. Photobiol. B* 21(2-3), 103–124 | 10.1016/1011-1344(93)80169-M | **DOI DOES NOT EXIST (404)** — the work is real, recorded in Crossref as `10.1016/1011-1344(93)80173-7`, vol 21, pages 103–124, 1993, authors Tuite & Kelly |
-| [5] | Albani 2007, *Principles and Applications of Fluorescence Spectroscopy* | 10.1002/9780470691274; ISBN 978-1-4051-3891-8 | **DOI DOES NOT EXIST (404)** — the book is real (ISBN verified), correct DOI `10.1002/9780470692059` |
-| [6] | Sauer, Hofkens & Enderlein 2011, *Handbook of Fluorescence Spectroscopy and Imaging* | ISBN 978-3-527-31669-4 | **verified** via OpenLibrary — title and lead author match |
+| [1] | Kasha 1950, *Discussions of the Faraday Society* 9, 14–19 | 10.1039/DF9500900014 | **verified** — title, author, journal, volume, year match |
+| [2] | Lakowicz 2006, *Principles of Fluorescence Spectroscopy* 3rd ed. | 10.1007/978-0-387-46312-4 | **verified** (ISBN 978-0-387-31278-1 matches; text closed, not read) |
+| [3] | Mujumdar et al. 1993, *Bioconjugate Chem.* 4(2), 105–111 | 10.1021/bc00020a001 | **verified** — exact match on title, all five authors, volume, pages |
+| [4] | Tuite & Kelly 1993, *J. Photochem. Photobiol. B* 21(2-3), 103–124 | 10.1016/1011-1344(93)80169-M | **404, does not exist** → use `10.1016/1011-1344(93)80173-7` |
+| [5] | Albani 2007, *Principles and Applications of Fluorescence Spectroscopy* | 10.1002/9780470691274 | **404, does not exist** → use `10.1002/9780470692059` (ISBN 978-1-4051-3891-8 is correct) |
+| [6] | Sauer, Hofkens & Enderlein 2011, *Handbook of Fluorescence Spectroscopy and Imaging* | none (ISBN 978-3-527-31669-4) | **verified** via OpenLibrary; no DOI needed |
 
-Two fabricated DOIs are enough to look like hallucination even though both works
-are genuine. Fix both suffixes before submission.
+Both works behind the broken DOIs are real; only the suffixes are invented. Under
+PS1 that is still the shape of a hallucinated reference, so both must be corrected
+before submission.
 
-**Still unchecked: whether each reference supports the exact claim attached to
-it.** These need a read, not a lookup:
+### 5.2 Relevance: six claims sit on references that cannot carry them
 
-- "*τf ≈ 0.3–1.0 ns for Cy3 [3]*" — [3] is a dye-labeling chemistry paper; a
-  fluorescence lifetime cited to it should be double-checked, or the claim re-cited
-  to a lifetime source.
-- "*narrowing the HOMO–LUMO energy gap by approximately 0.33 eV … particle-in-a-box
-  model [3]*" — [3] does not do that calculation; cite a spectroscopy textbook
-  (e.g. [2] or [5]) or drop the number.
-- "*rapid intersystem crossing into the triplet state T1, mediated by sulfur
-  spin-orbit coupling [4]*" — plausibly supported by [4]; confirm in the text of
-  the paper.
-- Numbers repeated from our own pack (Φf, ε) should cite `data/SOURCES.md` or the
-  primary sources inside it, not a textbook.
+| claim in the draft | cited to | what the audit found | fix |
+| --- | --- | --- | --- |
+| Cy3 fluorescence lifetime ≈ 0.3–1.0 ns | [3] | [3] is a dye-synthesis paper; its abstract has no lifetime and no time-resolved data | cite a Cy3 photophysics measurement, e.g. Berrocal-Martin et al., *J. Phys. Chem. B* 2025, DOI 10.1021/acs.jpcb.5c03845 (open access; reports ~0.2 ns free sCy3 and 0.6–1.1 ns components) |
+| internal conversion / vibrational relaxation take 100 fs – 1 ps | [1, 2] | [1] bounds IC as "at least 10⁴ times faster" than the ~10⁻⁷ s radiative lifetime and never states 1e-13–1e-12 s | keep [1] for "ultrafast", cite [2] for the specific window, or drop the window |
+| Beer–Lambert + `I_PL = I_abs · Φf` | [3] | textbook fluorescence, not in a dye-synthesis paper | cite [2] (or [5]) |
+| `π–π*` assignment for the cyanine S0→S1 band | [3] | [3] names Cy3 and its laser lines (546 nm) but never says 550 nm or `π–π*`; 550 nm is the vendor value | keep [3] for the chromophore, cite [1]/[2] for the assignment, and attribute 550 nm to the Cytiva datasheet |
+| emission vanishes at λexc ≥ 620 nm because hν < the 0–0 gap | [1–3] | no source states a Cy3 0–0 gap or a 620 nm cutoff; Cy3's 0–0 is ~570 nm, and the simulator itself does not cut emission at λexc — the signal dies because the absorption tail dies | state it as a consequence of the vanishing absorption, drop the citation |
+| ~96 % of excited methylene blue decays non-radiatively, "specifically by intersystem crossing to T1" | [4] | 96 % is the *total* non-radiative share (1 − Φf); MB's triplet yield is roughly half of it, the rest being internal conversion. Also [4]'s full text could not be read anywhere | reword to "of the ~96 % that does not fluoresce, roughly half crosses to T1 by intersystem crossing and roughly half returns to S0 by internal conversion", and cite a phenothiazine review that states the yields |
+| narrow HOMO–LUMO gap by 0.33 eV, "free-electron particle-in-a-box model" | [3] | [3] does no such calculation; the free-electron model of cyanines is Kuhn 1949, 44 years earlier | cite Kuhn, *J. Chem. Phys.* 1949, 17, 1198, DOI 10.1063/1.1747143 (the arithmetic itself is right: 550→649 nm is 0.344 eV) |
+| silicon responsivity "scales as λ/1.24 µm" | nothing | correct relation, no citation given | cite Hamamatsu, *Si photodiodes*, technical note KSPD9001E04, §2-3 eq. (2-3) |
+| methylene blue is a "tricyclic phenothiazine with distinct electronic symmetry and selection rules" | [4] | [4]'s abstract does not mention structure, symmetry or selection rules; 18 citing papers use it for DNA binding and photosensitised oxidation | cite a phenothiazinium dye review for the structure, or drop the symmetry clause |
 
----
+### 5.3 Other audit findings
 
-## "Screenshots" — what the announcement means
-
-Decided 2026-10-18 (OBODA): *"Show using screen shots that your PL spectrometer can
-simulate the spectra"* and *"add your screen shots"* mean **the graphs the simulator
-produces**, one per dye for question 1 and the sweep for question 2. The report is a
-PDF of figures plus code in the appendix; the figures *are* the screenshots. Terminal
-captures were built and then dropped: a terminal shows a command, not a spectrum.
-
-Consequence for question 1 (25 %): the three dye spectra must be in the PDF as
-figures, produced by the committed code — which they now are, from the measured
-reference bands. Nothing extra needs capturing.
+- **[5] and [6] are never cited in the body**, only listed. Cite them where they
+  carry something, or drop them: an uncited reference is exactly what "irrelevant"
+  means to a marker.
+- **Quantum yields are cited to [3, 4]** while the repository attributes them to
+  vendor datasheets, PhotochemCAD and OMLC. Cite `data/SOURCES.md`'s primary
+  sources for numbers that come from the data pack.
+- **The body says methylene blue Φf = 0.04** while the shipped database says 0.02
+  in water. The number in the text, the figures and the code must be the same one.
+- **[2] Lakowicz could not be read from anywhere accessible** (closed access, no
+  OCR copy). Claims that rest on it should be phrased as standard textbook content,
+  and anything more specific needs a readable source.
 
 ## 6. Submission format
 
@@ -250,13 +265,19 @@ reference bands. Nothing extra needs capturing.
 
 ## 8. Definition of done
 
-- [ ] R1: three dye spectra + screenshots inside the PDF, code appendix present,
-      AI tool named
-- [ ] R2: Cy3 sweep 400–700 nm with screenshots, observations, literature comparison,
-      corrected references; the 570 nm artifact either fixed or explained in the text
-- [ ] R3: both figure forms labelled, "same concentration" premise stated explicitly,
-      the "why" answered with the mechanisms the model actually contains
-- [ ] Report text and code appendix agree on every number
-- [ ] Every DOI/ISBN resolves; every reference supports the sentence it is attached to
-- [ ] `reportlab` declared so the PDF rebuilds from a clean `uv sync`
-- [ ] One PDF, no external attachments
+Report-phase items are unchecked; everything the report depends on is done and
+verified (`VERIFICATION.md`).
+
+- [x] figures for R1/R2/R3 exist and are the "screenshots" the announcement asks for
+- [x] R2's measurement artifact fixed and verified against the model
+- [x] R3's equal-concentration premise implemented and stated in the figure titles
+- [x] every shipped dye number independently re-checked (`data/SOURCES.md`)
+- [x] every reference checked for existence and for relevance
+      (`report/references/AUDIT.md`), with corrections listed in section 5
+- [x] `reportlab` declared, PDF rebuilds from a clean `uv sync`
+- [x] figures and `report/numbers.md` regenerate byte-identically in a clean room
+- [ ] **report phase**: correct the five unsupported numbers (section 6 of `numbers.md`)
+- [ ] **report phase**: fix the two DOIs and re-point the six mis-cited claims (section 5.2)
+- [ ] **report phase**: cite or drop [5] and [6]; say which AI tool designed the system
+- [ ] **report phase**: rebuild the PDF from the corrected text and figures
+- [ ] **report phase**: one PDF, no external attachments, nothing left outside it
