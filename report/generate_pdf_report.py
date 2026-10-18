@@ -485,7 +485,9 @@ def build_pdf():
         "[8] Hamamatsu Photonics, \"Si photodiodes\", technical note KSPD9001E04, sec. 2-3, eq. (2-3), "
         "which prints the quantum-efficiency form QE = (S &times; 1240 / &lambda;) &times; 100 %; "
         "equivalently the responsivity of a detector of quantum efficiency &eta; is "
-        "&eta;&lambda;[&micro;m]/1.24 A/W.",
+        "&eta;&lambda;[&micro;m]/1.24 A/W. A technical note has no DOI of its own; for the same relation "
+        "from a citable source, RP Photonics, \"Responsivity\", DOI 10.61835/xal, an article on "
+        "responsivity and how it relates to quantum efficiency.",
 
         "[9] Dye spectra and molar extinction coefficients: the Cytiva/GE Healthcare Cy3 "
         "amine-reactive sheet 28951573 (catalogue PA23001: 550 nm, 150 000, 570 nm) and the Cy5 "
@@ -496,8 +498,8 @@ def build_pdf():
         "this report, and the raw files themselves are in <i>data/raw/</i>.",
 
         "[10] A published Cy5 emission bandwidth, used only as a cross-check on the width measured here: "
-        "<i>Biosensors</i> <b>13</b> (2023) 876, Table 2 (open access, PMC10526137), which gives an "
-        "Aptamer-Cy5 emission maximum at 665.0 nm with a 37.4 nm FWHM.",
+        "<i>Biosensors</i> <b>13</b> (2023) 876, Table 2, DOI 10.3390/bios13090876 (open access, "
+        "PMC10526137), which gives an Aptamer-Cy5 emission maximum at 665.0 nm with a 37.4 nm FWHM.",
     ]
     for reference in references:
         story.append(ReferenceParagraph(reference, s["ref"]))
