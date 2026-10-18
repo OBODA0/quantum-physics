@@ -327,10 +327,13 @@ verified (`VERIFICATION.md`).
       (`VERIFICATION.md` section 4b)
 - [x] `reportlab` declared, PDF rebuilds from a clean `uv sync`
 - [x] figures and `report/numbers.md` regenerate byte-identically in a clean room
-- [ ] **report phase**: correct the five unsupported numbers (section 6 of `numbers.md`)
-- [ ] **report phase**: fix the two DOIs and re-point the six mis-cited claims (section 5.2)
-- [ ] **report phase**: cite or drop [5] and [6]; say which AI tool designed the system
-- [ ] **report phase**: embed the three individual dye panels as well as the
-      combined overview (the PDF currently shows only the overview for question 1)
-- [ ] **report phase**: rebuild the PDF from the corrected text and figures
-- [ ] **report phase**: one PDF, no external attachments, nothing left outside it
+- [x] the five unsupported numbers corrected in the text (section 6 of `numbers.md`)
+- [x] the two fabricated DOIs replaced, the nine mis-cited claims re-pointed, and the
+      reference list reduced to the works actually cited (section 5.4)
+- [x] the AI tool and models named in the report header table
+- [x] the instrument diagram added, the three individual dye panels embedded, and an
+      absorption-overlay figure added to question 3
+- [x] the report rebuilt from the corrected text and figures (43 pages, 14 appendix
+      files)
+- [x] the PDF carries no external attachments; every DOI printed in it resolves
+      (checked against Crossref on the built file)ide it

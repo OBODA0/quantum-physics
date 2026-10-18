@@ -72,10 +72,20 @@ uv run python report/generate_numbers.py                             # rewrite r
 The figures fix their own optical conditions so that every number in the report
 can be traced: same concentration for all three dyes (1 umol/L in a 1 cm cuvette),
 detection range 450-900 nm, stray excitation light 0.1 % of the excitation power.
-They are the "screenshots" the assignment asks for: one per dye for question 1, the
-sweep for question 2, the three-dye comparison for question 3. `report/numbers.md` is
-generated from the code and the reference pack, so the report never retypes a
-number by hand and the text cannot drift away from the code.
+They are the "screenshots" the assignment asks for:
+
+| figure | question |
+| --- | --- |
+| `part1_instrument_diagram.png` | 1 - the design itself |
+| `part1_combined_overview.png`, `part1_cy3.png`, `part1_cy5.png`, `part1_methylene-blue.png` | 1 - the three dye spectra |
+| `part2_cy3_excitation_sweep.png` | 2 - the 400-700 nm sweep |
+| `part3_absorption_overlay.png` | 3 - why the peaks differ |
+| `part3_three_dyes_comparison.png`, `part3_single_canvas_overlay.png` | 3 - three dyes on one graph, both readings |
+
+`report/numbers.md` is generated from the code and the reference pack, so the report
+never retypes a number by hand and the text cannot drift away from the code.
+`report/generate_pdf_report.py` builds the submission PDF from the figures, the
+numbers and the source files themselves.
 
 ## What is modelled, and how real it is
 
@@ -142,6 +152,7 @@ plsim/detector.py       silicon photodiode
 plsim/spectrometer.py   the instrument, producing a PL scan
 plsim/analysis.py       excitation scans and their model checks
 plsim/plot.py           matplotlib rendering
+report/settings.py      optical conditions shared by figures and numbers
 plsim/cli.py            command line interface
 data/                   measured reference pack + sources + raw source data
 report/                 assignment figures, numbers, and the report itself

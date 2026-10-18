@@ -219,6 +219,31 @@ fraction below λexc (3.7 % for Cy3, 9.2 % for Cy5, 7.9 % for methylene blue at 
 absorption maximum) is quantified in `report/numbers.md` §3.1 so the report can
 state it instead of hiding it.
 
+
+## 6. The submission PDF (report phase)
+
+Built by `report/generate_pdf_report.py` from the corrected text, the generated
+figures and the source files. What was checked on the built file itself, not on the
+repository:
+
+| check | result |
+| --- | --- |
+| pages / size | 43 pages, 3.0 MB |
+| figures embedded (not linked) | yes — device figures on pages 1-4 at full resolution (3900x1680 diagram, 4800x1440 overview, 3 x 2160x1380 singles, 4350x1680 sweep, part-3 figures) |
+| appendix files present | 14 |
+| every DOI printed in the PDF resolves | 7 of 7 return HTTP 200 from Crossref |
+| the two fabricated DOIs from the earlier draft | absent |
+| one file, no attachments | yes |
+
+The DOI check is the PS1 gate: it runs on the text extracted from the built PDF, so
+a reference cannot be correct in the repository and wrong in the submission.
+
+Two independent audits ran on the report text afterwards: one checking every number,
+arithmetic claim, caption and factual statement against `numbers.md`, the figures and
+the code; one checking every citation for existence and for whether the cited work
+supports the sentence it is attached to. Their findings and the fixes are recorded
+below as they land.
+
 ## 5. Not verified, and therefore not claimed
 
 - The report text itself has not been touched, so its numbers still disagree with
