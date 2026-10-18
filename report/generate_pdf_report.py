@@ -232,13 +232,15 @@ def build_pdf():
 
     story.append(Paragraph("<b>1.2 Sample database and baseline spectra.</b>", s["h2"]))
     story.append(Paragraph(
-        "Cy3 and Cy5 are the sulfoindocyanine dyes introduced as fluorescent labelling reagents, "
-        "and the model uses the vendor maxima, 550 nm for Cy3 and 649 nm for Cy5 [9]. The same "
+        "Cy3 and Cy5 are the sulfoindocyanine dyes introduced as fluorescent labelling reagents by "
+        "[3], and the model uses the vendor maxima, 550 nm for Cy3 and 649 nm for Cy5 [9]. The same "
         "vendor documentation names the lines the fluorescence literature conventionally uses, the "
         "633 nm helium-neon and 647 nm krypton-argon lines [9]. Methylene "
         "blue is a phenothiazinium dye whose excited state is quenched "
         "both by internal conversion and by intersystem crossing [4, 6], which is why its quantum "
-        "yield is the lowest of the three. The database holds the three dyes named in the task, at "
+        "yield is the lowest of the three: the 0.04 that is often quoted for it is an absolute "
+        "measurement in ethanol [11], and the aqueous value used here is the 0.02 reference-standard "
+        "convention declared in section 4. The database holds the three dyes named in the task, at "
         "the same concentration "
         "(1 &micro;mol/L in a 1 cm cuvette, so <i>A</i> = &epsilon;<i>c</i><i>l</i> differs between "
         "them: 0.150 for Cy3, 0.250 for Cy5, 0.067 for methylene blue). Each dye was excited at its own "
@@ -426,8 +428,8 @@ def build_pdf():
         "those two wavelengths does not give equal photocurrent.<br/>"
         "<b>(4) The width of the emission band.</b> Measured on the digitized bands, Cy3, Cy5 and "
         "methylene blue are 28.6, 33.4 and 48.6 nm wide (the simulated curves read 28, 32 and 47 nm "
-        "on a 1 nm grid); the one published bandwidth found, 37.4 nm for Cy5 [10], is 4 nm wider than "
-        "the 33.4 nm measured here. This width is not a further factor inside the peak heights above: "
+        "on a 1 nm grid); a published Cy5 bandwidth, 37.4 nm for an aptamer conjugate [10], is 4 nm "
+        "wider than the 33.4 nm measured here, and no published bandwidth for Cy3 was found at all. This width is not a further factor inside the peak heights above: "
         "the model draws each band normalized to its own maximum, so a peak here is set by the "
         "absorbed fraction and the quantum yield, and the width shows up in the integral. It does "
         "enter the moment the comparison is made at equal emitted power, which is how a quantum yield "
@@ -518,6 +520,12 @@ def build_pdf():
         "[10] A published Cy5 emission bandwidth, used only as a cross-check on the width measured here: "
         "<i>Biosensors</i> <b>13</b> (2023) 876, Table 2, DOI 10.3390/bios13090876 (open access, "
         "PMC10526137), which gives an Aptamer-Cy5 emission maximum at 665.0 nm with a 37.4 nm FWHM.",
+
+        "[11] J. Olmsted III, \"Calorimetric determinations of absolute fluorescence quantum yields\", "
+        "<i>Journal of Physical Chemistry</i> <b>83</b> (1979) 2581-2584. DOI 10.1021/j100483a006. "
+        "(The primary attribution for the 0.04 figure that is widely quoted for methylene blue, which "
+        "it measures in ethanol by an absolute method; the value used in this report, 0.02 in water, "
+        "is the reference-standard convention, and the two are not interchangeable.)",
     ]
     for reference in references:
         story.append(ReferenceParagraph(reference, s["ref"]))
@@ -527,10 +535,13 @@ def build_pdf():
         "blue extinction coefficient of 95,000 M<sup>-1</sup>cm<sup>-1</sup>, so it is not used: the "
         "pack carries 67,000 (PhotochemCAD, water), 74,028 (OMLC) and 107,800 for the deconvoluted "
         "monomer. The quantum yield of methylene blue in water, 0.02, is the value used in "
-        "photodynamic-therapy work; the readable measurement in the literature is 0.04 in ethanol. The "
-        "emission bandwidths quoted here are measured on the digitized bands rather than taken from the "
-        "literature; the one published value found, a Cy5 emission FWHM of 37.4 nm [10], is 4 nm wider "
-        "than the 33.4 nm measured here, and for Cy3 no published value was found at all. The FPbase records from which the Cy3 and Cy5 bands are digitized do "
+        "photodynamic-therapy work, where it serves as a reference standard; the value with a primary "
+        "attribution is 0.04, measured in ethanol by a calorimetric absolute method [11], and some "
+        "readable sources also quote 0.04 for water, so the range is 0.02-0.04 rather than a single "
+        "number. The emission bandwidths quoted here are measured on the digitized bands rather than "
+        "taken from the literature; a published Cy5 emission FWHM of 37.4 nm [10], for an aptamer "
+        "conjugate, is 4 nm wider than the 33.4 nm measured here, and no published bandwidth for Cy3 "
+        "was found at all. The FPbase records from which the Cy3 and Cy5 bands are digitized do "
         "not state their provenance; the fully documented curves for the same chromophores are the "
         "PhotochemCAD methanol spectra kept in <i>data/raw/</i>. Section 3.1 of the generated number "
         "table tests how much any of this could move the result: re-run at the top of both unverified "
