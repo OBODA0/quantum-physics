@@ -315,7 +315,7 @@ def build(database_choice="reference"):
         "over the window they share, which is why one strip is used rather than a splice of two."
         .format(100 * disagreement))
     add("")
-    add("| wavelength | excitation strip (fraction of peak) | absorbed from it | methanol record 016 | absorbed from it |")
+    add("| wavelength | excitation strip | absorbed | methanol record 016 | absorbed |")
     add("| --- | --- | --- | --- | --- |")
     cy3_peak_absorbance = 150000.0 * CONCENTRATION_M * PATH_LENGTH_CM
     for wavelength in (400.0, 450.0, 590.0, 600.0, 610.0, 620.0, 650.0, 700.0):

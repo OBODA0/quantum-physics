@@ -84,7 +84,7 @@ The model uses the absorbance strip of the shipped Cy3 record, 450-590 nm. The s
 
 The absorbance strip and the excitation strip differ by 2.9 % of full scale on average over the window they share, which is why one strip is used rather than a splice of two.
 
-| wavelength | excitation strip (fraction of peak) | absorbed from it | methanol record 016 | absorbed from it |
+| wavelength | excitation strip | absorbed | methanol record 016 | absorbed |
 | --- | --- | --- | --- | --- |
 | 400 nm | 0.0019 | 0.07% | 0.0004 | 0.01% |
 | 450 nm | 0.0183 | 0.63% | 0.0426 | 1.46% |

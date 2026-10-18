@@ -102,12 +102,20 @@ def styles():
 
 
 def wrapped_source(text, width=120):
-    """Safety net: no appendix file has a line near this width, so nothing is changed."""
+    """Break over-long lines so nothing reaches the page edge.
+
+    No source file in the appendix comes near this width, so code is passed through untouched;
+    only the prose paragraphs of the generated number table are wrapped, and those are broken at
+    a space so the result stays readable.
+    """
     lines = []
     for line in text.splitlines():
         while len(line) > width:
-            lines.append(line[:width])
-            line = "    " + line[width:]
+            cut = line.rfind(" ", 1, width + 1)
+            if cut <= 0:
+                cut = width
+            lines.append(line[:cut])
+            line = "    " + line[cut:].lstrip()
         lines.append(line)
     return "\n".join(lines)
 
@@ -134,6 +142,19 @@ def link_dois(text):
         return '<link href="https://doi.org/{d}" color="{c}">DOI {d}</link>{t}'.format(
             d=doi, c=LINK_COLOR, t=trailing)
     return DOI_RE.sub(replace, text)
+
+
+def extract_markdown_sections(text, wanted):
+    """Keep only the named '###' sections of a markdown file (the ones the report cites)."""
+    kept, current = [], None
+    for line in text.splitlines():
+        if line.startswith("### "):
+            current = line[:7] in wanted
+        elif line.startswith("## "):
+            current = None
+        if current:
+            kept.append(line)
+    return "\n".join(kept)
 
 
 class ReferenceParagraph(Paragraph):
@@ -603,7 +624,8 @@ def build_pdf():
         ("report/data_provenance.md",
          "Source and confidence behind every dye value, and what could not be verified"),
         ("report/numbers.md",
-         "The generated number table: every value this report quotes, with its check"),
+         "The generated number table: the two sections this report cites (3.1 and 3.3); the "
+         "whole table is report/numbers.md in the repository"),
         ("plsim/bands.py", "Band shapes: Gaussian model and tabulated measured bands"),
         ("plsim/sources.py", "Excitation arm: xenon lamp, monochromator, harmonic filter"),
         ("plsim/samples.py", "Sample database, absorbance, concentration"),
@@ -626,7 +648,10 @@ def build_pdf():
         story.append(Paragraph(f"<b>File: {rel_path}</b> - <i>{desc}</i>", s["h2"]))
         # Chunks keep a page break from leaving one or two lines stranded on a page
         # of their own; short tails are merged into the previous chunk.
-        lines = wrapped_source(full_path.read_text(encoding="utf-8")).split("\n")
+        text = full_path.read_text(encoding="utf-8")
+        if rel_path == "report/numbers.md":
+            text = extract_markdown_sections(text, {"### 3.1", "### 3.3"})
+        lines = wrapped_source(text).split("\n")
         chunk_size = 55
         chunks = [lines[i:i + chunk_size] for i in range(0, len(lines), chunk_size)]
         if len(chunks) > 1 and len(chunks[-1]) < 6:
