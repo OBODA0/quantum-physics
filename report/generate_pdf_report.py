@@ -173,8 +173,9 @@ def _count_pages(path):
 def _prepend_cover(report_path, cover_path, page_count):
     """Put the submitted cover in front of the report, carrying the report's own footer.
 
-    The cover is used exactly as submitted; only the footer line is added to it, so the
-    page numbering runs unbroken from page 1 to the last page.
+    The cover is used exactly as submitted (its own text layer was corrected once, in place, by
+    report/fix_cover.py); only the footer line is added here, so the page numbering runs unbroken
+    from page 1 to the last page.
     """
     import io
 
@@ -182,6 +183,7 @@ def _prepend_cover(report_path, cover_path, page_count):
 
     overlay_buffer = io.BytesIO()
     overlay = canvas.Canvas(overlay_buffer, pagesize=letter)
+    overlay.setFillColor(colors.HexColor("#555555"))
     overlay.setFont("Helvetica", 9)
     overlay.setFillColor(colors.HexColor("#555555"))
     overlay.drawString(54, 34, "Nanotechnology / Quantum Physics - PL Spectrometer Simulation")
