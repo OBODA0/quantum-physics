@@ -18,7 +18,8 @@ from reportlab.platypus import (
 from reportlab.pdfgen import canvas
 
 PDF_FILENAME = "Assignment_1_PL_Spectroscopy_Simulation_Report.pdf"
-FIG_DIR = Path("report_figures")
+PDF_PATH = Path(__file__).resolve().parent / PDF_FILENAME
+FIG_DIR = Path(__file__).resolve().parent / "report_figures"
 
 class NumberedCanvas(canvas.Canvas):
     """Two-pass canvas to dynamically compute and print 'Page X of Y'."""
@@ -62,7 +63,7 @@ class NumberedCanvas(canvas.Canvas):
 
 def build_pdf():
     doc = SimpleDocTemplate(
-        PDF_FILENAME,
+        str(PDF_PATH),
         pagesize=letter,
         leftMargin=54,
         rightMargin=54,
@@ -381,7 +382,7 @@ def build_pdf():
 
     # Build the document
     doc.build(story, canvasmaker=NumberedCanvas)
-    print(f"PDF successfully built: {PDF_FILENAME}")
+    print(f"PDF successfully built: {PDF_PATH}")
 
 
 if __name__ == "__main__":

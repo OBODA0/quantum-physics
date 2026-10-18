@@ -5,15 +5,19 @@ Generate all figures required for Assignment 1:
 3. Part 3: Three dyes overlaid at 450 nm, 550 nm, and 650 nm excitation wavelengths.
 """
 
+import sys
 from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from plsim.samples import get_sample
 from plsim.spectrometer import PLSpectrometer
 
-FIG_DIR = Path("report_figures")
-FIG_DIR.mkdir(exist_ok=True)
+FIG_DIR = Path(__file__).resolve().parent / "report_figures"
+FIG_DIR.mkdir(parents=True, exist_ok=True)
 
 # Set clean styling
 plt.style.use("seaborn-v0_8-whitegrid" if "seaborn-v0_8-whitegrid" in plt.style.available else "default")
