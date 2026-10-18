@@ -221,33 +221,42 @@ def generate_part3(dyes):
         ", ".join("{:.0f} nm".format(w) for w in ASSIGNED_EXCITATION_NM)))
     review = []
 
-    figure, axes = plt.subplots(1, 3, figsize=(16, 5.2), constrained_layout=True, sharey=True)
-    for axis, lambda_exc in zip(axes, ASSIGNED_EXCITATION_NM):
-        peaks_here = {}
+    # Every curve first, so the panels can be judged against the tallest curve of
+    # all of them rather than against the axis of whichever panel is being drawn.
+    scans = {}
+    for lambda_exc in ASSIGNED_EXCITATION_NM:
         for key in DYE_KEYS:
             dye = dyes[key]
-            scan = instrument(dye, 0.0).acquire(
+            scans[(lambda_exc, key)] = instrument(dye, 0.0).acquire(
                 lambda_exc_nm=lambda_exc, lambda_min_nm=DETECTION_RANGE_NM[0],
                 lambda_max_nm=DETECTION_RANGE_NM[1], dlambda_nm=1.0)
-            axis.plot(scan.wavelengths_nm, scan.photocurrent, color=DYE_COLORS[key], lw=2.0,
-                      label="{} (A = {:.3f})".format(dye.name, dye.peak_absorbance))
-            peaks_here[dye.name] = scan.photocurrent.max()
             review.append(
                 "  lambda_exc {:5.0f} nm  {:<16s} A(exc) {:.4f}  absorbed {:6.2%}  peak current {:.5f}".format(
                     lambda_exc, dye.name, dye.absorbance(lambda_exc),
-                    dye.absorbed_fraction(lambda_exc), scan.photocurrent.max()))
+                    dye.absorbed_fraction(lambda_exc), scans[(lambda_exc, key)].photocurrent.max()))
+    tallest = max(scan.photocurrent.max() for scan in scans.values())
+
+    figure, axes = plt.subplots(1, 3, figsize=(16, 5.2), constrained_layout=True, sharey=True)
+    for axis, lambda_exc in zip(axes, ASSIGNED_EXCITATION_NM):
+        for key in DYE_KEYS:
+            dye = dyes[key]
+            scan = scans[(lambda_exc, key)]
+            axis.plot(scan.wavelengths_nm, scan.photocurrent, color=DYE_COLORS[key], lw=2.0,
+                      label="{} (A = {:.3f})".format(dye.name, dye.peak_absorbance))
         axis.axvline(lambda_exc, color="black", ls="--", alpha=0.5)
         axis.set_title("excitation {:.0f} nm".format(lambda_exc))
         axis.set_xlabel("wavelength (nm)")
         axis.legend(loc="upper right")
-        if max(peaks_here.values()) < 0.01 * max(0.01, axis.get_ylim()[1]):
-            axis.text(0.5, 0.55,
-                      "all three dyes are nearly transparent here:\n"
-                      "absorbed {:.2f} % (Cy3), {:.2f} % (Cy5), {:.2f} % (MB)".format(
+        panel_tallest = max(scans[(lambda_exc, key)].photocurrent.max() for key in DYE_KEYS)
+        if panel_tallest < 0.02 * tallest:
+            axis.text(0.5, 0.5,
+                      "all three dyes are nearly transparent here\n"
+                      "absorbed {:.2f} % (Cy3), {:.2f} % (Cy5), {:.2f} % (methylene blue)\n"
+                      "this is why the panel looks empty".format(
                           100 * dyes["cy3"].absorbed_fraction(lambda_exc),
                           100 * dyes["cy5"].absorbed_fraction(lambda_exc),
                           100 * dyes["methylene-blue"].absorbed_fraction(lambda_exc)),
-                      transform=axis.transAxes, ha="center", fontsize=9,
+                      transform=axis.transAxes, ha="center", va="center", fontsize=9,
                       bbox=dict(boxstyle="round", fc="white", ec="#bbbbbb"))
     axes[0].set_ylabel("photodetector current (relative a.u., shared scale)")
     figure.suptitle("Part 3: emission spectra of the three dyes at the same concentration "
