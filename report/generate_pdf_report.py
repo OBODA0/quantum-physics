@@ -422,8 +422,9 @@ def build_pdf():
 
         "[7] H. Kuhn, \"A quantum-mechanical theory of light absorption of organic dyes and similar "
         "compounds\", <i>Journal of Chemical Physics</i> <b>17</b> (1949) 1198-1212. DOI "
-        "10.1063/1.1747143. (Free-electron model of the cyanine chain: why two extra methine units "
-        "shift the band about 100 nm to the red.)",
+        "10.1063/1.1747143. (Free-electron model of the cyanine chain, eq. (8); the report uses it for "
+        "the chain-length argument and quotes the shift from our own data - 550 nm for the trimethine "
+        "Cy3 against 649 nm for the pentamethine Cy5.)",
 
         "[8] Hamamatsu Photonics, \"Si photodiodes\", technical note KSPD9001E04, sec. 2-3, eq. (2-3), "
         "which prints the quantum-efficiency form QE = (S &times; 1240 / &lambda;) &times; 100 %; "
