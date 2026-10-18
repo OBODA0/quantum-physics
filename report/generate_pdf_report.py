@@ -332,7 +332,8 @@ def build_pdf():
     story.append(figure("part3_absorption_overlay.png", 470, 251))
     story.append(Paragraph(
         "<b>Figure 5:</b> the three absorption bands, each normalised to its own maximum, with the "
-        "three excitation wavelengths marked. At 550 nm Cy3 is at its maximum while Cy5 and methylene "
+        "three excitation wavelengths marked. At 550 nm Cy3 is near its maximum (its curve peaks at "
+        "554 nm) while Cy5 and methylene "
         "blue are on their rising edges; at 650 nm the situation is reversed.", s["caption"]))
     story.append(figure("part3_three_dyes_comparison.png", 504, 164))
     story.append(Paragraph(
