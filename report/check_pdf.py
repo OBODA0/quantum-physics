@@ -75,6 +75,8 @@ def main(argv=None):
         failures.append("PDF title metadata")
 
     raw = PDF.read_bytes()
+    if b"https://github.com/OBODA0/pl-spectrometer-simulator" not in raw:
+        failures.append("repository link missing from the title page")
     uri_links = raw.count(b"/URI")
     dest_links = raw.count(b"/Dest [")
     print(f"clickable DOI links : {uri_links}")
