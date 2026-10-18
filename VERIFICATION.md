@@ -7,7 +7,7 @@ transcription rather than discovery. Nothing here touches the report text.
 
 ## 1. The physics model
 
-`uv run pytest` — **18 checks, all passing** (`tests/test_simulator.py`). They
+`uv run pytest` — **19 checks, all passing** (`tests/test_simulator.py`). They
 assert the things the report will claim:
 
 | what it asserts | why it is in the suite |
@@ -26,6 +26,7 @@ assert the things the report will claim:
 | the excitation scan reproduces `P_exc·(1−10^−A)·Φf` | the sweep metric is correct |
 | the excitation scan peaks at the absorption maximum | question 2's headline |
 | the CLI rejects bad input instead of drawing a wrong plot | users type wrong things |
+| the reference pack is well formed (fields present, curves strictly increasing, finite, non-negative, normalised to 1, quoted maxima inside the measured range) | the data file is an input, and a broken input would silently distort every figure |
 
 ### Defect found and fixed: the model broke Kasha's rule
 
@@ -129,13 +130,27 @@ report/generate_numbers.py
 report/generate_pdf_report.py  -> PDF built
 ```
 
-Results:
+Results (repeated after every change, latest run on the committed tree):
 
 - `report/numbers.md` regenerated **byte-identical** to the committed file;
 - all seven figures regenerated with **mean absolute pixel difference 0.000** and
   identical dimensions, so the committed figures provably come from the committed
   code;
-- the PDF builds from a clean environment with no manual steps.
+- the PDF builds from a clean environment with no manual steps;
+- with the reference pack temporarily removed, `--database auto` falls back to the
+  Gaussian model and says so in its output, while `--database reference` refuses
+  with a one-line error instead of a traceback.
+
+### Defect found and fixed: the code appendix was not the code
+
+`report/generate_pdf_report.py` read its appendix sources from paths relative to
+the *working directory* and skipped any file that did not exist — so building the
+PDF from anywhere but the repository root produced a silently shorter appendix,
+and four modules that carry the results shown in the figures (`analysis.py`,
+`cli.py`, `plot.py`, `reference.py`) were missing from it entirely. Paths now
+resolve against the repository root, a missing file is a hard error, and the
+appendix lists thirteen files including the figure and number generators and the
+test suite (`VERIFICATION.md` sections 4; `TASK.md` section 3).
 
 ## 5. Not verified, and therefore not claimed
 
