@@ -212,7 +212,10 @@ def build_pdf():
         "prediction <i>P</i><sub>exc</sub>(&lambda;)[1 &minus; "
         "10<sup>&minus;A(&lambda;)</sup>]&Phi;<sub>f</sub>, and the absorbance normalised to its own "
         "maximum. The two model curves lie on top of each other; the absorbance differs slightly "
-        "because the intensity carries the xenon lamp spectrum as a weight.", s["caption"]))
+        "because the intensity carries the xenon lamp spectrum as a weight. The left panel is the "
+        "detected signal including stray light, so each curve carries a small spike at its own "
+        "excitation wavelength; the sweep on the right uses the fluorescence alone, so stray light "
+        "cannot contaminate it.", s["caption"]))
 
     story.append(Paragraph("<b>2.2 What is observed.</b>", s["h2"]))
     story.append(Paragraph(

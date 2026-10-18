@@ -227,7 +227,10 @@ def generate_part2(dyes):
     print("Part 2: Cy3 with the excitation wavelength swept {:.0f} to {:.0f} nm".format(
         EXCITATION_START_NM, EXCITATION_STOP_NM))
     dye = dyes["cy3"]
-    cy3 = instrument(dye, 0.0)
+    # stray light is on here, so the figure shows the scattered line tracking the
+    # excitation wavelength; the sweep on the right uses the PL-only signal, so the
+    # stray light cannot contaminate the integrated intensity
+    cy3 = instrument(dye, SCATTER_FRACTION)
 
     figure, (left, right) = plt.subplots(1, 2, figsize=(14.5, 5.6), constrained_layout=True)
 
@@ -238,7 +241,7 @@ def generate_part2(dyes):
         scan = cy3.acquire(lambda_exc_nm=lambda_exc, lambda_min_nm=DETECTION_RANGE_NM[0],
                            lambda_max_nm=DETECTION_RANGE_NM[1], dlambda_nm=1.0)
         bands.append(measured_emission_band(scan))
-        left.plot(scan.wavelengths_nm, scan.emitted_photocurrent, color=cmap(norm(lambda_exc)), lw=2.0,
+        left.plot(scan.wavelengths_nm, scan.photocurrent, color=cmap(norm(lambda_exc)), lw=2.0,
                   label="excitation {:.0f} nm".format(lambda_exc))
     peaks = [band.peak_nm for band in bands]
     widths = [band.fwhm_nm for band in bands]
@@ -246,7 +249,7 @@ def generate_part2(dyes):
                    "peak {:.1f}-{:.1f} nm, FWHM {:.1f}-{:.1f} nm: the band does not move "
                    "(Kasha's rule)".format(min(peaks), max(peaks), min(widths), max(widths)))
     left.set_xlabel("emission wavelength (nm)")
-    left.set_ylabel("PL photocurrent (relative a.u.)")
+    left.set_ylabel("detected photocurrent (relative a.u.)")
     left.legend(loc="upper right")
 
     sweep = excitation_scan(cy3, np.arange(EXCITATION_START_NM, EXCITATION_STOP_NM + 0.1,
