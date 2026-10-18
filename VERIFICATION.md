@@ -246,6 +246,22 @@ the code; one checking every citation for existence and for whether the cited wo
 supports the sentence it is attached to. Their findings and the fixes are recorded
 below as they land.
 
+
+## 8. Audits of the report itself
+
+Three independent passes ran against the built PDF. Their findings and what was done
+about them:
+
+| pass | scope | findings | status |
+| --- | --- | --- | --- |
+| text audit | every number, arithmetic claim, caption and factual statement in the PDF, against `numbers.md`, the figures and the code | 17: 1 blocker, 9 must-fix, 7 cosmetic. Blocker: five of the nine references were never cited in the body, which under PS1 reads as irrelevant | all fixed. Each reference now carries a sentence; the causal claim about peak positions, the two wrong statements about the wavelength ends, the order-of-magnitude claim, the missing detection settings and the bandwidth values were rewritten |
+| reference audit | existence of every reference and whether it supports the sentence it is attached to | 10: no reference hallucinated and all DOIs resolve, but ten corrections - a wrong author initial, a mislabelled vendor sheet, an attribution to the wrong PhotochemCAD reference, an internal-conversion figure attributed to Kasha 1950 rather than to the textbook, a 100 nm figure that Kuhn 1949 does not print, a quantum-efficiency formula quoted as responsivity, and a bandwidth limitation stated too absolutely | all applied |
+| end-to-end audit | fresh clone from GitHub, `uv sync`, the full build chain, figure and number comparison, appendix, DOIs, and the six assignment clauses | the chain reproduces exactly: figures byte-identical, `numbers.md` identical, PDF text identical, 7/7 DOIs resolve, all six clauses satisfied | the four defects it found were stale documentation, all corrected |
+
+The gate that runs on the built file is `report/check_pdf.py`: DOI resolution, appendix
+count, embedded figures, metadata. It passes on the current build (47 pages, 14
+appendix files, 18 embedded image objects, 8 DOIs, none failing).
+
 ## 7. Not verified, and therefore not claimed
 
 - The report text itself has not been touched, so its numbers still disagree with
