@@ -152,10 +152,52 @@ resolve against the repository root, a missing file is a hard error, and the
 appendix lists thirteen files including the figure and number generators and the
 test suite (`VERIFICATION.md` sections 4; `TASK.md` section 3).
 
+## 4b. The figures, audited independently
+
+A separate pass checked all seven figures pixel by pixel against the printed axes
+and against `report/numbers.md`. Every number printed in the figures (A, Φf, λexc,
+concentration) agreed with the generated table. The curves did not always:
+
+| finding | what was wrong | fix |
+| --- | --- | --- |
+| stray light drawn in the wrong units | the dotted stray-light curve was plotted from optical power while the axis is photocurrent, so in the methylene blue panel it stood 44 % above the spectrum it belongs to and set the axis | `PLScan` now carries `emitted_photocurrent` and `scatter_photocurrent`; every figure plots current. A test asserts the two add up to `photocurrent` and that the stray line is never the tallest feature |
+| stray light dominating the dim dye | at 0.5 % of the excitation power the stray line was 79 % of methylene blue's PL peak | the report figures use 0.1 %, which is what a double monochromator with a harmonic filter should leave; the value is stated in every legend |
+| three legend entries with no curve | the question-2 overlay listed 450, 600 and 650 nm, where Cy3 does not absorb, so three labels pointed at flat lines | the overlay now shows the six wavelengths that produce a spectrum (470–560 nm) and the title says why |
+| empty 450 nm panel | at 450 nm all three dyes absorb under 0.25 %, so the panel looked broken | the panel carries an annotation giving the absorbed fraction of each dye |
+| single canvas hid the answer | one spectrum set the scale, so eight of nine curves were flat at zero | the peak current of all nine curves is printed in the figure |
+| missing Φf, ambiguous A | the individual dye titles had no quantum yield, and "A = 0.150" is the peak absorbance at 554 nm, not at the 550 nm excitation used | titles now read "A(550 nm) = 0.143, A_peak = 0.150, Φf = 0.04" |
+| unlabelled stray spike, three scales | the overview panels drew a stray spike with no legend entry and three different y scales | stray light has its own legend entry and the title states that each panel has its own scale |
+| "detected PL" label | the curve is PL plus stray light | labelled "detected photocurrent (PL + stray)" |
+
+Two further defects were found in the numbers generator itself: it double-converted
+one ratio to a percentage (399 % instead of 4.0 %), and a figure title overflowed
+its canvas. Both fixed.
+
+### Deliberate non-fix: emission drawn below the excitation wavelength
+
+The audit flagged that 4–9 % of the emitted band integral lies below λexc, which is
+anti-Stokes emission. The remedy it suggested — cutting the emission at λexc — is
+the exact defect that was removed earlier in this phase, because it breaks Kasha's
+rule. A Boltzmann suppression referenced to λexc was also tried and rejected: it
+*is* the physically correct treatment for a single excitation wavelength, but it
+makes the band shape depend on λexc again, which is the one thing question 2 must
+not do. The correct reference for hot-band suppression is the dye's own 0–0 energy,
+which does not move with λexc; the measured band already contains its own vibronic
+envelope, so applying another factor on top would double-count it.
+
+The chosen behaviour is therefore: the emission band is the measured band, and the
+fraction below λexc (3.7 % for Cy3, 9.2 % for Cy5, 7.9 % for methylene blue at the
+absorption maximum) is quantified in `report/numbers.md` §3.1 so the report can
+state it instead of hiding it.
+
 ## 5. Not verified, and therefore not claimed
 
 - The report text itself has not been touched, so its numbers still disagree with
-  the code in the five places listed above.
+  the code in the five places listed above. The PDF committed in `report/` has
+  current figures and a current appendix but its prose is the old draft; it embeds
+  three of the seven figures (the combined overview, the sweep, the comparison)
+  and its Figure-2 caption still says "450–610 nm" against a figure that spans
+  450–650 nm.
 - The committed PDF predates the corrected figures and must be rebuilt during the
   report phase.
 - The literature's *experimental* emission maxima differ from our simulated ones by

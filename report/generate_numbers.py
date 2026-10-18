@@ -67,6 +67,20 @@ def band_fwhm(band, lo, hi):
     return float(above[-1] - above[0])
 
 
+def absorption_maximum_nm(key):
+    """The absorption maximum the sources report, from the reference pack."""
+    return float(records_cache()[key]["absorption_max_nm"])
+
+
+_RECORDS = {}
+
+
+def records_cache():
+    if not _RECORDS:
+        _RECORDS.update(json.loads(Path(DEFAULT_PATH).read_text()))
+    return _RECORDS
+
+
 def band_peak(band, lo, hi):
     grid = np.arange(lo, hi, 0.1)
     return float(grid[int(np.argmax(band(grid)))])
@@ -156,6 +170,39 @@ def build(database_choice="reference"):
                 peak, integrated))
     add("")
 
+    add("### 3.1 What is drawn below the excitation wavelength, and how much stray light is left")
+    add("")
+    add("The emission band is the measured one: the model applies no extra suppression to the "
+        "part of the band that lies below lambda_exc, because that part of the spectrum is the "
+        "dye's own measured band shape and its amplitude there is small. A real instrument would "
+        "record scattered excitation light at the same time, which is the stray-light column.")
+    add("")
+    add("| dye | excitation (absorption maximum) | fraction of the emitted band below lambda_exc | "
+        "stray light / PL peak |")
+    add("| --- | --- | --- | --- |")
+    for key in DYE_KEYS:
+        dye = dyes[key]
+        lambda_exc = absorption_maximum_nm(key)
+        scan = PLSpectrometer(sample=dye, scatter_fraction=0.001).acquire(
+            lambda_exc_nm=lambda_exc, lambda_min_nm=DETECTION_RANGE_NM[0],
+            lambda_max_nm=DETECTION_RANGE_NM[1], dlambda_nm=0.5)
+        band = scan.emitted_photocurrent
+        below = scan.wavelengths_nm < lambda_exc
+        fraction = (
+            float(np.trapezoid(band[below], scan.wavelengths_nm[below]) / np.trapezoid(band, scan.wavelengths_nm))
+            if band.max() > 0 else float("nan")
+        )
+        stray_ratio = (
+            scan.scatter_photocurrent.max() / band.max() if band.max() > 0 else float("nan")
+        )
+        add("| {} | {:.0f} nm | {:.2%} | {:.1%} |".format(
+            dye.name, lambda_exc, fraction, stray_ratio))
+    add("")
+    add("The stray-light figure is a model input, not a measurement: the report figures use 0.1 % "
+        "of the excitation power, which is what a double monochromator with a harmonic filter is "
+        "expected to leave. With a single monochromator it would be far larger, and methylene blue "
+        "at 1 umol/L is dim enough that stray light would then dominate its spectrum.")
+    add("")
     add("Peak wavelengths are read off the scan on the step-size grid after the detection "
         "passband, so they can differ from the tabulated curve peak by about one step "
         "(methylene blue reads 685.5 nm on a 0.5 nm grid and 686 nm on a 1 nm grid; the "

@@ -90,6 +90,22 @@ def test_cy5_is_the_brighter_dye_at_its_own_optimum():
     assert cy5_scan.emitted_power.max() > cy3_scan.emitted_power.max()
 
 
+def test_a_scan_keeps_power_and_current_in_separate_units():
+    """A figure that draws an optical power on a current axis is drawn in two units.
+
+    This went wrong once: the stray-light curve was plotted from `scatter_power`
+    on an axis labelled in photocurrent, which made it look taller than the
+    spectrum it sits on.
+    """
+    scan = PLSpectrometer(sample=get_sample("methylene-blue"), scatter_fraction=0.001).acquire(
+        lambda_exc_nm=664.0, lambda_min_nm=450.0, lambda_max_nm=900.0, dlambda_nm=1.0
+    )
+    assert np.allclose(scan.photocurrent, scan.emitted_photocurrent + scan.scatter_photocurrent)
+    assert np.all(scan.scatter_photocurrent <= scan.photocurrent + 1e-12)
+    # in the same units the stray line is a fraction of the PL, never the tallest feature
+    assert scan.scatter_photocurrent.max() < scan.emitted_photocurrent.max()
+
+
 def test_emission_is_linear_in_the_absorbed_light():
     """Doubling what is absorbed doubles the emission, wavelength by wavelength."""
     dye = get_sample("cy3")

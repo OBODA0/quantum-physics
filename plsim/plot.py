@@ -12,7 +12,7 @@ EXC_COLOR = "#555555"
 
 def plot_scan(scan, path=None, show=False):
     """Draw one PL scan. Returns the figure."""
-    power = scan.detected_power
+    power = scan.photocurrent
     scale = float(power.max())
     if scale <= 0.0:
         scale = 1.0
@@ -25,10 +25,10 @@ def plot_scan(scan, path=None, show=False):
         lw=1.8,
         label="detected PL spectrum",
     )
-    if scan.scatter_power.max() > 1e-3 * scale:
+    if scan.scatter_photocurrent.max() > 1e-3 * scale:
         ax.plot(
             scan.wavelengths_nm,
-            scan.scatter_power / scale,
+            scan.scatter_photocurrent / scale,
             color=SCATTER_COLOR,
             lw=1.2,
             ls=":",

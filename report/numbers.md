@@ -45,6 +45,18 @@ Equal concentration does not mean equal absorbance: A_peak = epsilon * c * l, an
 | 650 nm | Cy5 | 0.2471 | 43.39% | 667.5 nm | 5.848 |
 | 650 nm | Methylene blue | 0.0550 | 11.90% | 685.5 nm | 0.183 |
 
+### 3.1 What is drawn below the excitation wavelength, and how much stray light is left
+
+The emission band is the measured one: the model applies no extra suppression to the part of the band that lies below lambda_exc, because that part of the spectrum is the dye's own measured band shape and its amplitude there is small. A real instrument would record scattered excitation light at the same time, which is the stray-light column.
+
+| dye | excitation (absorption maximum) | fraction of the emitted band below lambda_exc | stray light / PL peak |
+| --- | --- | --- | --- |
+| Cy3 | 550 nm | 3.71% | 4.0% |
+| Cy5 | 649 nm | 9.21% | 0.4% |
+| Methylene blue | 664 nm | 7.94% | 15.8% |
+
+The stray-light figure is a model input, not a measurement: the report figures use 0.1 % of the excitation power, which is what a double monochromator with a harmonic filter is expected to leave. With a single monochromator it would be far larger, and methylene blue at 1 umol/L is dim enough that stray light would then dominate its spectrum.
+
 Peak wavelengths are read off the scan on the step-size grid after the detection passband, so they can differ from the tabulated curve peak by about one step (methylene blue reads 685.5 nm on a 0.5 nm grid and 686 nm on a 1 nm grid; the curve itself peaks at 685.0 nm). That is the instrument, not an inconsistency.
 
 The digitized curves are defined only inside the range where they were measured (Cy3 absorption 450-590 nm, Cy5 430-734 nm, methylene blue 300-800 nm). Outside that range the model reads zero absorption, which is why Cy3 shows 0.00 % at 450 nm while the independent check on the same dye puts it near 0.6 %. It does not change the conclusion at 450 nm, where all three dyes are transparent, but the report should say "negligible" rather than "exactly zero".

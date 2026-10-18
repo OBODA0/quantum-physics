@@ -21,6 +21,8 @@ class PLScan:
     excitation_power: float
     emitted_power: np.ndarray
     scatter_power: np.ndarray
+    emitted_photocurrent: np.ndarray
+    scatter_photocurrent: np.ndarray
     photocurrent: np.ndarray
     scatter_fraction: float
 
@@ -88,7 +90,11 @@ class PLSpectrometer:
             wavelengths, lambda_exc_nm, self.scatter_fraction * excitation_power
         )
 
-        photocurrent = self.detector.current(emitted_power + scatter_power, wavelengths)
+        # Optical powers and photocurrents are kept separate: a figure that draws
+        # an optical power on an axis labelled in current is drawn in two units.
+        emitted_photocurrent = self.detector.current(emitted_power, wavelengths)
+        scatter_photocurrent = self.detector.current(scatter_power, wavelengths)
+        photocurrent = emitted_photocurrent + scatter_photocurrent
 
         return PLScan(
             sample_name=self.sample.name,
@@ -97,6 +103,8 @@ class PLSpectrometer:
             excitation_power=excitation_power,
             emitted_power=emitted_power,
             scatter_power=scatter_power,
+            emitted_photocurrent=emitted_photocurrent,
+            scatter_photocurrent=scatter_photocurrent,
             photocurrent=photocurrent,
             scatter_fraction=self.scatter_fraction,
         )
