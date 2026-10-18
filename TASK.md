@@ -115,7 +115,7 @@ shots)?"*, *"Do your observations fit with the results in the literature?"*,
 | sweep λexc 400 → 700 nm | 8 overlaid spectra (450…610 nm) + 151-point sweep (2 nm steps) in `part2_cy3_excitation_sweep.png` | done, but see the artifact below |
 | observations | §2.1 of the report, 4 numbered observations | done |
 | screenshots | none, same gap as R1 | **gap** |
-| fit to literature + reasons | §2.2 (Kasha's rule, internal conversion vs ns emission, Stokes shift, excitationspectrum vs absorbance) | mostly done, one wrong claim |
+| fit to literature + reasons | §2.2 of the draft (Kasha's rule, internal conversion vs ns emission, Stokes shift, excitation spectrum vs absorbance) | substance is there; the "exactly mirrors A(λ)" claim and the 620 nm cutoff reasoning must be rewritten (section 5.2) |
 | references | 6 references listed, 2 DOIs broken — see §5 | **must fix** |
 
 The sweep as implemented: detection window 500–750 nm; the "PL peak intensity"
