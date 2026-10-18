@@ -69,9 +69,11 @@ uv run python report/generate_assignment_figures.py --only part2     # the Cy3 s
 uv run python report/generate_numbers.py                             # rewrite report/numbers.md
 ```
 
-`report/report_figures/` holds the spectra the assignment asks for, and they are
-the screenshots the report needs: one per dye for question 1, the sweep for
-question 2, the three-dye comparison for question 3. `report/numbers.md` is
+The figures fix their own optical conditions so that every number in the report
+can be traced: same concentration for all three dyes (1 umol/L in a 1 cm cuvette),
+detection range 450-900 nm, stray excitation light 0.1 % of the excitation power.
+They are the "screenshots" the assignment asks for: one per dye for question 1, the
+sweep for question 2, the three-dye comparison for question 3. `report/numbers.md` is
 generated from the code and the reference pack, so the report never retypes a
 number by hand and the text cannot drift away from the code.
 

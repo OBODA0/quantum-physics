@@ -306,10 +306,15 @@ verified (`VERIFICATION.md`).
 - [x] every shipped dye number independently re-checked (`data/SOURCES.md`)
 - [x] every reference checked for existence and for relevance
       (`report/references/AUDIT.md`), with corrections listed in section 5
+- [x] the seven figures audited independently against their own numbers and against
+      the question each belongs to; eight defects found and fixed
+      (`VERIFICATION.md` section 4b)
 - [x] `reportlab` declared, PDF rebuilds from a clean `uv sync`
 - [x] figures and `report/numbers.md` regenerate byte-identically in a clean room
 - [ ] **report phase**: correct the five unsupported numbers (section 6 of `numbers.md`)
 - [ ] **report phase**: fix the two DOIs and re-point the six mis-cited claims (section 5.2)
 - [ ] **report phase**: cite or drop [5] and [6]; say which AI tool designed the system
+- [ ] **report phase**: embed the three individual dye panels as well as the
+      combined overview (the PDF currently shows only the overview for question 1)
 - [ ] **report phase**: rebuild the PDF from the corrected text and figures
 - [ ] **report phase**: one PDF, no external attachments, nothing left outside it
