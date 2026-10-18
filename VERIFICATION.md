@@ -141,6 +141,15 @@ Results (repeated after every change, latest run on the committed tree):
   Gaussian model and says so in its output, while `--database reference` refuses
   with a one-line error instead of a traceback.
 
+### A new teammate, from the remote alone
+
+The committed repository was cloned from GitHub on a clean path and driven by the
+README alone — `uv sync`, the four documented CLI examples, the figure generator,
+the numbers generator, the PDF builder. Result: 20 tests pass, every documented
+command works, all seven figures regenerate **byte-identical** to the committed
+ones, `numbers.md` identical. The only file that changes is the PDF, and only in
+its `/CreationDate` metadata (2 lines), which is expected for a rebuilt PDF.
+
 ### Defect found and fixed: the code appendix was not the code
 
 `report/generate_pdf_report.py` read its appendix sources from paths relative to
