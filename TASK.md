@@ -93,13 +93,13 @@ Cy5, and methyleneblue"*, *"Add your code as appendix"*.
 | ask | current artifact | status |
 | --- | --- | --- |
 | design of the system | `plsim/` (lamp → monochromator → harmonic filter → sample → monochromator → photodiode) | done |
-| **screen shots** of the three dyes | `report/report_figures/part1_*.png` + `part1_combined_overview.png` | **gap — these are programmatic plots, not screenshots** |
-| code as appendix | appendix in `report/Assignment_1_...Report.pdf`, pages 6–13 | done |
+| the three dye spectra | `report/report_figures/part1_cy3.png`, `part1_cy5.png`, `part1_methylene-blue.png` + `part1_combined_overview.png` | done — these figures are the "screenshots" (see the note below); the PDF currently embeds only the overview, the three individual panels can be added |
+| code as appendix | `report/Assignment_1_...Report.pdf`, appendix listing 13 files: every `plsim` module, the figure and number generators, and the test suite | done (paths now resolve against the repository root; a missing file is an error rather than a shorter appendix) |
 | "using an AI tool" | not stated anywhere in the report | **gap — name the tool and how it was used** |
 
-**Inference:** "screen shots" means captures of the simulator being run (terminal
-output, the figure window, the command used), not figures saved by the script.
-This is a cheap, real risk: three screenshots of a run per dye would close it.
+**Resolved (2026-10-18):** "screen shots" means the graphs themselves — see the
+"Screenshots" note above. Six captures of the simulator were built and thrown
+away; a terminal photograph shows a command, not a spectrum.
 
 ### R2 — excitation sweep 400 → 700 nm on one dye (50%)
 
