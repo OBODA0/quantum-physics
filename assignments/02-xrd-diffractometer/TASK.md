@@ -244,3 +244,39 @@ These are the numbers the simulator must reproduce before any figure is made.
 Deliberately not modelled, unless the brief asks for them: Rietveld refinement, anomalous
 scattering, texture beyond a simple preferred-orientation factor, K-beta residual, detector
 energy discrimination, and absolute intensities (the model is relative, as in Assignment 1).
+
+
+### 9.7 What exists now (2026-10-22)
+
+The simulator core is written and tested; the report is not. Nothing here depends on the
+missing brief, and nothing here is a claim about what the brief will ask for.
+
+| module | state |
+| --- | --- |
+| `xrdsim/lattice.py` | d-spacings (cubic, tetragonal, hexagonal, orthorhombic), Bragg round trip, cubic lattice refinement |
+| `xrdsim/atoms.py` | Waasmaier-Kirfel f0 interpolated from `data/scattering_factors.json`, Debye-Waller term |
+| `xrdsim/structure.py` | structure factor from an explicit basis, orbit multiplicities, Lorentz-polarisation |
+| `xrdsim/samples.py` | eight phases: Si, Al, Cu, Fe, NaCl, MgO, ZnO, TiO2 rutile |
+| `xrdsim/geom*` | flat-plate footprint, attenuation, penetration depth (`geometry.py`) |
+| `xrdsim/sources.py` | Cu K-alpha1/K-alpha2/K-beta lines and the doublet ratio |
+| `xrdsim/profile.py` | Gaussian, Lorentzian, pseudo-Voigt, Caglioti FWHM, Scherrer both ways |
+| `xrdsim/detector.py` | Poisson counts, noise, dead time |
+| `xrdsim/diffractometer.py` | reflection list, the scan, doublet, size broadening, noise |
+| `xrdsim/analysis.py` | peak finding with parabolic refinement, FWHM, areas, Scherrer, cubic indexing |
+| `xrdsim/plot.py`, `cli.py` | rendering and `python -m xrdsim` with `--list-phases`, `--table`, `--out` |
+
+81 tests pass. Every phase reproduces its published strongest line (Si 111 at 28.44, Al 111
+38.47, Cu 111 43.30, Fe 110 44.67, NaCl 200 31.69, MgO 200 42.92, ZnO 101 36.25, rutile 110
+27.45 deg), and the silicon intensity ratios land at 100 / 58 / 30 / 6 for 111 / 220 / 311 /
+400, which is the standard pattern.
+
+### 9.8 Defects found while building, and what fixed them
+
+| defect | symptom | fix |
+| --- | --- | --- |
+| profile deposited without the step factor | peak areas were 1/step too large; intensities looked right but counts did not scale with the scan step | multiply the unit-area profile by the step |
+| every permutation of (hkl) listed as its own reflection | 111 weaker than 220 on silicon, intensities off by integer factors | keep one representative per symmetry family; multiplicities already count the orbit |
+| Lorentz-polarisation evaluated at 2theta = 180 deg | a reflection at exactly lambda/2 produced an infinite intensity and every other peak vanished in the normalisation | cap the scan at 150 deg, which is also what a goniometer does |
+| hand-written cell constants taken from primitive-cell conversions | rutile 110 at 27.30 instead of 27.45, MgO 111 at 36.57 instead of 36.94 | use conventional room-temperature values and test every phase against its published strongest line |
+| hand-expanded anatase basis | spurious (001) line at 9.27 deg with 100 % intensity | phase removed until its CIF can be parsed and the basis checked |
+| sampled peak heights without sub-bin refinement | heights jittered with the scan step | three-point parabolic refinement of position and height |
