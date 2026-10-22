@@ -34,7 +34,7 @@ What the suite covers, by file:
 | rutile 110 | 27.45 | 27.44 |
 | K-alpha1 - K-alpha2 splitting at Si 422 | 0.275 deg (computed) | 0.28 deg in the scan |
 
-The 0.002-0.007 deg residuals on silicon come from the wavelength convention: NIST
+The 0.001-0.007 deg residuals on silicon come from the wavelength convention: NIST
 certificates quote 1.5405929 A, the simulator uses 1.540598 A. That is stated in
 `data/SOURCES.md` and is smaller than the peak width.
 

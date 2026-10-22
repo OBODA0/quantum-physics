@@ -208,7 +208,7 @@ def build() -> None:
         "checks compare simulated peak positions with certified and published values: silicon "
         f"111/220/311/400 at {numbers['si_positions']} deg against the NIST SRM 640d values "
         "28.4425/47.3034/56.1211/69.1295, and the relative intensities "
-        f"{numbers['si_ratios']} against the standard 100/55/30/5. The 0.002-0.007 deg residual "
+        f"{numbers['si_ratios']} against the standard 100/55/30/5. The 0.001-0.003 deg residual on these four lines "
         "is the wavelength convention: the certificates quote 1.5405929 angstrom, the simulator "
         "uses 1.540598.", s["body"]))
     story.append(Paragraph(
