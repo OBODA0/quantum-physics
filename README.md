@@ -9,7 +9,7 @@ report generator and submitted PDF.
 | # | assignment | simulator | report |
 | --- | --- | --- | --- |
 | 1 | PL spectrometer | `plsim` - xenon lamp, two monochromators, dye database, photodiode | [markdown](assignments/01-pl-spectrometer/README.md) - [PDF](assignments/01-pl-spectrometer/report/Assignment_1_PL_Spectroscopy_Simulation_Report.pdf) |
-| 2 | XRD diffractometer | in progress | - |
+| 2 | XRD diffractometer | `xrdsim` - Bragg-Brentano scan, structure factors, K-alpha doublet, Scherrer | [markdown](assignments/02-xrd-diffractometer/README.md) |
 
 ## Layout
 
@@ -28,11 +28,16 @@ uv sync
 uv run pytest
 ```
 
-Assignment 1 also has a command line interface:
+Both assignments have a command line interface:
 
 ```
 uv run python -m plsim --help
 uv run python -m plsim --sample cy5 --lambda-exc 649 --range 600 780
+```
+
+```
+uv run python -m xrdsim --list-phases
+uv run python -m xrdsim --phase si --range 20 100 --out out/si.png
 ```
 
 The report in each assignment folder is generated from the same source as the
