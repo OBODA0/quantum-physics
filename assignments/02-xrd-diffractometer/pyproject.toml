@@ -20,7 +20,6 @@ dev = [
     "pytest>=8",
     "reportlab>=4",
     "pypdf>=5",
-    "periodictable>=2.1.0",
     "xraydb>=4.5.8",
     "gemmi>=0.7.5",
 ]

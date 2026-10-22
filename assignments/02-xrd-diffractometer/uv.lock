@@ -827,19 +827,6 @@ wheels = [
 ]
 
 [[package]]
-name = "periodictable"
-version = "2.1.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
-    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-    { name = "pyparsing" },
-]
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/0d/f494a2ec62ab56ffd44da4f236db374421fe0cd1e39d9ebc9785751eb432/periodictable-2.1.0-py3-none-any.whl", hash = "sha256:e9155d2bf5ac10050abeff2f99096d4f04312c0c8a6bb432e28744367c5064b3", size = 830749, upload-time = "2026-02-28T00:08:27.135Z" },
-]
-
-[[package]]
 name = "pillow"
 version = "13.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1303,7 +1290,6 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "gemmi" },
-    { name = "periodictable" },
     { name = "pypdf" },
     { name = "pytest" },
     { name = "reportlab" },
@@ -1319,7 +1305,6 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "gemmi", specifier = ">=0.7.5" },
-    { name = "periodictable", specifier = ">=2.1.0" },
     { name = "pypdf", specifier = ">=5" },
     { name = "pytest", specifier = ">=8" },
     { name = "reportlab", specifier = ">=4" },
