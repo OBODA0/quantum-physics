@@ -266,7 +266,7 @@ missing brief, and nothing here is a claim about what the brief will ask for.
 | `xrdsim/analysis.py` | peak finding with parabolic refinement, FWHM, areas, Scherrer, cubic indexing |
 | `xrdsim/plot.py`, `cli.py` | rendering and `python -m xrdsim` with `--list-phases`, `--table`, `--out` |
 
-81 tests pass. Every phase reproduces its published strongest line (Si 111 at 28.44, Al 111
+82 tests pass. Every phase reproduces its published strongest line (Si 111 at 28.44, Al 111
 38.47, Cu 111 43.30, Fe 110 44.67, NaCl 200 31.69, MgO 200 42.92, ZnO 101 36.25, rutile 110
 27.45 deg), and the silicon intensity ratios land at 100 / 58 / 30 / 6 for 111 / 220 / 311 /
 400, which is the standard pattern.

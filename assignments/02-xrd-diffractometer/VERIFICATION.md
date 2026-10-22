@@ -5,7 +5,7 @@ what it proves. Nothing here is reported from intent.
 
 ## 1. Test suite
 
-`cd assignments/02-xrd-diffractometer && uv run pytest -q` -> **81 passed**.
+`cd assignments/02-xrd-diffractometer && uv run pytest -q` -> **82 passed**.
 
 What the suite covers, by file:
 
