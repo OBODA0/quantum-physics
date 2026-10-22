@@ -47,18 +47,20 @@ Relative intensities, simulated against published powder patterns. The model use
 uniform Debye-Waller factor (B = 0.5 A^2), no absorption correction and no texture, so
 agreement is expected to be good but not exact.
 
-| phase | reflections | simulated I/I0 | published |
+| phase | reflections | simulated I/I0 | published peak heights |
 | --- | --- | --- | --- |
-| Si | 111 / 220 / 311 / 400 | 100 / 58 / 30 / 6 | 100 / 55 / 30 / 5 |
-| Cu | 111 / 200 / 220 / 311 | 100 / 41 / 16 / 15 | 100 / 46 / 20 / 17 |
-| NaCl | 111 / 200 / 220 | 6 / 100 / 54 | 13 / 100 / 55 |
-| ZnO | 100 / 002 / 101 | 50 / 38 / 100 | 57 / 44 / 100 |
-| rutile TiO2 | 110 / 101 / 211 | 100 / 43 / 37 | 100 / 50 / 60 |
+| Si | 111 / 220 / 311 / 400 | 100 / 64 / 37 / 10 | 100 / 55 / 30 / 5 |
+| Cu | 111 / 200 / 220 / 311 | 100 / 46 / 24 / 27 | 100 / 46 / 20 / 17 |
+| NaCl | 111 / 200 / 220 | 8 / 100 / 64 | 13 / 100 / 55 |
+| ZnO | 100 / 002 / 101 | 52 / 40 / 100 | 57 / 44 / 100 |
+| rutile TiO2 | 110 / 101 / 211 | 100 / 45 / 55 | 100 / 50 / 60 |
 
-The largest deviation is rutile 211 (37 against 60) and NaCl 111 (6 against 13). Both are
-weak-line cases where the difference of two form factors is small, so the result is
-sensitive to the tabulated f0 and to B. This is recorded rather than tuned: adjusting B per
-site to fit published intensities would be fitting, not physics.
+The low-angle ratios now agree closely; the high-angle ones run high (Si 400 at 10 against
+5, Cu 311 at 27 against 17). Part of that is a definition: the model returns integrated
+intensities, while printed powder cards list peak heights, and the instrument width grows
+with angle, so the same area gives a lower height. The rest is the untuned model: no
+absorption correction, one Debye-Waller factor for every site. This is recorded rather than
+tuned; fitting B per site would be fitting, not physics.
 
 ## 2.2 Clean-room rebuild
 
@@ -82,7 +84,8 @@ document id.
 
 ## 2.3 Robustness sweep
 
-567 scans on 2026-10-22, covering every phase:
+`uv run python -m tools.sweep` reproduces the sweep below: 567 scans, 0 failures, about
+12 s. Every phase is covered:
 
 | dimension | values |
 | --- | --- |
@@ -90,7 +93,7 @@ document id.
 | crystallite size | none, 1 nm, 10 um |
 | options | default, K-alpha2 off, monochromator at 26.6 deg, 1 mm specimen displacement, dead time 0.1 ms, Poisson seed, no background |
 
-**0 failures**, 26.5 s in total. Every scan returned equal-length arrays and no negative
+**0 failures**. Every scan returned equal-length arrays and no negative
 counts. The command line interface rejects an unknown phase, a reversed range, a zero step
 and a negative size with `xrdsim: error: ...` and exit status 2, not a traceback.
 

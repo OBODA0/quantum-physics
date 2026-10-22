@@ -68,7 +68,8 @@ the pseudo-Voigt; that approximation is stated rather than hidden.
 Counts per step are the sum of the profile areas multiplied by the step, plus a flat
 background, then a Poisson draw. The dead time, when enabled, compresses the rate as
 `n = m / (1 + m tau)` before the draw. The strongest reflection carries
-`reference_counts` integrated counts; every other line scales by its relative intensity.
+`reference_counts` integrated counts **of the K-alpha1 line**; the K-alpha2 partner adds
+another 49.7 % of that area, and every other line scales by its relative intensity.
 
 The K-alpha doublet puts every reflection twice, at its own Bragg angle, weighted 1 and
 0.497, so the shoulder grows with 2theta as it does on a real diffractometer.

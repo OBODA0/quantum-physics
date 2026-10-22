@@ -100,7 +100,7 @@ def _wrap_code(text: str, width: int = 110) -> str:
 def code_appendix(story, s) -> None:
     story.append(Paragraph("Appendix A: the code", s["h1"]))
     story.append(Paragraph(
-        "Every module the simulator ships, in the order the README lists them. The same "
+        "Every module the simulator ships, in alphabetical order. The same "
         "files are in the repository under assignments/02-xrd-diffractometer/xrdsim/.",
         s["body"]))
     for path in sorted((REPO_ROOT / "xrdsim").glob("*.py")):

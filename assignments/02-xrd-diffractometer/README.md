@@ -73,7 +73,7 @@ docs/       model.md, brief_intake.md, research/
 report/     make_figures.py, tables.py, generate_pdf_report.py, numbers_source.py,
             check_pdf.py, check_numbers.py,
             figures/, tables.md, the draft PDF
-tools/      build_scattering_factors.py, phase_from_cif.py, check_all.py
+tools/      build_scattering_factors.py, phase_from_cif.py, check_all.py, sweep.py
 ```
 
 `uv run python -m tools.check_all` runs the whole close-out: tests, figures, tables,

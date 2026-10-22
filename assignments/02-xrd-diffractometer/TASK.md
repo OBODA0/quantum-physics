@@ -168,11 +168,11 @@ Report-phase items are unchecked; everything the report depends on is done and v
 
 - [ ] the brief is quoted verbatim in §2 and every weight in it is listed
 - [ ] every requirement in §3 has an artifact and a status of done
-- [ ] every number the report quotes appears in `report/numbers.md`
+- [ ] every number the report quotes appears in `report/tables.md` or is produced by `report/numbers_source.py`
 - [ ] every shipped datum has a source and a confidence in `data/SOURCES.md`
-- [ ] every reference verified for existence and relevance (`report/references/AUDIT.md`)
+- [ ] every reference verified for existence and relevance (`report/references/AUDIT.md`, to be created with the draft)
 - [ ] figures audited against their own numbers (`VERIFICATION.md`)
-- [ ] clean-room rebuild: figures byte-identical, `numbers.md` identical, PDF builds
+- [ ] clean-room rebuild: figures byte-identical, `tables.md` identical, PDF byte-identical
 - [ ] `report/check_pdf.py` passes on the built PDF
 - [ ] §7 questions answered or explicitly declared open
 
