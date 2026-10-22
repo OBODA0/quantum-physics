@@ -78,6 +78,14 @@ def table(rows, widths, s):
     return grid
 
 
+def _footer(canvas, doc) -> None:
+    canvas.saveState()
+    canvas.setFont("Helvetica", 8)
+    canvas.setFillColor(colors.HexColor("#666666"))
+    canvas.drawRightString(letter[0] - 54, 32, str(doc.page))
+    canvas.restoreState()
+
+
 def _wrap_code(text: str, width: int = 110) -> str:
     """Break over-long source lines so the appendix cannot run off the page."""
     lines = []
@@ -259,7 +267,7 @@ def build() -> None:
 
     code_appendix(story, s)
 
-    doc.build(story)
+    doc.build(story, onFirstPage=_footer, onLaterPages=_footer)
     print(f"wrote {PDF_PATH}")
 
 
