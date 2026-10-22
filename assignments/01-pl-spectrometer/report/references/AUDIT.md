@@ -10,7 +10,7 @@
 
 Audited: `report/generate_pdf_report.py` (the PDF's source of record) and `data/SOURCES.md`,
 `data/reference_spectra.json` in the assignment repo on Alfred
-(`/home/oboda/Projects/Nano capsule/quantum physics/pl-spectrometer-simulator/`).
+(`assignments/01-pl-spectrometer/` in `quantum-physics`).
 Audit run 2026-10-18 on the Blackwall outpost (CT 180). No repository was modified.
 
 Tools actually used: Crossref REST, doi.org content negotiation, OpenLibrary books API and

@@ -128,7 +128,7 @@ def figure(name, width, height):
 
 
 LINK_COLOR = "#1155cc"
-REPO_URL = "https://github.com/OBODA0/pl-spectrometer-simulator"
+REPO_URL = "https://github.com/OBODA0/quantum-physics"
 
 DOI_RE = re.compile(r"DOI\s+(10\.\d{4,9}/\S+)")
 

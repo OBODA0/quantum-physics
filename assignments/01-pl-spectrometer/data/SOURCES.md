@@ -1,7 +1,7 @@
 # PL spectrometer simulator - reference data pack: sources and confidence
 
 Compiled 2026-10-15 on the Blackwall outpost (CT 180, `agent`) for
-`/home/oboda/Projects/Nano capsule/quantum physics/pl-spectrometer-simulator`.
+`assignments/01-pl-spectrometer/` in the `quantum-physics` repository.
 Companion file: `reference_spectra.json` (same directory).
 
 Nothing here is invented. Where no citable value existed I report nothing rather than a guess; in the end every field in

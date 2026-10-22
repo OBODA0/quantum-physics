@@ -78,8 +78,8 @@ def main(argv=None):
     raw = PDF.read_bytes()
     # The URL text can be split across the content stream, so look for it in the extracted
     # text as well as the raw bytes.
-    if "github.com/OBODA0/pl-spectrometer-simulator" not in joined and \
-            b"github.com/OBODA0/pl-spectrometer-simulator" not in raw:
+    if "github.com/OBODA0/quantum-physics" not in joined and \
+            b"github.com/OBODA0/quantum-physics" not in raw:
         failures.append("repository link missing from the title page")
     uri_links = raw.count(b"/URI")
     dest_links = raw.count(b"/Dest [")
