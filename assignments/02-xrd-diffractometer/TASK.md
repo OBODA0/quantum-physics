@@ -254,31 +254,34 @@ missing brief, and nothing here is a claim about what the brief will ask for.
 
 | module | state |
 | --- | --- |
-| `xrdsim/lattice.py` | d-spacings (cubic, tetragonal, hexagonal, orthorhombic), Bragg round trip, cubic lattice refinement |
+| `xrdsim/lattice.py` | d-spacings (cubic, tetragonal, hexagonal, orthorhombic) checked against the metric tensor, Bragg round trip, cubic lattice refinement |
 | `xrdsim/atoms.py` | Waasmaier-Kirfel f0 interpolated from `data/scattering_factors.json`, Debye-Waller term |
 | `xrdsim/structure.py` | structure factor from an explicit basis, orbit multiplicities, Lorentz-polarisation |
-| `xrdsim/samples.py` | nine phases: Si, Al, Cu, Fe, NaCl, MgO, ZnO, TiO2 rutile and anatase |
-| `xrdsim/geom*` | flat-plate footprint, attenuation, penetration depth (`geometry.py`) |
+| `xrdsim/samples.py` | nine phases: Si, Al, Cu, alpha-Fe, NaCl, MgO, ZnO, TiO2 rutile and anatase |
+| `xrdsim/geometry.py` | flat-plate footprint, attenuation, penetration depth, specimen displacement |
 | `xrdsim/sources.py` | Cu K-alpha1/K-alpha2/K-beta lines and the doublet ratio |
-| `xrdsim/profile.py` | Gaussian, Lorentzian, pseudo-Voigt, Caglioti FWHM, Scherrer both ways |
+| `xrdsim/profile.py` | Gaussian, Lorentzian, pseudo-Voigt (scalar and vectorised), Caglioti FWHM, Scherrer both ways |
 | `xrdsim/detector.py` | Poisson counts, noise, dead time |
-| `xrdsim/diffractometer.py` | reflection list, the scan, doublet, size broadening, noise |
-| `xrdsim/analysis.py` | peak finding with parabolic refinement, FWHM, areas, Scherrer, cubic indexing |
-| `xrdsim/plot.py`, `cli.py` | rendering and `python -m xrdsim` with `--list-phases`, `--table`, `--out` |
+| `xrdsim/diffractometer.py` | reflection list, the scan, doublet, size broadening, noise, displacement |
+| `xrdsim/analysis.py` | peak finding with parabolic refinement, FWHM, areas, Scherrer, Williamson-Hall, cubic indexing with a lattice hint, phase identification |
+| `xrdsim/plot.py`, `cli.py` | rendering and `python -m xrdsim` with `--list-phases`, `--table`, `--index`, `--scherrer`, `--identify`, `--out` |
 
-The suite passes, including four analytic structure-factor checks and a brute-force orbit count. Every phase reproduces its published strongest line (Si 111 at 28.44, Al 111
-38.47, Cu 111 43.30, Fe 110 44.67, NaCl 200 31.69, MgO 200 42.92, ZnO 101 36.25, rutile 110
-27.45 deg), and the silicon intensity ratios land at 100 / 58 / 30 / 6 for 111 / 220 / 311 /
-400, which is the standard pattern.
+The suite passes (111 tests at the last run), including four analytic structure-factor
+checks, a brute-force orbit count and a metric-tensor check. Every phase reproduces its
+published strongest line (Si 111 at 28.44, Al 111 38.47, Cu 111 43.30, Fe 110 44.67, NaCl
+200 31.69, MgO 200 42.92, ZnO 101 36.25, rutile 110 27.45, anatase 101 25.27 deg), and the
+silicon intensity ratios land at 100 / 58 / 30 / 6 for 111 / 220 / 311 / 400, which is the
+standard pattern.
 
 ### 9.8 Defects found while building, and what fixed them
 
 | defect | symptom | fix |
 | --- | --- | --- |
-| profile deposited without the step factor | peak areas were 1/step too large; intensities looked right but counts did not scale with the scan step | multiply the unit-area profile by the step |
-| every permutation of (hkl) listed as its own reflection | 111 weaker than 220 on silicon, intensities off by integer factors | keep one representative per symmetry family; multiplicities already count the orbit |
-| Lorentz-polarisation evaluated at 2theta = 180 deg | a reflection at exactly lambda/2 produced an infinite intensity and every other peak vanished in the normalisation | cap the scan at 150 deg, which is also what a goniometer does |
-| hand-written cell constants taken from primitive-cell conversions | rutile 110 at 27.30 instead of 27.45, MgO 111 at 36.57 instead of 36.94 | use conventional room-temperature values and test every phase against its published strongest line |
-| hexagonal multiplicity for a general (hk0) reflection | 6 instead of 12; no shipped pattern changed, but any general in-plane family would have been under-weighted | special-position rule (h == 0, k == 0 or h == k gives 6, otherwise 12) | `test_multiplicity_matches_a_brute_force_orbit`, which enumerates the operations independently |
-| hand-expanded anatase basis | spurious (001) line at 9.27 deg with 100 % intensity | phase removed until its CIF can be parsed and the basis checked |
-| sampled peak heights without sub-bin refinement | heights jittered with the scan step | three-point parabolic refinement of position and height |
+| profile deposited without the step factor | peak areas were 1/step too large; counts did not scale with the scan step | multiply the unit-area profile by the step |
+| every permutation of (hkl) listed as its own reflection | 111 weaker than 220 on silicon, intensities off by integer factors | keep one representative per symmetry family |
+| Lorentz-polarisation evaluated at 2theta = 180 deg | a reflection at lambda/2 produced an infinite intensity and every other peak vanished in the normalisation | cap the scan at 150 deg, which is also what a goniometer does |
+| cell constants taken from primitive-cell conversions | rutile 110 at 27.30 instead of 27.45, MgO 111 at 36.57 instead of 36.94 | conventional room-temperature values, and a test against each phase's published strongest line |
+| hexagonal multiplicity for a general (hk0) reflection | 6 instead of 12; any general in-plane family would have been under-weighted | special-position rule: h, k or h == k gives 6, otherwise 12; checked by a brute-force orbit count |
+| hand-expanded anatase basis | a forbidden (001) line at 9.27 deg with 100 % intensity | basis taken from the COD CIF and expanded by gemmi; (001) is now zero |
+| sampled peak heights | heights jittered with the scan step | three-point parabolic refinement of position and height |
+| indexing started its search at n^2 = 3 | a body-centred pattern came back as (111), (211), (300) | search from n^2 = 1 and name the lattice from the sequence |
