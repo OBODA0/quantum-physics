@@ -55,9 +55,6 @@ class Scan:
     phase: Phase | None = None
     instrument: Instrument | None = None
 
-    @property
-    def peak_counts(self) -> np.ndarray:
-        return self.counts
 
 
 def reflections(phase: Phase, instrument: Instrument, hmax: int = 6) -> list[Reflection]:
@@ -72,10 +69,12 @@ def reflections(phase: Phase, instrument: Instrument, hmax: int = 6) -> list[Ref
                     continue
                 try:
                     d = d_spacing(h, k, l, **phase.cell_kwargs())
-                    two_theta = 2.0 * math.degrees(math.asin(
-                        min(1.0, instrument.wavelength / (2.0 * d))))
                 except ValueError:
                     continue
+                if 2.0 * d < instrument.wavelength:
+                    continue
+                two_theta = 2.0 * math.degrees(
+                    math.asin(instrument.wavelength / (2.0 * d)))
                 if two_theta > instrument.max_two_theta:
                     continue
                 f = structure_factor(phase, h, k, l, instrument.wavelength)
@@ -106,7 +105,10 @@ def scan(phase: Phase, two_theta_min: float, two_theta_max: float, step: float,
 
     lines = [(instrument.wavelength, 1.0)]
     if instrument.ka2:
-        lines = [(sources.CU_KA1, 1.0), (sources.CU_KA2, sources.KA2_TO_KA1)]
+        # the doublet is scaled from the instrument's own K-alpha1 so that another anode
+        # keeps its own wavelengths instead of silently getting copper's
+        ka2 = instrument.wavelength * sources.CU_KA2 / sources.CU_KA1
+        lines = [(instrument.wavelength, 1.0), (ka2, sources.KA2_TO_KA1)]
 
     mean = np.full_like(grid, expected_counts(instrument.background_rate, instrument.dwell_s),
                         dtype=float)
@@ -117,11 +119,11 @@ def scan(phase: Phase, two_theta_min: float, two_theta_max: float, step: float,
             centre = 2.0 * math.degrees(math.asin(min(1.0, wavelength / (2.0 * d))))
             centre += displacement_shift(centre, instrument.sample_displacement_mm,
                                          instrument.goniometer_radius_mm)
-            if not (two_theta_min - 5.0 <= centre <= two_theta_max + 5.0):
-                continue
             width = caglioti_fwhm(centre, *instrument.caglioti)
             if size_a is not None:
                 width = add_in_quadrature(width, size_fwhm(size_a, centre, wavelength))
+            if not (two_theta_min - 5.0 * width <= centre <= two_theta_max + 5.0 * width):
+                continue
             profile = np.array([pseudo_voigt(x, centre, width, instrument.eta) for x in grid])
             mean += area_total * weight * profile * step
 
@@ -156,8 +158,10 @@ def _representative(h: int, k: int, l: int, system: str) -> bool:
 
 def displacement_shift(two_theta_deg: float, displacement_mm: float,
                        radius_mm: float) -> float:
-    # 2theta shift in degrees for a flat specimen displaced from the goniometer axis.
-    # Delta(2theta) = -2 s cos(theta) / R, in radians.
+    """2theta shift in degrees for a flat specimen displaced from the goniometer axis.
+
+    Delta(2theta) = -2 s cos(theta) / R, in radians.
+    """
     if displacement_mm == 0.0:
         return 0.0
     if radius_mm <= 0:
