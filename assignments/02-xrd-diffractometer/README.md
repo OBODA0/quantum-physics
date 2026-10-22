@@ -66,10 +66,16 @@ Cell constants, their provenance and their confidence are in `data/SOURCES.md`.
 ```
 xrdsim/     lattice, atoms, structure, samples, geometry, sources, profile,
             detector, diffractometer, analysis, plot, cli
-tests/      one file per module group, 91 tests
+tests/      one file per module group, 92 tests
 data/       scattering_factors.json (generated), SOURCES.md
-tools/      build_scattering_factors.py
+docs/       model.md, brief_intake.md, research/
+report/     make_figures.py, tables.py, generate_pdf_report.py, check_pdf.py,
+            figures/, tables.md, the draft PDF
+tools/      build_scattering_factors.py, phase_from_cif.py, check_all.py
 ```
+
+`uv run python -m tools.check_all` runs the whole close-out: tests, figures, tables,
+PDF and the gate.
 
 ## What is modelled, and what is not
 
