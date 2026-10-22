@@ -191,8 +191,9 @@ def build() -> None:
                      f"{label} at {best.two_theta:.2f} deg"])
     story.append(table(rows, [58, 92, 80, 95, 120], s))
     story.append(Paragraph("Table 1: the phases the simulator ships. The last column is the "
-                           "line the model predicts, which can differ from a printed card by "
-                           "sources and their confidence are listed in "
+                           "line the model predicts, which can differ from a printed card by a "
+                           "few hundredths of a degree. Cell constants, their sources and their "
+                           "confidence are listed in "
                            "<font face=\"Courier\">data/SOURCES.md</font>; every row is checked "
                            "against its published strongest reflection in the test suite.",
                            s["caption"]))
