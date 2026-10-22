@@ -67,7 +67,7 @@ Cell constants, their provenance and their confidence are in `data/SOURCES.md`.
 ```
 xrdsim/     lattice, atoms, structure, samples, geometry, sources, profile,
             detector, diffractometer, analysis, plot, cli
-tests/      one file per module group, 92 tests
+tests/      one file per module group
 data/       scattering_factors.json (generated), SOURCES.md
 docs/       model.md, brief_intake.md, research/
 report/     make_figures.py, tables.py, generate_pdf_report.py, numbers_source.py,
