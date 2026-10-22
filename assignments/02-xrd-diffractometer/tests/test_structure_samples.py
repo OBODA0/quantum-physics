@@ -146,3 +146,38 @@ def test_multiplicity_matches_a_brute_force_orbit(system):
                     continue
                 assert multiplicity(h, k, l, system) == _brute_multiplicity(h, k, l, system), (
                     system, h, k, l)
+
+
+def test_rocksalt_structure_factor_is_the_form_factor_difference():
+    from xrdsim.lattice import d_spacing
+    nacl = get_phase("nacl")
+    for hkl, sign in [((1, 1, 1), -1.0), ((2, 0, 0), +1.0)]:
+        d = d_spacing(*hkl, **nacl.cell_kwargs())
+        s = LAM / (2 * d)
+        expected = 4.0 * (f0("Na", s) + sign * f0("Cl", s)) * debye_waller(0.5, s)
+        assert structure_factor(nacl, *hkl, LAM).real == pytest.approx(expected, rel=1e-12)
+
+
+def test_fcc_structure_factor_is_four_times_the_form_factor():
+    from xrdsim.lattice import d_spacing
+    cu = get_phase("cu")
+    d = d_spacing(1, 1, 1, **cu.cell_kwargs())
+    expected = 4.0 * f0("Cu", LAM / (2 * d)) * debye_waller(0.5, LAM / (2 * d))
+    assert structure_factor(cu, 1, 1, 1, LAM).real == pytest.approx(expected, rel=1e-12)
+
+
+def test_bcc_structure_factor_is_twice_the_form_factor():
+    from xrdsim.lattice import d_spacing
+    fe = get_phase("fe")
+    d = d_spacing(1, 1, 0, **fe.cell_kwargs())
+    expected = 2.0 * f0("Fe", LAM / (2 * d)) * debye_waller(0.5, LAM / (2 * d))
+    assert structure_factor(fe, 1, 1, 0, LAM).real == pytest.approx(expected, rel=1e-12)
+
+
+def test_diamond_111_structure_factor_has_the_expected_modulus():
+    from xrdsim.lattice import d_spacing
+    si = get_phase("si")
+    d = d_spacing(1, 1, 1, **si.cell_kwargs())
+    expected = 4.0 * f0("Si", LAM / (2 * d)) * debye_waller(0.5, LAM / (2 * d))
+    assert abs(structure_factor(si, 1, 1, 1, LAM)) == pytest.approx(
+        expected * math.sqrt(2.0), rel=1e-12)
