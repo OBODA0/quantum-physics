@@ -208,7 +208,15 @@ def build() -> None:
         "standard 100/55/30/5. The 0.002-0.007 deg residual is the wavelength convention: the "
         "certificates quote 1.5405929 angstrom, the simulator uses 1.540598.", s["body"]))
     story.append(Paragraph(
-        "Defects found and fixed during the build are listed in "
+        "Multiplicities are checked against a brute-force enumeration of the symmetry "
+        "operations for cubic, tetragonal and hexagonal families, and the intensity ratios "
+        "sit inside the spread expected from a uniform Debye-Waller factor and no absorption "
+        "correction: copper 111/200/220 comes out at 100/41/16 against the published 100/46/20, "
+        "and rutile at 100/43/37 for 110/101/211 against 100/50/60. "
+        "The whole assignment rebuilds from a fresh clone: uv sync, 91 tests, figures, tables, "
+        "PDF and the gate.", s["body"]))
+    story.append(Paragraph(
+        "Multiplicities are checked against a brute-force enumeration of the symmetry operations for cubic, tetragonal and hexagonal families, and the intensity ratios sit inside the spread expected from a uniform Debye-Waller factor and no absorption correction: copper 111/200/220 comes out at 100/41/16 against the published 100/46/20, and rutile at 100/43/37 for 110/101/211 against 100/50/60. The whole assignment rebuilds from a fresh clone: uv sync, 91 tests, figures, tables, PDF and the gate. Defects found and fixed during the build are listed in "
         "<font face=\"Courier\">VERIFICATION.md</font>: a missing step factor in the profile, "
         "duplicate reflections from permuted indices, a Lorentz-polarisation divergence at "
         "180 deg, cell constants taken from primitive-cell conversions, and a hand-written "

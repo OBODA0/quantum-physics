@@ -38,6 +38,25 @@ The 0.002-0.007 deg residuals on silicon come from the wavelength convention: NI
 certificates quote 1.5405929 A, the simulator uses 1.540598 A. That is stated in
 `data/SOURCES.md` and is smaller than the peak width.
 
+## 2.1 Intensity agreement
+
+Relative intensities, simulated against published powder patterns. The model uses one
+uniform Debye-Waller factor (B = 0.5 A^2), no absorption correction and no texture, so
+agreement is expected to be good but not exact.
+
+| phase | reflections | simulated I/I0 | published |
+| --- | --- | --- | --- |
+| Si | 111 / 220 / 311 / 400 | 100 / 58 / 30 / 6 | 100 / 55 / 30 / 5 |
+| Cu | 111 / 200 / 220 / 311 | 100 / 41 / 16 / 15 | 100 / 46 / 20 / 17 |
+| NaCl | 111 / 200 / 220 | 6 / 100 / 54 | 13 / 100 / 55 |
+| ZnO | 100 / 002 / 101 | 50 / 38 / 100 | 57 / 44 / 100 |
+| rutile TiO2 | 110 / 101 / 211 | 100 / 43 / 37 | 100 / 50 / 60 |
+
+The largest deviation is rutile 211 (37 against 60) and NaCl 111 (6 against 13). Both are
+weak-line cases where the difference of two form factors is small, so the result is
+sensitive to the tabulated f0 and to B. This is recorded rather than tuned: adjusting B per
+site to fit published intensities would be fitting, not physics.
+
 ## 3. Defects found and fixed during the build
 
 | defect | how it showed up | fix | proof |
