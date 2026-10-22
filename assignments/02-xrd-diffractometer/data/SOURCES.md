@@ -43,14 +43,23 @@ xraydb, the simulator itself needs only numpy.
 | key | formula | space group | cell (A) | confidence | source |
 | --- | --- | --- | --- | --- | --- |
 | si | Si | Fd-3m | a = 5.431144 | firm | NIST SRM 640f certificate, a = 5.431144(8) A at 22.5 C |
-| al | Al | Fm-3m | a = 4.0398 | derived | AFLOW `Al1_ICSD_52611` primitive 2.856 A, converted to the conventional cell (x sqrt2) |
-| cu | Cu | Fm-3m | a = 3.6146 | derived | AFLOW `Cu1_ICSD_53755` primitive 2.5559 A, x sqrt2 |
-| fe | alpha-Fe | Im-3m | a = 2.8665 | provisional | room-temperature value in common use. The AFLOW `Fe1_ICSD_631722` entry reads 2.9647 A (3.4% high, probably expanded or high-temperature) and is deliberately NOT used. |
-| nacl | NaCl | Fm-3m | a = 5.665 | derived | AFLOW `Cl1Na1_ICSD_60280` primitive 4.0058 A, x sqrt2 |
-| mgo | MgO | Fm-3m | a = 4.253 | derived | AFLOW `Mg1O1_ICSD_173128` primitive 3.0073 A, x sqrt2 |
+| al | Al | Fm-3m | a = 4.0495 | provisional | room-temperature conventional value. AFLOW `Al1_ICSD_52611` (primitive 2.856 A) converts to 4.0398 A, a different entry; the conventional value reproduces the published 111 line at 38.47 deg. |
+| cu | Cu | Fm-3m | a = 3.6149 | provisional | room-temperature conventional value; AFLOW `Cu1_ICSD_53755` converts to 3.6146 A |
+| fe | alpha-Fe | Im-3m | a = 2.8665 | provisional | room-temperature conventional value. The AFLOW `Fe1_ICSD_631722` entry reads 2.9647 A (3.4% high, probably expanded or high-temperature) and is deliberately NOT used. |
+| nacl | NaCl | Fm-3m | a = 5.6402 | provisional | room-temperature conventional value; AFLOW `Cl1Na1_ICSD_60280` converts to 5.665 A |
+| mgo | MgO | Fm-3m | a = 4.2112 | provisional | room-temperature conventional value; AFLOW `Mg1O1_ICSD_173128` converts to 4.253 A |
 | zno | ZnO | P63mc | a = 3.2494, c = 5.2038 | firm | COD 9004180; u(O) = 0.3819 |
-| tio2-rutile | TiO2 | P42/mnm | a = 4.616, c = 2.977 | firm | COD 9004143; u(O) = 0.3047 |
-| tio2-anatase | TiO2 | I41/amd | a = 3.7892, c = 9.537 | firm | COD 9008214; z(O) = 0.2081 |
+| tio2-rutile | TiO2 | P42/mnm | a = 4.5937, c = 2.9587 | provisional | room-temperature conventional values; u(O) = 0.3047. The research note listed COD 9004143 as 4.616 / 2.977 A, which puts 110 at 27.30 deg instead of the published 27.45 deg, so the conventional values are used and the COD record has to be re-read before they are called firm. |
+
+**Anatase is deliberately absent.** Its basis could not be checked against a CIF from this
+host on 2026-10-22 (COD over TLS resets the connection, and plain HTTP now resets too), and
+a hand-written basis produced a spurious (001) line at 9.27 deg. Shipping a wrong phase is
+worse than shipping one fewer phase; it returns when the CIF can be parsed.
+
+**Every phase is checked against its published strongest reflection** in
+`tests/test_structure_samples.py`: Si 111 at 28.44, Al 111 at 38.47, Cu 111 at 43.30,
+Fe 110 at 44.67, NaCl 200 at 31.69, MgO 200 at 42.92, ZnO 101 at 36.25, rutile 110 at
+27.45 deg. That test is what caught the wrong cell constants above.
 
 **Warning carried from the research pass:** COD and AFLOW entries are not interchangeable.
 The same element appears with lattice constants differing by 0.5-3% because the entries come

@@ -85,3 +85,19 @@ def test_all_phases_have_sites_and_a_source():
     for phase in PHASES.values():
         assert phase.sites, phase.key
         assert phase.source, phase.key
+
+
+KNOWN_STRONGEST = {
+    "si": ((1, 1, 1), 28.44), "al": ((1, 1, 1), 38.47), "cu": ((1, 1, 1), 43.30),
+    "fe": ((1, 1, 0), 44.67), "nacl": ((2, 0, 0), 31.69), "mgo": ((2, 0, 0), 42.92),
+    "zno": ((1, 0, 1), 36.25), "tio2-rutile": ((1, 1, 0), 27.45),
+}
+
+
+def test_every_phase_reproduces_its_published_strongest_line():
+    from xrdsim.diffractometer import Instrument, reflections
+    for key, (hkl, expected) in KNOWN_STRONGEST.items():
+        rows = [row for row in reflections(PHASES[key], Instrument()) if row.intensity > 1e-9]
+        strongest = max(rows, key=lambda row: row.intensity)
+        assert strongest.hkl == hkl, key
+        assert strongest.two_theta == pytest.approx(expected, abs=0.03), key

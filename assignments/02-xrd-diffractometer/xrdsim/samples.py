@@ -74,24 +74,24 @@ PHASES: dict[str, Phase] = {
         source="NIST SRM 640f certificate, a = 5.431144(8) A at 22.5 C"),
     "al": Phase(
         key="al", name="Aluminium", formula="Al", space_group="Fm-3m (225)",
-        a=4.0398, sites=_fcc("Al"),
-        source="AFLOW Al1_ICSD_52611 primitive a = 2.856 A, converted to the conventional cell"),
+        a=4.0495, sites=_fcc("Al"),
+        source="room-temperature conventional value 4.0495 A; the AFLOW Al1_ICSD_52611 primitive (2.856 A) converts to 4.0398 A, a different entry"),
     "cu": Phase(
         key="cu", name="Copper", formula="Cu", space_group="Fm-3m (225)",
-        a=3.6146, sites=_fcc("Cu"),
-        source="AFLOW Cu1_ICSD_53755 primitive a = 2.5559 A, converted to the conventional cell"),
+        a=3.6149, sites=_fcc("Cu"),
+        source="room-temperature conventional value 3.6149 A; AFLOW Cu1_ICSD_53755 converts to 3.6146 A"),
     "fe": Phase(
         key="fe", name="alpha-Iron", formula="Fe", space_group="Im-3m (229)",
         a=2.8665, sites=(Site("Fe", 0, 0, 0), Site("Fe", .5, .5, .5)),
         source="room-temperature conventional value; the AFLOW ICSD entry reads 2.9647 A and is flagged as expanded"),
     "nacl": Phase(
         key="nacl", name="Rock salt", formula="NaCl", space_group="Fm-3m (225)",
-        a=5.665, sites=_rocksalt("Na", "Cl"),
-        source="AFLOW Cl1Na1_ICSD_60280 primitive 4.0058 A, converted to the conventional cell"),
+        a=5.6402, sites=_rocksalt("Na", "Cl"),
+        source="room-temperature conventional value 5.6402 A; AFLOW Cl1Na1_ICSD_60280 converts to 5.665 A"),
     "mgo": Phase(
         key="mgo", name="Periclase", formula="MgO", space_group="Fm-3m (225)",
-        a=4.253, sites=_rocksalt("Mg", "O"),
-        source="AFLOW Mg1O1_ICSD_173128 primitive 3.0073 A, converted to the conventional cell"),
+        a=4.2112, sites=_rocksalt("Mg", "O"),
+        source="room-temperature conventional value 4.2112 A; AFLOW Mg1O1_ICSD_173128 converts to 4.253 A"),
     "zno": Phase(
         key="zno", name="Zincite", formula="ZnO", space_group="P63mc (186)",
         a=3.2494, c=5.2038, hexagonal=True, sites=(
@@ -100,20 +100,11 @@ PHASES: dict[str, Phase] = {
         source="COD 9004180, a = 3.2494, c = 5.2038 A; u(O) = 0.3819"),
     "tio2-rutile": Phase(
         key="tio2-rutile", name="Rutile", formula="TiO2", space_group="P42/mnm (136)",
-        a=4.616, c=2.977, sites=(
+        a=4.5937, c=2.9587, sites=(
             Site("Ti", 0, 0, 0), Site("Ti", .5, .5, .5),
             Site("O", .3047, .3047, 0), Site("O", .6953, .6953, 0),
             Site("O", .8047, .1953, .5), Site("O", .1953, .8047, .5)),
-        source="COD 9004143, a = 4.616, c = 2.977 A; u(O) = 0.3047"),
-    "tio2-anatase": Phase(
-        key="tio2-anatase", name="Anatase", formula="TiO2", space_group="I41/amd (141)",
-        a=3.7892, c=9.537, sites=(
-            Site("Ti", 0, 0, 0), Site("Ti", 0, .5, .25), Site("Ti", .5, .5, 0), Site("Ti", .5, 0, .75),
-            Site("O", 0, 0, .2081), Site("O", 0, 0, .7919),
-            Site("O", 0, .5, .4581), Site("O", 0, .5, .0419),
-            Site("O", .5, .5, .2081), Site("O", .5, .5, .7919),
-            Site("O", .5, 0, .4581), Site("O", .5, 0, .0419)),
-        source="COD 9008214, a = 3.7892, c = 9.537 A; z(O) = 0.2081"),
+        source="room-temperature conventional values a = 4.5937, c = 2.9587 A; u(O) = 0.3047"),
 }
 
 

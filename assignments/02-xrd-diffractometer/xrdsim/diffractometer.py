@@ -145,5 +145,5 @@ def _representative(h: int, k: int, l: int, system: str) -> bool:
     if system == "tetragonal":
         return h >= k
     if system == "hexagonal":
-        return k >= h
+        return h >= k
     return True
