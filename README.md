@@ -3,13 +3,14 @@
 Simulators written for the quantum physics section of the nano capsule class
 (EE4005, Nanotechnology & Quantum Physics).
 
-Each assignment is self-contained: its own Python package, tests, data pack,
-report generator and submitted PDF.
+Each assignment is self-contained: its own Python package, tests, data pack and report
+generator. Assignment 1's PDF is the submitted document; assignment 2's is a draft until its
+brief arrives.
 
 | # | assignment | simulator | report |
 | --- | --- | --- | --- |
 | 1 | PL spectrometer | `plsim` - xenon lamp, two monochromators, dye database, photodiode | [markdown](assignments/01-pl-spectrometer/README.md) - [PDF](assignments/01-pl-spectrometer/report/Assignment_1_PL_Spectroscopy_Simulation_Report.pdf) |
-| 2 | XRD diffractometer | `xrdsim` - Bragg-Brentano scan, structure factors, K-alpha doublet, Scherrer | [markdown](assignments/02-xrd-diffractometer/README.md) |
+| 2 | XRD diffractometer | `xrdsim` - Bragg-Brentano scan, structure factors, K-alpha doublet, Scherrer | [markdown](assignments/02-xrd-diffractometer/README.md) - [draft PDF](assignments/02-xrd-diffractometer/report/Assignment_2_XRD_Diffractometer_Report.pdf) |
 
 ## Layout
 
