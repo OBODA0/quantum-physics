@@ -49,15 +49,3 @@ def save_scan(scan: Scan, path, title: str | None = None, dpi: int = 160) -> Non
     fig.tight_layout()
     fig.savefig(path, dpi=dpi)
     plt.close(fig)
-
-
-def plot_overview(scans, path, dpi: int = 160) -> None:
-    """One panel per scan, stacked."""
-    fig, axes = plt.subplots(len(scans), 1, figsize=(9, 3.0 * len(scans)), sharex=True)
-    if len(scans) == 1:
-        axes = [axes]
-    for ax, scan in zip(axes, scans):
-        plot_scan(scan, ax=ax, title=scan.phase.name if scan.phase else None)
-    fig.tight_layout()
-    fig.savefig(path, dpi=dpi)
-    plt.close(fig)
