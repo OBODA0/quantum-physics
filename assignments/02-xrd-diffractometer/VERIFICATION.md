@@ -5,7 +5,7 @@ what it proves. Nothing here is reported from intent.
 
 ## 1. Test suite
 
-`cd assignments/02-xrd-diffractometer && uv run pytest -q` -> **107 passed** (commit `42d6f14`).
+`cd assignments/02-xrd-diffractometer && uv run pytest -q` -> **111 passed** (2026-10-22).
 
 What the suite covers, by file:
 
@@ -60,7 +60,7 @@ site to fit published intensities would be fitting, not physics.
 
 ## 2.2 Clean-room rebuild
 
-Checked at commit `42d6f14`: a fresh `git clone` of the repository into `/tmp/clean3`,
+Checked on 2026-10-22: a fresh `git clone` of the repository into `/tmp/clean3`,
 then
 
 ```
@@ -73,7 +73,7 @@ uv run python -m report.check_pdf
 uv run python -m report.check_numbers
 ```
 
-produced **92 passed** and **PASS**, and `git status` in the clone was **empty**: every
+produced **111 passed** and **PASS**, and `git status` in the clone was **empty**: every
 figure, the reflection table and the PDF came out byte-identical to the committed ones.
 The PDF is deterministic because `reportlab.rl_config.invariant` fixes its timestamps and
 document id.
