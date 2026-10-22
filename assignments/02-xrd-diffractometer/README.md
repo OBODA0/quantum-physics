@@ -48,7 +48,7 @@ uv run python -m xrdsim --phase si --table
 
 ## Phases
 
-| key | formula | space group | cell (A) | strongest line |
+| key | formula | space group | cell (A) | published strongest line |
 | --- | --- | --- | --- | --- |
 | `si` | Si | Fd-3m | 5.431144 | 111 at 28.44 |
 | `al` | Al | Fm-3m | 4.0495 | 111 at 38.47 |
