@@ -46,3 +46,16 @@ def test_identify_ranks_the_simulated_phase_first(capsys):
     block = out.split("identification:")[1].strip().splitlines()
     assert block[0].startswith("phase")  # header
     assert block[1].split()[0] == "zno"
+
+
+def test_unknown_phase_is_a_clean_error(capsys):
+    with pytest.raises(SystemExit) as caught:
+        main(["--phase", "nope"])
+    assert caught.value.code == 2
+    assert "unknown phase" in capsys.readouterr().err
+
+
+def test_bad_scan_range_is_a_clean_error(capsys):
+    with pytest.raises(SystemExit):
+        main(["--phase", "si", "--range", "90", "20"])
+    assert "scan range" in capsys.readouterr().err

@@ -78,6 +78,20 @@ figure, the reflection table and the PDF came out byte-identical to the committe
 The PDF is deterministic because `reportlab.rl_config.invariant` fixes its timestamps and
 document id.
 
+## 2.3 Robustness sweep
+
+567 scans on 2026-10-22, covering every phase:
+
+| dimension | values |
+| --- | --- |
+| range and step | 20-90 at 0.02 deg, 10-150 at 0.05, 60-61 at 0.001 |
+| crystallite size | none, 1 nm, 10 um |
+| options | default, K-alpha2 off, monochromator at 26.6 deg, 1 mm specimen displacement, dead time 0.1 ms, Poisson seed, no background |
+
+**0 failures**, 26.5 s in total. Every scan returned equal-length arrays and no negative
+counts. The command line interface rejects an unknown phase, a reversed range, a zero step
+and a negative size with `xrdsim: error: ...` and exit status 2, not a traceback.
+
 ## 3. Defects found and fixed during the build
 
 | defect | how it showed up | fix | proof |

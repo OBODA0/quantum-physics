@@ -62,81 +62,88 @@ def main(argv: list[str] | None = None) -> int:
     if not args.phase:
         parser.error("--phase is required unless --list-phases is given")
 
-    phase = get_phase(args.phase)
-    instrument = _instrument(args)
-    result = scan(phase, args.range[0], args.range[1], args.step, instrument,
-                  size_a=args.size)
+    try:
+        return _run(args)
+    except (KeyError, ValueError) as error:
+        parser.error(str(error).strip('"'))
 
-    if args.table:
-        strongest = max(row.intensity for row in result.reflections)
-        print(f"{'hkl':>10s} {'d (A)':>8s} {'2theta':>8s} {'m':>3s} {'I/I0':>7s}")
-        for row in result.reflections:
-            if row.intensity < 1e-4 * strongest:
-                continue
-            label = "".join(str(v) for v in row.hkl)
-            print(f"{label:>10s} {row.d:8.4f} {row.two_theta:8.3f} {row.multiplicity:3d} "
-                  f"{100 * row.intensity / strongest:7.2f}")
-        return 0
 
-    peaks = find_peaks(result.two_theta, result.counts)
-    print(f"phase      : {phase.name} ({phase.formula}), {phase.space_group}")
-    print(f"wavelength : {instrument.wavelength:.6f} A"
-          + (" + K-alpha2" if instrument.ka2 else ""))
-    print(f"range      : {args.range[0]} - {args.range[1]} deg, step {args.step}")
-    print(f"peaks      : {len(peaks)}")
-    for peak in peaks[:12]:
-        line = f"  {peak.two_theta:8.3f} deg  height {peak.height:9.0f}  FWHM {peak.fwhm:.4f}"
-        if args.size and not args.scherrer:
+def _run(args) -> int:
+        phase = get_phase(args.phase)
+        instrument = _instrument(args)
+        result = scan(phase, args.range[0], args.range[1], args.step, instrument,
+                      size_a=args.size)
+
+        if args.table:
+            strongest = max(row.intensity for row in result.reflections)
+            print(f"{'hkl':>10s} {'d (A)':>8s} {'2theta':>8s} {'m':>3s} {'I/I0':>7s}")
+            for row in result.reflections:
+                if row.intensity < 1e-4 * strongest:
+                    continue
+                label = "".join(str(v) for v in row.hkl)
+                print(f"{label:>10s} {row.d:8.4f} {row.two_theta:8.3f} {row.multiplicity:3d} "
+                      f"{100 * row.intensity / strongest:7.2f}")
+            return 0
+
+        peaks = find_peaks(result.two_theta, result.counts)
+        print(f"phase      : {phase.name} ({phase.formula}), {phase.space_group}")
+        print(f"wavelength : {instrument.wavelength:.6f} A"
+              + (" + K-alpha2" if instrument.ka2 else ""))
+        print(f"range      : {args.range[0]} - {args.range[1]} deg, step {args.step}")
+        print(f"peaks      : {len(peaks)}")
+        for peak in peaks[:12]:
+            line = f"  {peak.two_theta:8.3f} deg  height {peak.height:9.0f}  FWHM {peak.fwhm:.4f}"
+            if args.size and not args.scherrer:
+                try:
+                    size = scherrer_from_peak(peak, caglioti_fwhm(peak.two_theta, *instrument.caglioti),
+                                              instrument.wavelength)
+                    line += f"  Scherrer {size / 10.0:.1f} nm"
+                except ValueError:
+                    pass
+            print(line)
+
+        if args.index:
             try:
-                size = scherrer_from_peak(peak, caglioti_fwhm(peak.two_theta, *instrument.caglioti),
-                                          instrument.wavelength)
-                line += f"  Scherrer {size / 10.0:.1f} nm"
-            except ValueError:
-                pass
-        print(line)
+                rows = index_cubic([peak.two_theta for peak in peaks])
+            except ValueError as error:
+                print(f"indexing failed: {error}")
+            else:
+                print("indexing   : hkl            2theta")
+                for hkl, angle in rows:
+                    print(f"             {str(hkl):14s} {angle:7.3f}")
+                n_squared = [hkl[0] ** 2 + hkl[1] ** 2 + hkl[2] ** 2 for hkl, _ in rows]
+                print(f"lattice    : {lattice_hint(n_squared)}")
 
-    if args.index:
-        try:
-            rows = index_cubic([peak.two_theta for peak in peaks])
-        except ValueError as error:
-            print(f"indexing failed: {error}")
-        else:
-            print("indexing   : hkl            2theta")
-            for hkl, angle in rows:
-                print(f"             {str(hkl):14s} {angle:7.3f}")
-            n_squared = [hkl[0] ** 2 + hkl[1] ** 2 + hkl[2] ** 2 for hkl, _ in rows]
-            print(f"lattice    : {lattice_hint(n_squared)}")
-
-    if args.scherrer:
-        print("Scherrer   : peak            size (nm)")
-        for peak in peaks:
+        if args.scherrer:
+            print("Scherrer   : peak            size (nm)")
+            for peak in peaks:
+                try:
+                    size = scherrer_from_peak(
+                        peak, caglioti_fwhm(peak.two_theta, *instrument.caglioti),
+                        instrument.wavelength)
+                except ValueError:
+                    continue
+                print(f"             {peak.two_theta:7.3f}         {size / 10.0:6.1f}")
             try:
-                size = scherrer_from_peak(
-                    peak, caglioti_fwhm(peak.two_theta, *instrument.caglioti),
+                wh_size, wh_strain = williamson_hall(
+                    peaks, lambda angle: caglioti_fwhm(angle, *instrument.caglioti),
                     instrument.wavelength)
-            except ValueError:
-                continue
-            print(f"             {peak.two_theta:7.3f}         {size / 10.0:6.1f}")
-        try:
-            wh_size, wh_strain = williamson_hall(
-                peaks, lambda angle: caglioti_fwhm(angle, *instrument.caglioti),
-                instrument.wavelength)
-        except ValueError as error:
-            print(f"Williamson-Hall: {error}")
-        else:
-            print(f"Williamson-Hall: D = {wh_size / 10.0:.1f} nm, strain = {wh_strain:.5f}"
-                  + ("" if args.no_ka2 else " (use --no-ka2: the shoulders bias the fit)"))
+            except ValueError as error:
+                print(f"Williamson-Hall: {error}")
+            else:
+                print(f"Williamson-Hall: D = {wh_size / 10.0:.1f} nm, strain = {wh_strain:.5f}"
+                      + ("" if args.no_ka2 else " (use --no-ka2: the shoulders bias the fit)"))
 
-    if args.identify:
-        ranking = identify([peak.two_theta for peak in peaks], PHASES, instrument)
-        print("identification: phase          score")
-        for key, score in ranking[:5]:
-            print(f"                {key:14s} {score:5.2f}")
+        if args.identify:
+            ranking = identify([peak.two_theta for peak in peaks], PHASES, instrument)
+            print("identification: phase          score")
+            for key, score in ranking[:5]:
+                print(f"                {key:14s} {score:5.2f}")
 
-    if args.out:
-        from .plot import save_scan
-        args.out.parent.mkdir(parents=True, exist_ok=True)
-        save_scan(result, args.out,
-                  title=f"{phase.name}, {instrument.wavelength:.4f} A")
-        print(f"wrote {args.out}")
-    return 0
+        if args.out:
+            from .plot import save_scan
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            save_scan(result, args.out,
+                      title=f"{phase.name}, {instrument.wavelength:.4f} A")
+            print(f"wrote {args.out}")
+        return 0
