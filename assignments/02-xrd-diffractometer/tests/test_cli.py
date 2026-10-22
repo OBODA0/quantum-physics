@@ -28,3 +28,12 @@ def test_writes_a_png(tmp_path, capsys):
 def test_requires_a_phase():
     with pytest.raises(SystemExit):
         main([])
+
+
+def test_index_and_scherrer_flags(capsys):
+    assert main(["--phase", "si", "--range", "20", "60", "--step", "0.01",
+                 "--size", "300", "--no-ka2", "--index", "--scherrer"]) == 0
+    out = capsys.readouterr().out
+    assert "(1, 1, 1)" in out and "(2, 2, 0)" in out
+    assert "Scherrer" in out
+    assert "30.0" in out or "30.1" in out

@@ -6,7 +6,7 @@ import argparse
 import pathlib
 
 from . import sources
-from .analysis import find_peaks, scherrer_from_peak
+from .analysis import find_peaks, index_cubic, scherrer_from_peak
 from .diffractometer import Instrument, reflections, scan
 from .profile import caglioti_fwhm
 from .samples import PHASES, get_phase
@@ -42,6 +42,10 @@ def main(argv: list[str] | None = None) -> int:
                         help="Poisson seed; 0 disables counting noise")
     parser.add_argument("--out", type=pathlib.Path, help="write the scan to this image")
     parser.add_argument("--table", action="store_true", help="print the reflection table")
+    parser.add_argument("--index", action="store_true",
+                        help="index the observed peaks as a cubic pattern")
+    parser.add_argument("--scherrer", action="store_true",
+                        help="report Scherrer sizes for the observed peaks")
     parser.add_argument("--list-phases", action="store_true", help="list the phase database")
     args = parser.parse_args(argv)
 
@@ -84,6 +88,27 @@ def main(argv: list[str] | None = None) -> int:
             except ValueError:
                 pass
         print(line)
+
+    if args.index:
+        try:
+            rows = index_cubic([peak.two_theta for peak in peaks], instrument.wavelength)
+        except ValueError as error:
+            print(f"indexing failed: {error}")
+        else:
+            print("indexing   : hkl            2theta")
+            for hkl, angle in rows:
+                print(f"             {str(hkl):14s} {angle:7.3f}")
+
+    if args.scherrer:
+        print("Scherrer   : peak            size (nm)")
+        for peak in peaks:
+            try:
+                size = scherrer_from_peak(
+                    peak, caglioti_fwhm(peak.two_theta, *instrument.caglioti),
+                    instrument.wavelength)
+            except ValueError:
+                continue
+            print(f"             {peak.two_theta:7.3f}         {size / 10.0:6.1f}")
 
     if args.out:
         from .plot import save_scan
