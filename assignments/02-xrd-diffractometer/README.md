@@ -69,7 +69,8 @@ xrdsim/     lattice, atoms, structure, samples, geometry, sources, profile,
 tests/      one file per module group, 92 tests
 data/       scattering_factors.json (generated), SOURCES.md
 docs/       model.md, brief_intake.md, research/
-report/     make_figures.py, tables.py, generate_pdf_report.py, check_pdf.py,
+report/     make_figures.py, tables.py, generate_pdf_report.py, numbers_source.py,
+            check_pdf.py, check_numbers.py,
             figures/, tables.md, the draft PDF
 tools/      build_scattering_factors.py, phase_from_cif.py, check_all.py
 ```

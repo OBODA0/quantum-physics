@@ -69,6 +69,7 @@ uv run python -m report.make_figures
 uv run python -m report.tables
 uv run python -m report.generate_pdf_report
 uv run python -m report.check_pdf
+uv run python -m report.check_numbers
 ```
 
 produced **92 passed** and **PASS**, and `git status` in the clone was **empty**: every
