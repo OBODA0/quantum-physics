@@ -46,6 +46,7 @@ certificates quote 1.5405929 A, the simulator uses 1.540598 A. That is stated in
 | every permutation of (hkl) listed separately | Si 111 weaker than 220 | one representative per symmetry family | `test_only_one_member_of_each_family_is_listed`, `test_silicon_relative_intensities_match_the_standard_pattern` |
 | LP evaluated at 2theta = 180 deg | infinite intensity, every other peak normalised to zero | cap at 150 deg | scans run; no non-finite counts |
 | cell constants taken from primitive-cell conversions | rutile 110 at 27.30, MgO 111 at 36.57 | conventional room-temperature values | `test_every_phase_reproduces_its_published_strongest_line` |
+| hexagonal multiplicity for a general (hk0) reflection | 6 instead of 12; no shipped pattern changed, but any general in-plane family would have been under-weighted | special-position rule (h == 0, k == 0 or h == k gives 6, otherwise 12) | `test_multiplicity_matches_a_brute_force_orbit`, which enumerates the operations independently |
 | hand-expanded anatase basis | spurious (001) at 9.27 deg with 100 % intensity | basis taken from the COD CIF expanded by gemmi | (001) now zero, 101 at 25.27 deg with 100 %; `test_every_phase_reproduces_its_published_strongest_line` |
 | sampled peak heights | heights jittered with the scan step | parabolic refinement | `test_find_peaks_recovers_positions_widths_and_heights` |
 

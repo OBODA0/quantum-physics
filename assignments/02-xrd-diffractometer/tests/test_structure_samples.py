@@ -102,3 +102,47 @@ def test_every_phase_reproduces_its_published_strongest_line():
         strongest = max(rows, key=lambda row: row.intensity)
         assert strongest.hkl == hkl, key
         assert strongest.two_theta == pytest.approx(expected, abs=0.03), key
+
+
+def _brute_multiplicity(h, k, l, system):
+    """Count the orbit by enumerating the operations, independently of multiplicity()."""
+    import itertools
+
+    def signed_permutations(values):
+        out = set()
+        for perm in itertools.permutations(values):
+            for signs in itertools.product([1, -1], repeat=len(perm)):
+                out.add(tuple(p * s for p, s in zip(perm, signs)))
+        return out
+
+    if system == "cubic":
+        return len(signed_permutations((h, k, l)))
+
+    if system == "tetragonal":
+        out = set()
+        for a, b in signed_permutations((h, k)):
+            for c in ({l, -l} if l else {0}):
+                out.add((a, b, c))
+        return len(out)
+
+    if system == "hexagonal":
+        rotations = [(h, k), (k, -h - k), (-h - k, h), (-h, -k), (-k, h + k), (h + k, -h)]
+        out = set()
+        for a, b in rotations:
+            for mirrored in ((a, b), (b, a)):
+                for c in ({l, -l} if l else {0}):
+                    out.add((mirrored[0], mirrored[1], c))
+        return len(out)
+
+    raise ValueError(system)
+
+
+@pytest.mark.parametrize("system", ["cubic", "tetragonal", "hexagonal"])
+def test_multiplicity_matches_a_brute_force_orbit(system):
+    for h in range(0, 4):
+        for k in range(0, 4):
+            for l in range(0, 4):
+                if h == k == l == 0:
+                    continue
+                assert multiplicity(h, k, l, system) == _brute_multiplicity(h, k, l, system), (
+                    system, h, k, l)

@@ -37,7 +37,10 @@ def multiplicity(h: int, k: int, l: int, system: str) -> int:
     if system == "hexagonal":
         if h == 0 and k == 0:
             return 2 if l else 1
-        return 12 if l else 6
+        # (h, k) on a mirror plane (h == 0, k == 0 or h == k) has a 6-member in-plane orbit;
+        # a general (h, k) has 12. A non-zero l doubles either.
+        in_plane = 6 if (h == 0 or k == 0 or h == k) else 12
+        return 2 * in_plane if l else in_plane
     raise ValueError(f"multiplicity is not defined for {system!r}")
 
 
