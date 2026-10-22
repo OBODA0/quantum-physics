@@ -210,7 +210,7 @@ def build() -> None:
 
     story.append(Paragraph("4.1 Crystallite size", s["h2"]))
     story.append(Paragraph(
-        "Broadening is the sum of the instrument and the specimen. Figure 3 fixes the "
+        "Broadening combines the instrument and the specimen in quadrature. Figure 3 fixes the "
         "instrument (U, V, W) and varies the crystallite size; the Scherrer analysis in "
         "<font face=\"Courier\">xrdsim/analysis.py</font> subtracts the instrumental width in "
         "quadrature and recovers the input size to within about 1 % on a noiseless scan "
