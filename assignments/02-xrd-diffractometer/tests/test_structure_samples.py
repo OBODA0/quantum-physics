@@ -181,3 +181,19 @@ def test_diamond_111_structure_factor_has_the_expected_modulus():
     expected = 4.0 * f0("Si", LAM / (2 * d)) * debye_waller(0.5, LAM / (2 * d))
     assert abs(structure_factor(si, 1, 1, 1, LAM)) == pytest.approx(
         expected * math.sqrt(2.0), rel=1e-12)
+
+
+@pytest.mark.parametrize("key", sorted(PHASES))
+def test_simulated_peaks_sit_on_the_predicted_reflections(key):
+    from xrdsim.analysis import find_peaks
+    from xrdsim.diffractometer import Instrument, scan
+    phase = PHASES[key]
+    result = scan(phase, 20.0, 90.0, 0.01,
+                  Instrument(ka2=False, background_rate=0.0, rng_seed=None))
+    found = [peak.two_theta for peak in find_peaks(result.two_theta, result.counts)]
+    strongest = max(row.intensity for row in result.reflections)
+    predicted = [row.two_theta for row in result.reflections
+                 if row.intensity > 0.05 * strongest and 20.0 <= row.two_theta <= 90.0]
+    assert predicted, key
+    for angle in predicted:
+        assert min(abs(angle - seen) for seen in found) < 0.1, (key, angle)
