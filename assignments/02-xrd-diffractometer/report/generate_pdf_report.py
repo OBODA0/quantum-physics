@@ -245,12 +245,13 @@ def build() -> None:
         "uses 1.540598.", s["body"]))
     story.append(Paragraph(
         "Multiplicities are checked against a brute-force enumeration of the symmetry "
-        "operations for cubic, tetragonal and hexagonal families, and the intensity ratios "
-        "sit inside the spread expected from a uniform Debye-Waller factor and no absorption "
-        f"correction: copper 111/200/220 comes out at {numbers['cu_ratios']} against the published 100/46/20, "
-        f"and rutile at {numbers['rutile_ratios']} for 110/101/211 against 100/50/60. "
-        "The whole assignment rebuilds from a fresh clone: uv sync, 91 tests, figures, tables, "
-        "PDF and the gate.", s["body"]))
+        "operations for cubic, tetragonal and hexagonal families. Intensity ratios agree with "
+        "published patterns to within about a third on strong lines: copper 111/200/220 comes "
+        f"out at {numbers['cu_ratios']} against the published 100/46/20, and rutile 110/101/211 "
+        f"at {numbers['rutile_ratios']} against 100/50/60. The deviations are largest on weak "
+        "lines and are not tuned: every site shares one Debye-Waller factor and no absorption "
+        "correction is applied. The whole assignment rebuilds from a fresh clone: uv sync, the "
+        "test suite, figures, tables, PDF and both gates.", s["body"]))
     story.append(Paragraph(
         "Defects found and fixed during the build are listed in "
         "<font face=\"Courier\">VERIFICATION.md</font>: a missing step factor in the profile, "
