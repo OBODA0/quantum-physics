@@ -223,9 +223,11 @@ def build() -> None:
     story.append(Paragraph("4.2 The K-alpha doublet", s["h2"]))
     story.append(Paragraph(
         "The doublet separation grows with angle, Delta(2theta) = 2 tan(theta) (lambda2 - "
-        "lambda1)/lambda1: about 0.07 deg at 28 deg and 0.28 deg at 88 deg. Below 60 deg the "
-        "two lines merge into one asymmetric peak, which is why a fitted width at low angle "
-        "is not the instrument width.", s["body"]))
+        "lambda1)/lambda1: about 0.07 deg at 28 deg and 0.28 deg at 88 deg. Whether the two "
+        "lines resolve depends on the peak width. With the default Caglioti width here "
+        "(0.05-0.07 deg) silicon's 111 pair is barely separated and every higher line is "
+        "resolved; a broader instrument merges them into one asymmetric peak, which is why a "
+        "fitted width at low angle is not the instrument width.", s["body"]))
     story.append(figure("doublet.png"))
     story.append(Paragraph("Figure 4: silicon 422 with and without the K-alpha2 line, at the "
                            "same instrument settings.", s["caption"]))
