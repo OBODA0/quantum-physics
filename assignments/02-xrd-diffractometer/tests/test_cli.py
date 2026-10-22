@@ -44,4 +44,5 @@ def test_identify_ranks_the_simulated_phase_first(capsys):
                  "--no-ka2", "--identify"]) == 0
     out = capsys.readouterr().out
     block = out.split("identification:")[1].strip().splitlines()
-    assert block[0].split()[0] == "zno"
+    assert block[0].startswith("phase")  # header
+    assert block[1].split()[0] == "zno"
