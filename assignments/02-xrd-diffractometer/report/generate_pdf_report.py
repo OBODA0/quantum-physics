@@ -243,9 +243,9 @@ def build() -> None:
         f"111/220/311/400 at {numbers['si_positions']} deg against the NIST SRM 640d values "
         "28.4425/47.3034/56.1211/69.1295, and the relative intensities "
         f"{numbers['si_ratios']} against the standard 100/55/30/5. The positions match the "
-        "certificate to three decimals; the intensity ratios run high at the back of the scan "
-        "because no absorption correction is applied and every site shares one Debye-Waller "
-        "factor.", s["body"]))
+        "certificate to three decimals. The intensity ratios run high at the back of the scan: "
+        "printed powder cards list peak heights, while the model returns integrated "
+        "intensities, and one Debye-Waller factor is shared by every site.", s["body"]))
     story.append(Paragraph(
         "Multiplicities are checked against a brute-force enumeration of the symmetry "
         "operations for cubic, tetragonal and hexagonal families. Intensity ratios agree with "
