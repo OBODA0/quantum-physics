@@ -59,9 +59,9 @@ def d_from_two_theta(two_theta_deg: float, wavelength: float) -> float:
 def refine_cubic_a(peaks: list[tuple[float, int, int, int]], wavelength: float) -> float:
     """Least-squares cubic lattice parameter from indexed peaks.
 
-    `peaks` is a list of (two_theta_deg, h, k, l). The fit is linear through the origin,
-    sin^2(theta) = (lambda^2 / 4a^2) * (h^2 + k^2 + l^2), so it weights every reflection
-    by its own scattering angle without needing per-peak uncertainties.
+    `peaks` is a list of (two_theta_deg, h, k, l). The fit is an unweighted least squares
+    through the origin, sin^2(theta) = (lambda^2 / 4a^2) * (h^2 + k^2 + l^2): no per-peak
+    uncertainties, and no zero-offset term, so a displaced specimen biases the result.
     """
     xs, ys = [], []
     for two_theta_deg, h, k, l in peaks:

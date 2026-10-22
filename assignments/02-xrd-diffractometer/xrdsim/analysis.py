@@ -98,6 +98,7 @@ def index_cubic(two_thetas: list[float],
     """
     if not two_thetas:
         raise ValueError("no peaks to index")
+    two_thetas = sorted(two_thetas)
     s2 = [math.sin(math.radians(t / 2.0)) ** 2 for t in two_thetas]
     base = s2[0]
     for n2_first in range(1, max_n_squared + 1):
