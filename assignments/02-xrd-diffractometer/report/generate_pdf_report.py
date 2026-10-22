@@ -19,8 +19,9 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
-from reportlab.platypus import (Image, Paragraph, Preformatted, SimpleDocTemplate,
-                                Table, TableStyle)
+from reportlab.platypus import (Image, PageBreak, Paragraph, Preformatted,
+                                SimpleDocTemplate, Table, TableStyle)
+from reportlab.platypus.tableofcontents import TableOfContents
 
 from xrdsim.diffractometer import Instrument, reflections
 from xrdsim.samples import PHASES
@@ -98,6 +99,7 @@ def _wrap_code(text: str, width: int = 110) -> str:
 
 
 def code_appendix(story, s) -> None:
+    story.append(PageBreak())
     story.append(Paragraph("Appendix A: the code", s["h1"]))
     story.append(Paragraph(
         "Every module the simulator ships, in the order the README lists them. The same "
@@ -108,10 +110,18 @@ def code_appendix(story, s) -> None:
         story.append(Preformatted(_wrap_code(path.read_text(encoding="utf-8")), s["code"]))
 
 
+class _NumberedDoc(SimpleDocTemplate):
+    """A document that tells a TableOfContents where each section landed."""
+
+    def afterFlowable(self, flowable) -> None:
+        if isinstance(flowable, Paragraph) and flowable.style.name == "H1":
+            self.notify("TOCEntry", (0, flowable.getPlainText(), self.page))
+
+
 def build() -> None:
     s = styles()
     numbers = quoted_numbers()
-    doc = SimpleDocTemplate(str(PDF_PATH), pagesize=letter, leftMargin=54, rightMargin=54,
+    doc = _NumberedDoc(str(PDF_PATH), pagesize=letter, leftMargin=54, rightMargin=54,
                             topMargin=54, bottomMargin=54,
                             title="Assignment 2: XRD Diffractometer Simulation",
                             author="Nanotechnology & Quantum Physics - Assignment 2")
@@ -140,6 +150,14 @@ def build() -> None:
         ["Repository", REPO_URL],
     ]
     story.append(table([["<b>Item</b>", "<b>What it is</b>"]] + meta, [90, 355], s))
+
+    contents = TableOfContents()
+    contents.levelStyles = [ParagraphStyle("TOC0", fontName="Helvetica", fontSize=9.5,
+                                           leading=13, spaceBefore=2)]
+    story.append(PageBreak())
+    story.append(Paragraph("Contents", s["title"]))
+    story.append(contents)
+    story.append(PageBreak())
 
     # 1 -------------------------------------------------------------------
     story.append(Paragraph("1. The instrument", s["h1"]))
@@ -269,7 +287,7 @@ def build() -> None:
 
     code_appendix(story, s)
 
-    doc.build(story, onFirstPage=_footer, onLaterPages=_footer)
+    doc.multiBuild(story, onFirstPage=_footer, onLaterPages=_footer)
     print(f"wrote {PDF_PATH}")
 
 
