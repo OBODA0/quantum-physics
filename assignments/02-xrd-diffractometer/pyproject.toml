@@ -1,0 +1,19 @@
+[project]
+name = "xrd-diffractometer-simulator"
+version = "0.1.0"
+description = "X-ray powder diffractometer simulator: Cu K-alpha source, Bragg-Brentano geometry, phase database, peak fitting and Scherrer analysis."
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.0",
+    "matplotlib>=3.8",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+# the package sits at the assignment root, so pytest must look there
+pythonpath = ["."]
+
+[dependency-groups]
+dev = ["pytest>=8", "reportlab>=4", "pypdf>=5"]
