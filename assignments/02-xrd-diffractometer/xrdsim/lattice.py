@@ -14,8 +14,8 @@ def d_spacing(h: int, k: int, l: int, *, a: float, b: float | None = None,
     """Interplanar spacing in angstrom.
 
     `hexagonal=True` selects the hexagonal setting (a = b, gamma = 120 degrees).
-    Otherwise `b=None` is cubic, `b` given and `c=None` is tetragonal, `b` and `c`
-    given is orthorhombic.
+    Otherwise `b` and `c` both None is cubic, `c` given with `b` None is tetragonal, and
+    both `b` and `c` given is orthorhombic. A lone `b` is rejected rather than guessed.
     """
     if a <= 0:
         raise ValueError("lattice parameter must be positive")
@@ -27,6 +27,8 @@ def d_spacing(h: int, k: int, l: int, *, a: float, b: float | None = None,
         inv_sq = (h * h + k * k + l * l) / a**2
     elif b is None:
         inv_sq = (h * h + k * k) / a**2 + l * l / c**2
+    elif c is None:
+        raise ValueError("an orthorhombic cell needs both b and c; for a tetragonal cell pass c and leave b None")
     else:
         inv_sq = h * h / a**2 + k * k / b**2 + l * l / c**2
     if inv_sq == 0:
