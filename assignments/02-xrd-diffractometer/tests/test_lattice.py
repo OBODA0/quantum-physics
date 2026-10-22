@@ -6,7 +6,7 @@ from xrdsim.lattice import (d_from_two_theta, d_spacing, peak_positions,
                             refine_cubic_a, two_theta)
 
 LAM = 1.540598
-A_SI = 5.4311946  # NIST SRM 640d, 22.5 C
+A_SI = 5.431144  # NIST SRM 640f, 22.5 C
 
 
 def test_silicon_d_spacings_match_the_literature():
@@ -15,18 +15,17 @@ def test_silicon_d_spacings_match_the_literature():
 
 
 @pytest.mark.parametrize("hkl,expected", [
-    # NIST SRM 640d certificate, Cu K-alpha1; the 0.01 deg window absorbs the
-    # wavelength convention (certificate 1.5405929 A, here 1.540598 A)
-    ((1, 1, 1), 28.4425),
-    ((2, 2, 0), 47.3034),
-    ((3, 1, 1), 56.1211),
-    ((4, 0, 0), 69.1295),
-    ((3, 3, 1), 76.3771),
-    ((4, 2, 2), 88.0324),
+    # NIST SRM 640f certificate Table 1, Cu K-alpha1
+    ((1, 1, 1), 28.441),
+    ((2, 2, 0), 47.301),
+    ((3, 1, 1), 56.120),
+    ((4, 0, 0), 69.127),
+    ((3, 3, 1), 76.373),
+    ((4, 2, 2), 88.026),
 ])
 def test_silicon_peak_positions(hkl, expected):
     d = d_spacing(*hkl, a=A_SI)
-    assert two_theta(d, LAM) == pytest.approx(expected, abs=1e-2)
+    assert two_theta(d, LAM) == pytest.approx(expected, abs=2e-3)
 
 
 def test_hexagonal_zinc_oxide():

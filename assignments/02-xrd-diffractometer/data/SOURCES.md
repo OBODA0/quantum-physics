@@ -18,12 +18,11 @@ modelling decision, not a measurement.
 | Cu K-beta | 1.392250 A | provisional | same |
 | K-alpha2 / K-alpha1 | 0.497 | provisional | standard doublet ratio; not re-measured here |
 | K-beta / K-alpha | 0.20 | provisional | used only when K-beta is switched on; not used in shipped figures |
-| Ni filter, 15 um | 0.52 (K-alpha) / 0.024 (K-beta) | provisional | from the instrument research note; only used to justify removing K-beta |
 
 These four wavelengths set every peak position. If the course expects a different
 wavelength convention (for example the 1.5405929 A printed on some NIST certificates), the
-positions move by about 0.002 deg at 30 deg - below the line width, but it should be
-stated in the report.
+positions move by about 0.0001 deg at 30 deg and 0.001 deg near the back of the scan -
+far below the line width. The report states the convention anyway.
 
 ## 2. Scattering factors
 
@@ -48,10 +47,9 @@ xraydb, the simulator itself needs only numpy.
 | fe | alpha-Fe | Im-3m | a = 2.8665 | provisional | room-temperature conventional value. The AFLOW `Fe1_ICSD_631722` entry reads 2.9647 A (3.4% high, probably expanded or high-temperature) and is deliberately NOT used. |
 | nacl | NaCl | Fm-3m | a = 5.6402 | provisional | room-temperature conventional value; AFLOW `Cl1Na1_ICSD_60280` converts to 5.665 A |
 | mgo | MgO | Fm-3m | a = 4.2112 | provisional | room-temperature conventional value; AFLOW `Mg1O1_ICSD_173128` converts to 4.253 A |
-| zno | ZnO | P63mc | a = 3.2494, c = 5.2038 | firm | COD 9004180; u(O) = 0.3819 |
-| tio2-rutile | TiO2 | P42/mnm | a = 4.5937, c = 2.9587 | provisional | room-temperature conventional values; u(O) = 0.3047. The research note listed COD 9004143 as 4.616 / 2.977 A, which puts 110 at 27.30 deg instead of the published 27.45 deg, so the conventional values are used and the COD record has to be re-read before they are called firm. |
-
-| tio2-anatase | TiO2 | I41/amd | a = 3.7892, c = 9.537 | firm | COD 9008214; z(O) = 0.2079; the basis is expanded from the deposited CIF by gemmi, not hand-written |
+| zno | ZnO | P63mc | a = 3.2494, c = 5.2038 | firm | COD 9004180; u(O) = 0.3830 (the CIF value) |
+| tio2-rutile | TiO2 | P42/mnm | a = 4.5937, c = 2.9587 | provisional | room-temperature conventional values; u(O) = 0.3047. COD 9004143 is a 600 C record (a = 4.616, c = 2.977 A), which is why its 110 sits at 27.30 deg instead of the published 27.45; the room-temperature cell is used and u(O) is the textbook value, not the CIF's 0.3045. |
+| tio2-anatase | TiO2 | I41/amd | a = 3.7845, c = 9.5143 | provisional | room-temperature conventional cell; the basis (z(O) = 0.2079) is expanded by gemmi from COD 9008214, which was measured at 300 C and gives a = 3.7892, c = 9.537 A. The high-temperature cell is deliberately not shipped: it moves 101 to 25.27 instead of 25.30 deg. |
 
 The COD CIFs were fetched with `curl` on 2026-10-22; Python's urllib hit a TLS reset on the
 same host. The expansion of each CIF into a full conventional-cell basis is done by gemmi
@@ -69,8 +67,10 @@ from different papers, temperatures and pressures, and AFLOW's relaxed fields ca
 DFT. Each row above states which record was used.
 
 **Basis coordinates** are the symmetry-expanded conventional cell for each space group,
-written out in `xrdsim/samples.py`. They are textbook Wyckoff positions, not fetched per
-site from a CIF; the cell constants are the sourced part.
+written out in `xrdsim/samples.py`. The anatase basis was expanded by gemmi from COD 9008214
+and matches it site for site; the ZnO basis matches COD 9004180; the rutile coordinates are
+textbook values for P42/mnm, and the cell is the sourced part. Where a basis was not taken
+from a CIF, the row above says so.
 
 **Debye-Waller:** every site ships B = 0.5 A^2 as a single stated assumption. No
 per-site B was read from the records.

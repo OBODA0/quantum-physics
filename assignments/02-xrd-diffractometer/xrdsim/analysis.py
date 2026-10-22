@@ -176,7 +176,7 @@ def williamson_hall(peaks: list[Peak], instrumental_fwhm_for,
 
 def identify_phase(two_thetas: list[float], phase, instrument,
                    tolerance: float = 0.15,
-                   min_intensity_fraction: float = 0.05) -> float:
+                   min_intensity_fraction: float = 0.15) -> float:
     """Fraction of a phase's strong reflections that the observed peaks contain.
 
     A score of 1.0 means every predicted line above `min_intensity_fraction` of the

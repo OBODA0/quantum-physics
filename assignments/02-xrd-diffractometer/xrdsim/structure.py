@@ -16,7 +16,7 @@ from .lattice import d_spacing
 def structure_factor(phase, h: int, k: int, l: int, wavelength: float) -> complex:
     """F(hkl) in electrons, including the Debye-Waller term of every site."""
     d = d_spacing(h, k, l, **phase.cell_kwargs())
-    s = wavelength / (2.0 * d)          # sin(theta)/lambda
+    s = 1.0 / (2.0 * d)                 # sin(theta)/lambda, by Bragg's law
     total = 0j
     for site in phase.sites:
         phase_angle = 2.0 * math.pi * (h * site.x + k * site.y + l * site.z)

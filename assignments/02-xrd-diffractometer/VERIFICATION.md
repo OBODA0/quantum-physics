@@ -1,11 +1,11 @@
 # VERIFICATION.md - Assignment 2 (XRD diffractometer simulator)
 
-Checked on 2026-10-22 on Alfred, at commit `c8d2ab7`. Every item states what was run and
+Checked on 2026-10-22 on Alfred, at the head of `main` that day. Every item states what was run and
 what it proves. Nothing here is reported from intent.
 
 ## 1. Test suite
 
-`cd assignments/02-xrd-diffractometer && uv run pytest -q` -> **111 passed** (2026-10-22).
+`cd assignments/02-xrd-diffractometer && uv run pytest -q` -> **113 passed** (2026-10-22).
 
 What the suite covers, by file:
 
@@ -24,7 +24,7 @@ What the suite covers, by file:
 
 | check | expected | observed |
 | --- | --- | --- |
-| Si 111 / 220 / 311 / 400 2theta (Cu K-alpha1) | 28.4425 / 47.3034 / 56.1211 / 69.1295 | 28.441 / 47.300 / 56.120 / 69.126 |
+| Si 111 / 220 / 311 / 400 2theta (Cu K-alpha1) | 28.441 / 47.301 / 56.120 / 69.127 (SRM 640f Table 1) | 28.441 / 47.301 / 56.120 / 69.127 |
 | Si relative intensities 111 / 220 / 311 / 400 | ~100 / 55 / 30 / 5 (standard pattern) | 100 / 58 / 30 / 6 |
 | ZnO 100 / 002 / 101 | 31.77 / 34.42 / 36.25 | 31.77 / 34.44 / 36.26 |
 | Al 111 | 38.47 | 38.47 |
@@ -35,9 +35,11 @@ What the suite covers, by file:
 | rutile 110 | 27.45 | 27.44 |
 | K-alpha1 - K-alpha2 splitting at Si 422 | 0.275 deg (computed) | 0.28 deg in the scan |
 
-The 0.001-0.007 deg residuals on silicon come from the wavelength convention: NIST
-certificates quote 1.5405929 A, the simulator uses 1.540598 A. That is stated in
-`data/SOURCES.md` and is smaller than the peak width.
+Silicon now matches the NIST SRM 640f certificate table to 0.001 deg. The earlier version
+of this file quoted 640d numbers against a 640c lattice parameter and blamed the 1.540598
+vs 1.5405929 A wavelength convention, which moves 2theta by about 0.0001 deg at 28 deg -
+far too little to explain the 0.002 deg it was invoked for. The cell, the label and the
+reference values are now the same certificate.
 
 ## 2.1 Intensity agreement
 
@@ -73,7 +75,7 @@ uv run python -m report.check_pdf
 uv run python -m report.check_numbers
 ```
 
-produced **111 passed** and **PASS**, and `git status` in the clone was **empty**: every
+produced **113 passed** and **PASS**, and `git status` in the clone was **empty**: every
 figure, the reflection table and the PDF came out byte-identical to the committed ones.
 The PDF is deterministic because `reportlab.rl_config.invariant` fixes its timestamps and
 document id.

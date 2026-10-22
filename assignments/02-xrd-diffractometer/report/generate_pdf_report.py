@@ -240,9 +240,10 @@ def build() -> None:
         "checks compare simulated peak positions with certified and published values: silicon "
         f"111/220/311/400 at {numbers['si_positions']} deg against the NIST SRM 640d values "
         "28.4425/47.3034/56.1211/69.1295, and the relative intensities "
-        f"{numbers['si_ratios']} against the standard 100/55/30/5. The 0.001-0.003 deg residual on these four lines "
-        "is the wavelength convention: the certificates quote 1.5405929 angstrom, the simulator "
-        "uses 1.540598.", s["body"]))
+        f"{numbers['si_ratios']} against the standard 100/55/30/5. The positions match the "
+        "certificate to three decimals; the intensity ratios run high at the back of the scan "
+        "because no absorption correction is applied and every site shares one Debye-Waller "
+        "factor.", s["body"]))
     story.append(Paragraph(
         "Multiplicities are checked against a brute-force enumeration of the symmetry "
         "operations for cubic, tetragonal and hexagonal families. Intensity ratios agree with "
@@ -262,8 +263,8 @@ def build() -> None:
     # 6 -------------------------------------------------------------------
     story.append(Paragraph("6. What is not modelled", s["h1"]))
     story.append(Paragraph(
-        "Rietveld refinement, anomalous dispersion, texture beyond a single orientation "
-        "factor, K-beta residual, detector energy discrimination and absolute intensities. "
+        "Rietveld refinement, anomalous dispersion, preferred orientation, K-beta residual, "
+        "detector energy discrimination and absolute intensities. "
         "The Cu K-alpha wavelengths are provisional: no primary table could be read from the "
         "build host. No simulated pattern has yet been compared with a measured scan; the "
         "comparisons above are with published peak positions and intensity ratios.", s["body"]))

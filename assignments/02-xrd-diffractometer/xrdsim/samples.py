@@ -96,23 +96,23 @@ PHASES: dict[str, Phase] = {
         key="zno", name="Zincite", formula="ZnO", space_group="P63mc (186)",
         a=3.2494, c=5.2038, hexagonal=True, sites=(
             Site("Zn", 1/3, 2/3, 0.0), Site("Zn", 2/3, 1/3, 0.5),
-            Site("O", 1/3, 2/3, 0.3819), Site("O", 2/3, 1/3, 0.8819)),
-        source="COD 9004180, a = 3.2494, c = 5.2038 A; u(O) = 0.3819"),
+            Site("O", 1/3, 2/3, 0.3830), Site("O", 2/3, 1/3, 0.8830)),
+        source="COD 9004180, a = 3.2494, c = 5.2038 A; u(O) = 0.3830"),
     "tio2-rutile": Phase(
         key="tio2-rutile", name="Rutile", formula="TiO2", space_group="P42/mnm (136)",
         a=4.5937, c=2.9587, sites=(
             Site("Ti", 0, 0, 0), Site("Ti", .5, .5, .5),
             Site("O", .3047, .3047, 0), Site("O", .6953, .6953, 0),
             Site("O", .8047, .1953, .5), Site("O", .1953, .8047, .5)),
-        source="room-temperature conventional values a = 4.5937, c = 2.9587 A; u(O) = 0.3047"),
+        source="room-temperature conventional values a = 4.5937, c = 2.9587 A; u(O) = 0.3047. COD 9004143 is a 600 C record, which is why its cell reads 4.616/2.977 A"),
     "tio2-anatase": Phase(
         key="tio2-anatase", name="Anatase", formula="TiO2", space_group="I41/amd (141)",
-        a=3.7892, c=9.537, sites=(
+        a=3.7845, c=9.5143, sites=(
             Site("Ti", 0, 0, 0), Site("Ti", 0, .5, .25), Site("Ti", .5, .5, .5), Site("Ti", .5, 0, .75),
             Site("O", 0, 0, .2079), Site("O", 0, .5, .4579), Site("O", .5, .5, .7079),
             Site("O", .5, 0, .9579), Site("O", 0, .5, .0421), Site("O", 0, 0, .7921),
             Site("O", .5, 0, .5421), Site("O", .5, .5, .2921)),
-        source="COD 9008214, a = 3.7892, c = 9.537 A; z(O) = 0.2079; basis expanded by gemmi from the deposited CIF"),
+        source="room-temperature cell a = 3.7845, c = 9.5143 A; z(O) = 0.2079 with the basis expanded by gemmi from COD 9008214, a 300 C record"),
 }
 
 

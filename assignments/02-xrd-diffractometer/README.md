@@ -58,7 +58,7 @@ uv run python -m xrdsim --phase si --table
 | `mgo` | MgO | Fm-3m | 4.2112 | 200 at 42.92 |
 | `zno` | ZnO | P63mc | 3.2494 / 5.2038 | 101 at 36.25 |
 | `tio2-rutile` | TiO2 | P42/mnm | 4.5937 / 2.9587 | 110 at 27.45 |
-| `tio2-anatase` | TiO2 | I41/amd | 3.7892 / 9.537 | 101 at 25.28 |
+| `tio2-anatase` | TiO2 | I41/amd | 3.7845 / 9.5143 | 101 at 25.28 |
 
 Cell constants, their provenance and their confidence are in `data/SOURCES.md`.
 
@@ -82,7 +82,9 @@ PDF and the gate.
 ## What is modelled, and what is not
 
 Modelled: Bragg positions, relative intensities, doublet splitting, instrumental and
-size broadening, Poisson noise, dead time, flat-plate absorption geometry.
+size broadening, Poisson noise, dead time and specimen displacement. The flat-plate
+absorption factor is computed but not applied: for a thick specimen it is independent of
+angle, so it cancels in the relative intensities.
 
 Not modelled: Rietveld refinement, anomalous dispersion, texture, K-beta residual,
 absolute intensities, and any measured background.

@@ -266,7 +266,7 @@ missing brief, and nothing here is a claim about what the brief will ask for.
 | `xrdsim/analysis.py` | peak finding with parabolic refinement, FWHM, areas, Scherrer, Williamson-Hall, cubic indexing with a lattice hint, phase identification |
 | `xrdsim/plot.py`, `cli.py` | rendering and `python -m xrdsim` with `--list-phases`, `--table`, `--index`, `--scherrer`, `--identify`, `--out` |
 
-The suite passes (111 tests at the last run), including four analytic structure-factor
+The suite passes, including four analytic structure-factor
 checks, a brute-force orbit count and a metric-tensor check. Every phase reproduces its
 published strongest line (Si 111 at 28.44, Al 111 38.47, Cu 111 43.30, Fe 110 44.67, NaCl
 200 31.69, MgO 200 42.92, ZnO 101 36.25, rutile 110 27.45, anatase 101 25.27 deg), and the

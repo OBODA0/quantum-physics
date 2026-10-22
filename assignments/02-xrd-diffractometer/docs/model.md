@@ -24,7 +24,9 @@ A reflection whose `d < lambda/2` is unreachable and is dropped, not clamped.
 `f0` is interpolated from `data/scattering_factors.json`, sampled from the
 Waasmaier-Kirfel parameterisation; `f0(0)` reproduces the electron count, which the test
 suite checks. Every site ships `B = 0.5 A^2`, a stated assumption, not a measurement.
-Anomalous dispersion is neglected: for Cu K-alpha and these elements it is below 1 %.
+Anomalous dispersion is neglected. It is not negligible: for Cu K-alpha the real part is of
+order -2 electrons, roughly 7 % of f0(0) for a 3d element, so intensities near an absorption
+edge would be off by that much. Only the intensity column is affected, not the positions.
 
 Absences are not tabulated. They appear because the phases cancel: the diamond 222, the
 FCC 100/110/210 and the BCC 100/111 all come out as zero from the sum.
@@ -73,7 +75,7 @@ The K-alpha doublet puts every reflection twice, at its own Bragg angle, weighte
 
 A displaced specimen shifts every line by `Delta(2theta) = -2 s cos(theta) / R` with the
 goniometer radius `R = 240 mm`; the shift is largest at low angle, so a misplaced sample
-compresses the pattern towards higher 2theta without moving the high-angle lines as much.
+shifts the whole pattern, most at low angle: a specimen 0.2 mm off the axis moves 111 from 28.441 to 28.348 deg but 422 by only about 0.05 deg.
 
 ## 7. What the analysis reads back
 
@@ -85,7 +87,7 @@ reflections, and a Williamson-Hall fit of the same peaks returns 30.0 nm with ze
 
 ## 8. Fidelity limits
 
-Not modelled: Rietveld refinement, anomalous dispersion, texture beyond a single
-orientation factor, K-beta residual, detector energy discrimination, thin-film absorption,
-axial-divergence asymmetry, amorphous background, and absolute intensities. The wavelengths
-are provisional (see `data/SOURCES.md`).
+Not modelled: Rietveld refinement, anomalous dispersion, preferred orientation, K-beta
+residual, detector energy discrimination, thin-film absorption, axial-divergence asymmetry,
+amorphous background, and absolute intensities. The wavelengths are provisional (see
+`data/SOURCES.md`).

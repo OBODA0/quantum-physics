@@ -3,7 +3,7 @@
 Every figure here is written straight from the simulator, so a figure cannot drift from
 the model. Run it with:
 
-    uv run python report/make_figures.py
+    uv run python -m report.make_figures
 """
 
 from __future__ import annotations

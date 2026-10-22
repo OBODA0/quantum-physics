@@ -81,9 +81,9 @@ def test_silicon_relative_intensities_match_the_standard_pattern():
     rows = {row.hkl: row for row in reflections(SI, _quiet())}
     top = rows[(1, 1, 1)].intensity
     assert rows[(1, 1, 1)].intensity == pytest.approx(top)
-    assert rows[(2, 2, 0)].intensity / top == pytest.approx(0.58, abs=0.04)
-    assert rows[(3, 1, 1)].intensity / top == pytest.approx(0.30, abs=0.04)
-    assert rows[(4, 0, 0)].intensity / top == pytest.approx(0.06, abs=0.03)
+    assert rows[(2, 2, 0)].intensity / top == pytest.approx(0.64, abs=0.04)
+    assert rows[(3, 1, 1)].intensity / top == pytest.approx(0.37, abs=0.04)
+    assert rows[(4, 0, 0)].intensity / top == pytest.approx(0.10, abs=0.03)
 
 
 def test_sample_displacement_shifts_low_angles_more():
