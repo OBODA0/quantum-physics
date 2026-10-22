@@ -66,3 +66,12 @@ def test_expected_counts_scales_with_dwell():
     assert expected_counts(100.0, 2.0) == 200.0
     with pytest.raises(ValueError):
         expected_counts(100.0, 0.0)
+
+
+def test_vectorised_profile_matches_the_scalar_one():
+    import numpy as np
+    from xrdsim.profile import pseudo_voigt, pseudo_voigt_array
+    grid = np.linspace(29.0, 30.0, 501)
+    vector = pseudo_voigt_array(grid, 29.5, 0.08, 0.5)
+    scalar = np.array([pseudo_voigt(x, 29.5, 0.08, 0.5) for x in grid])
+    assert np.allclose(vector, scalar, rtol=0, atol=0)

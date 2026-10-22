@@ -63,3 +63,17 @@ def size_fwhm(size_a: float, two_theta_deg: float, wavelength: float,
 def add_in_quadrature(*fwhms: float) -> float:
     """Combine Gaussian widths."""
     return math.sqrt(sum(f * f for f in fwhms))
+
+
+def pseudo_voigt_array(x, center: float, fwhm: float, eta: float):
+    """Unit-area pseudo-Voigt over an array; same numbers as pseudo_voigt, vectorised."""
+    import numpy as np
+    if not 0.0 <= eta <= 1.0:
+        raise ValueError("eta must lie in [0, 1]")
+    values = np.asarray(x, dtype=float)
+    sigma = fwhm / (2.0 * math.sqrt(TWO_LN2))
+    half = fwhm / 2.0
+    z = (values - center) / sigma
+    gaussian_part = np.exp(-0.5 * z * z) / (sigma * math.sqrt(2.0 * math.pi))
+    lorentzian_part = (half / math.pi) / ((values - center) ** 2 + half * half)
+    return eta * lorentzian_part + (1.0 - eta) * gaussian_part

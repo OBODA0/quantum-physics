@@ -15,7 +15,8 @@ import numpy as np
 from . import sources
 from .detector import apply_dead_time, expected_counts
 from .lattice import d_spacing
-from .profile import add_in_quadrature, caglioti_fwhm, pseudo_voigt, size_fwhm
+from .profile import (add_in_quadrature, caglioti_fwhm, pseudo_voigt_array,
+                      size_fwhm)
 from .samples import Phase
 from .structure import lorentz_polarisation, multiplicity, structure_factor
 
@@ -124,7 +125,7 @@ def scan(phase: Phase, two_theta_min: float, two_theta_max: float, step: float,
                 width = add_in_quadrature(width, size_fwhm(size_a, centre, wavelength))
             if not (two_theta_min - 5.0 * width <= centre <= two_theta_max + 5.0 * width):
                 continue
-            profile = np.array([pseudo_voigt(x, centre, width, instrument.eta) for x in grid])
+            profile = pseudo_voigt_array(grid, centre, width, instrument.eta)
             mean += area_total * weight * profile * step
 
     if instrument.dead_time_s:
