@@ -19,7 +19,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
-from reportlab.platypus import (Image, Paragraph, SimpleDocTemplate,
+from reportlab.platypus import (Image, Paragraph, Preformatted, SimpleDocTemplate,
                                 Table, TableStyle)
 
 from xrdsim.diffractometer import Instrument, reflections
@@ -76,6 +76,17 @@ def table(rows, widths, s):
         ("RIGHTPADDING", (0, 0), (-1, -1), 3),
     ]))
     return grid
+
+
+def code_appendix(story, s) -> None:
+    story.append(Paragraph("Appendix A: the code", s["h1"]))
+    story.append(Paragraph(
+        "Every module the simulator ships, in the order the README lists them. The same "
+        "files are in the repository under assignments/02-xrd-diffractometer/xrdsim/.",
+        s["body"]))
+    for path in sorted((REPO_ROOT / "xrdsim").glob("*.py")):
+        story.append(Paragraph(f"xrdsim/{path.name}", s["h2"]))
+        story.append(Preformatted(path.read_text(encoding="utf-8"), s["code"]))
 
 
 def build() -> None:
@@ -234,6 +245,8 @@ def build() -> None:
         "The Cu K-alpha wavelengths are provisional: no primary table could be read from the "
         "build host. No simulated pattern has yet been compared with a measured scan; the "
         "comparisons above are with published peak positions and intensity ratios.", s["body"]))
+
+    code_appendix(story, s)
 
     doc.build(story)
     print(f"wrote {PDF_PATH}")

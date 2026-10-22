@@ -25,7 +25,8 @@ fails to import.
 
 `Assignment_2_XRD_Diffractometer_Report.pdf` is a draft: the graded questions are not in
 it because the assignment brief has not been received. It carries the instrument, the
-model, the phase table, the four figures and the verification summary.
+model, the phase table, the four figures, the verification summary and a code appendix
+(every module under `xrdsim/`, 22 pages in total).
 
 ```
 uv run python -m report.generate_pdf_report
