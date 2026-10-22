@@ -35,14 +35,17 @@ def find_peaks(two_theta: np.ndarray, counts: np.ndarray,
         if not (y[i] >= y[i - 1] and y[i] > y[i + 1] and y[i] >= threshold):
             continue
         centre, height = _refine(x, y, i)
-        half = (height + _local_floor(y, i)) / 2.0
+        half = (height + _local_floor(x, y, i)) / 2.0
         fwhm = _width_at(x, y, i, half)
         area = _area(x, y, i, 4.0 * fwhm if fwhm > 0 else x[1] - x[0])
         peaks.append(Peak(centre, height, fwhm, area))
     return peaks
 
 
-def _local_floor(y: np.ndarray, i: int, reach: int = 200) -> float:
+def _local_floor(x: np.ndarray, y: np.ndarray, i: int, reach_deg: float = 1.0) -> float:
+    """Lowest point within `reach_deg` of the peak, so the result does not depend on the step."""
+    step = x[1] - x[0] if len(x) > 1 else 1.0
+    reach = max(1, int(reach_deg / step))
     left = max(0, i - reach)
     right = min(len(y), i + reach)
     return float(min(y[left:i + 1].min(), y[i:right].min()))
@@ -115,7 +118,7 @@ def lattice_hint(n_squared: list[int]) -> str:
     starts 3, 4, 8, 11, 12, 16, 19, 20, 24. Anything else is primitive.
     """
     values = sorted({int(value) for value in n_squared})
-    fcc = {3, 4, 8, 11, 12, 16, 19, 20, 24, 27}
+    fcc = {3, 4, 8, 11, 12, 16, 19, 20, 24, 27, 32, 35, 36, 40, 43, 44, 48}
     if values and all(value % 2 == 0 for value in values):
         return "body-centred, conventional cell twice the refined edge"
     if set(values) <= fcc:

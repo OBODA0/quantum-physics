@@ -37,7 +37,9 @@ class Phase:
     def system(self) -> str:
         if self.hexagonal:
             return "hexagonal"
-        return "cubic" if self.c is None and self.b is None else "tetragonal"
+        if self.b is not None:
+            return "orthorhombic"
+        return "cubic" if self.c is None else "tetragonal"
 
     def cell_kwargs(self) -> dict:
         return {"a": self.a, "b": self.b, "c": self.c, "hexagonal": self.hexagonal}

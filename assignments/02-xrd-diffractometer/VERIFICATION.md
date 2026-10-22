@@ -5,7 +5,7 @@ what it proves. Nothing here is reported from intent.
 
 ## 1. Test suite
 
-`cd assignments/02-xrd-diffractometer && uv run pytest -q` -> **113 passed** (2026-10-22).
+`cd assignments/02-xrd-diffractometer && uv run pytest -q` -> **114 passed** (2026-10-22).
 
 What the suite covers, by file:
 
@@ -77,7 +77,7 @@ uv run python -m report.check_pdf
 uv run python -m report.check_numbers
 ```
 
-produced **113 passed** and **PASS**, and `git status` in the clone was **empty**: every
+produced **114 passed** and **PASS**, and `git status` in the clone was **empty**: every
 figure, the reflection table and the PDF came out byte-identical to the committed ones.
 The PDF is deterministic because `reportlab.rl_config.invariant` fixes its timestamps and
 document id.

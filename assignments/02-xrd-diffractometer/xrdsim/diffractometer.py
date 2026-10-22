@@ -58,7 +58,7 @@ class Scan:
 
 
 
-def reflections(phase: Phase, instrument: Instrument, hmax: int = 6) -> list[Reflection]:
+def reflections(phase: Phase, instrument: Instrument, hmax: int = 8) -> list[Reflection]:
     """Every reflection the wavelength reaches, with its relative intensity."""
     rows: list[Reflection] = []
     for h in range(0, hmax + 1):
@@ -89,7 +89,7 @@ def reflections(phase: Phase, instrument: Instrument, hmax: int = 6) -> list[Ref
 
 def scan(phase: Phase, two_theta_min: float, two_theta_max: float, step: float,
          instrument: Instrument | None = None, size_a: float | None = None,
-         hmax: int = 6) -> Scan:
+         hmax: int = 8) -> Scan:
     """Simulate one 2theta scan, with Poisson noise and optional crystallite size."""
     if instrument is None:
         instrument = Instrument()

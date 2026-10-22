@@ -98,3 +98,12 @@ def test_identify_scores_a_wrong_phase_lower():
     angles = [peak.two_theta for peak in find_peaks(result.two_theta, result.counts)]
     assert identify_phase(angles, get_phase("zno"), instrument) > \
         identify_phase(angles, get_phase("si"), instrument)
+
+
+def test_fwhm_does_not_depend_on_the_step():
+    from xrdsim.profile import gaussian
+    for step in (0.01, 0.001):
+        x = np.arange(28.0, 29.2, step)
+        y = np.array([gaussian(v, 28.6, 0.08) for v in x])
+        peaks = find_peaks(x, y)
+        assert peaks[0].fwhm == pytest.approx(0.08, abs=0.01)
