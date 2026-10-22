@@ -78,6 +78,17 @@ def table(rows, widths, s):
     return grid
 
 
+def _wrap_code(text: str, width: int = 110) -> str:
+    """Break over-long source lines so the appendix cannot run off the page."""
+    lines = []
+    for line in text.splitlines():
+        while len(line) > width:
+            lines.append(line[:width])
+            line = "    " + line[width:]
+        lines.append(line)
+    return "\n".join(lines)
+
+
 def code_appendix(story, s) -> None:
     story.append(Paragraph("Appendix A: the code", s["h1"]))
     story.append(Paragraph(
@@ -86,7 +97,7 @@ def code_appendix(story, s) -> None:
         s["body"]))
     for path in sorted((REPO_ROOT / "xrdsim").glob("*.py")):
         story.append(Paragraph(f"xrdsim/{path.name}", s["h2"]))
-        story.append(Preformatted(path.read_text(encoding="utf-8"), s["code"]))
+        story.append(Preformatted(_wrap_code(path.read_text(encoding="utf-8")), s["code"]))
 
 
 def build() -> None:
