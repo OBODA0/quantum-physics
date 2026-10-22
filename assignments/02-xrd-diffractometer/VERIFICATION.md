@@ -46,7 +46,7 @@ certificates quote 1.5405929 A, the simulator uses 1.540598 A. That is stated in
 | every permutation of (hkl) listed separately | Si 111 weaker than 220 | one representative per symmetry family | `test_only_one_member_of_each_family_is_listed`, `test_silicon_relative_intensities_match_the_standard_pattern` |
 | LP evaluated at 2theta = 180 deg | infinite intensity, every other peak normalised to zero | cap at 150 deg | scans run; no non-finite counts |
 | cell constants taken from primitive-cell conversions | rutile 110 at 27.30, MgO 111 at 36.57 | conventional room-temperature values | `test_every_phase_reproduces_its_published_strongest_line` |
-| hand-expanded anatase basis | spurious (001) at 9.27 deg with 100 % intensity | anatase removed from the database | phase absent; noted in `data/SOURCES.md` |
+| hand-expanded anatase basis | spurious (001) at 9.27 deg with 100 % intensity | basis taken from the COD CIF expanded by gemmi | (001) now zero, 101 at 25.27 deg with 100 %; `test_every_phase_reproduces_its_published_strongest_line` |
 | sampled peak heights | heights jittered with the scan step | parabolic refinement | `test_find_peaks_recovers_positions_widths_and_heights` |
 
 ## 4. What is NOT verified
@@ -54,7 +54,6 @@ certificates quote 1.5405929 A, the simulator uses 1.540598 A. That is stated in
 - The Cu K-alpha wavelengths are provisional: no primary table could be read from this host.
 - The Caglioti U, V, W are plausible defaults, not fitted to a real instrument.
 - Every site ships B = 0.5 A^2; no per-site Debye-Waller value was read.
-- Anatase is missing, and its absence is a gap in the polymorphism demo.
 - No simulated pattern has yet been compared with a *measured* scan. Everything above is
   compared with published peak positions and intensity ratios, which is the strongest check
   available without a diffractogram.

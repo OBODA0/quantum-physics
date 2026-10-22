@@ -51,15 +51,17 @@ xraydb, the simulator itself needs only numpy.
 | zno | ZnO | P63mc | a = 3.2494, c = 5.2038 | firm | COD 9004180; u(O) = 0.3819 |
 | tio2-rutile | TiO2 | P42/mnm | a = 4.5937, c = 2.9587 | provisional | room-temperature conventional values; u(O) = 0.3047. The research note listed COD 9004143 as 4.616 / 2.977 A, which puts 110 at 27.30 deg instead of the published 27.45 deg, so the conventional values are used and the COD record has to be re-read before they are called firm. |
 
-**Anatase is deliberately absent.** Its basis could not be checked against a CIF from this
-host on 2026-10-22 (COD over TLS resets the connection, and plain HTTP now resets too), and
-a hand-written basis produced a spurious (001) line at 9.27 deg. Shipping a wrong phase is
-worse than shipping one fewer phase; it returns when the CIF can be parsed.
+| tio2-anatase | TiO2 | I41/amd | a = 3.7892, c = 9.537 | firm | COD 9008214; z(O) = 0.2079; the basis is expanded from the deposited CIF by gemmi, not hand-written |
+
+The COD CIFs were fetched with `curl` on 2026-10-22; Python's urllib hit a TLS reset on the
+same host. The expansion of each CIF into a full conventional-cell basis is done by gemmi
+(`tools/` carries no build step for this yet: the sites are written into `xrdsim/samples.py`
+with the COD id in the source column).
 
 **Every phase is checked against its published strongest reflection** in
 `tests/test_structure_samples.py`: Si 111 at 28.44, Al 111 at 38.47, Cu 111 at 43.30,
 Fe 110 at 44.67, NaCl 200 at 31.69, MgO 200 at 42.92, ZnO 101 at 36.25, rutile 110 at
-27.45 deg. That test is what caught the wrong cell constants above.
+27.45, anatase 101 at 25.28 deg. That test is what caught the wrong cell constants above.
 
 **Warning carried from the research pass:** COD and AFLOW entries are not interchangeable.
 The same element appears with lattice constants differing by 0.5-3% because the entries come

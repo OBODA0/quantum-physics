@@ -256,7 +256,7 @@ missing brief, and nothing here is a claim about what the brief will ask for.
 | `xrdsim/lattice.py` | d-spacings (cubic, tetragonal, hexagonal, orthorhombic), Bragg round trip, cubic lattice refinement |
 | `xrdsim/atoms.py` | Waasmaier-Kirfel f0 interpolated from `data/scattering_factors.json`, Debye-Waller term |
 | `xrdsim/structure.py` | structure factor from an explicit basis, orbit multiplicities, Lorentz-polarisation |
-| `xrdsim/samples.py` | eight phases: Si, Al, Cu, Fe, NaCl, MgO, ZnO, TiO2 rutile |
+| `xrdsim/samples.py` | nine phases: Si, Al, Cu, Fe, NaCl, MgO, ZnO, TiO2 rutile and anatase |
 | `xrdsim/geom*` | flat-plate footprint, attenuation, penetration depth (`geometry.py`) |
 | `xrdsim/sources.py` | Cu K-alpha1/K-alpha2/K-beta lines and the doublet ratio |
 | `xrdsim/profile.py` | Gaussian, Lorentzian, pseudo-Voigt, Caglioti FWHM, Scherrer both ways |
