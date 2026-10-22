@@ -34,10 +34,11 @@ def find_peaks(two_theta: np.ndarray, counts: np.ndarray,
     for i in range(1, len(y) - 1):
         if not (y[i] >= y[i - 1] and y[i] > y[i + 1] and y[i] >= threshold):
             continue
-        half = (y[i] + _local_floor(y, i)) / 2.0
+        centre, height = _refine(x, y, i)
+        half = (height + _local_floor(y, i)) / 2.0
         fwhm = _width_at(x, y, i, half)
         area = _area(x, y, i, 4.0 * fwhm if fwhm > 0 else x[1] - x[0])
-        peaks.append(Peak(float(x[i]), float(y[i]), fwhm, area))
+        peaks.append(Peak(centre, height, fwhm, area))
     return peaks
 
 
@@ -114,3 +115,15 @@ def _hkl_from_n2(n2: int) -> tuple[int, int, int]:
             if l * l == l_sq:
                 return tuple(sorted((h, k, l), reverse=True))
     raise ValueError(f"no (hkl) has n^2 = {n2}")
+
+
+def _refine(x: np.ndarray, y: np.ndarray, i: int) -> tuple[float, float]:
+    """Parabolic refinement of a sampled maximum: position and height between bins."""
+    y0, y1, y2 = y[i - 1], y[i], y[i + 1]
+    denom = y0 - 2.0 * y1 + y2
+    if denom == 0:
+        return float(x[i]), float(y[i])
+    delta = 0.5 * (y0 - y2) / denom
+    if abs(delta) > 0.5:
+        return float(x[i]), float(y[i])
+    return float(x[i] + delta * (x[i + 1] - x[i])), float(y1 - 0.25 * (y0 - y2) * delta)

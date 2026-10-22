@@ -66,6 +66,8 @@ def reflections(phase: Phase, instrument: Instrument, hmax: int = 6) -> list[Ref
             for l in range(0, hmax + 1):
                 if h == 0 and k == 0 and l == 0:
                     continue
+                if not _representative(h, k, l, phase.system):
+                    continue
                 try:
                     d = d_spacing(h, k, l, **phase.cell_kwargs())
                     two_theta = 2.0 * math.degrees(math.asin(
@@ -130,3 +132,18 @@ def scan(phase: Phase, two_theta_min: float, two_theta_max: float, step: float,
         counts = rng.poisson(np.clip(mean, 0.0, None)).astype(float)
 
     return Scan(grid, counts, rows, phase, instrument)
+
+
+def _representative(h: int, k: int, l: int, system: str) -> bool:
+    """True for one member of each symmetry family.
+
+    Enumerating h, k, l >= 0 visits every permutation of a reflection; the multiplicity
+    already counts the whole orbit, so only the canonical member may be used.
+    """
+    if system == "cubic":
+        return h >= k >= l
+    if system == "tetragonal":
+        return h >= k
+    if system == "hexagonal":
+        return k >= h
+    return True

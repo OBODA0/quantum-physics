@@ -69,3 +69,18 @@ def test_dead_time_compresses_strong_peaks():
 def test_bad_scan_range_is_rejected():
     with pytest.raises(ValueError):
         scan(SI, 60.0, 40.0, 0.02)
+
+
+def test_only_one_member_of_each_family_is_listed():
+    for row in reflections(SI, _quiet()):
+        h, k, l = row.hkl
+        assert h >= k >= l, row.hkl
+
+
+def test_silicon_relative_intensities_match_the_standard_pattern():
+    rows = {row.hkl: row for row in reflections(SI, _quiet())}
+    top = rows[(1, 1, 1)].intensity
+    assert rows[(1, 1, 1)].intensity == pytest.approx(top)
+    assert rows[(2, 2, 0)].intensity / top == pytest.approx(0.58, abs=0.04)
+    assert rows[(3, 1, 1)].intensity / top == pytest.approx(0.30, abs=0.04)
+    assert rows[(4, 0, 0)].intensity / top == pytest.approx(0.06, abs=0.03)
