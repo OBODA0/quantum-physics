@@ -71,7 +71,7 @@ def scherrer_demo() -> None:
     """The same phase at three crystallite sizes, on the 111 line."""
     fig, ax = plt.subplots(figsize=(8, 4))
     for size, colour in [(50.0, "#8a3b12"), (200.0, "#1a3d6d"), (2000.0, "#2f7d32")]:
-        result = scan(get_phase("si"), 27.5, 29.0, 0.002,
+        result = scan(get_phase("si"), 25.5, 31.0, 0.005,
                       Instrument(ka2=False, background_rate=0.0, rng_seed=None), size_a=size)
         ax.plot(result.two_theta, result.counts / result.counts.max(),
                 lw=1.2, color=colour, label=f"D = {size / 10:.0f} nm")
