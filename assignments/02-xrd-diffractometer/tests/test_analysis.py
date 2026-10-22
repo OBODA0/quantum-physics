@@ -47,14 +47,15 @@ def test_index_cubic_on_silicon_angles():
     assert [hkl for hkl, _ in rows] == [(1, 1, 1), (2, 2, 0), (3, 1, 1), (4, 0, 0), (3, 3, 1), (4, 2, 2)]
 
 
-def test_scherrer_recovers_a_known_crystallite_size():
+@pytest.mark.parametrize("step", [0.02, 0.005, 0.001])
+def test_scherrer_recovers_a_known_crystallite_size(step):
     instrument = Instrument(reference_counts=100_000.0, background_rate=0.0,
                             ka2=False, rng_seed=None)
-    s = scan(SI, 27.5, 29.5, 0.002, instrument, size_a=200.0)
+    s = scan(SI, 27.5, 29.5, step, instrument, size_a=200.0)
     peak = find_peaks(s.two_theta, s.counts)[0]
     instrumental = caglioti_fwhm(peak.two_theta, *instrument.caglioti)
     size = scherrer_from_peak(peak, instrumental, instrument.wavelength)
-    assert size == pytest.approx(200.0, rel=0.15)
+    assert size == pytest.approx(200.0, rel=0.12)
 
 
 def test_lattice_hint_reads_the_sequence():
