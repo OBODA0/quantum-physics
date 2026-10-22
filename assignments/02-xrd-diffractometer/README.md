@@ -41,6 +41,9 @@ uv run python -m xrdsim --phase si --table
 | doublet | `--no-ka2` | drop the K-alpha2 line |
 | monochromator | `--monochromator 2THETA` | add the polarisation term |
 | noise | `--noise SEED` | Poisson counts (0 disables) |
+| table | `--table` | print the reflection table |
+| index | `--index` | index the observed peaks, and name the lattice from the n^2 sequence |
+| Scherrer | `--scherrer` | size from each peak, corrected for the instrument |
 
 ## Phases
 

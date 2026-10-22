@@ -55,3 +55,10 @@ def test_scherrer_recovers_a_known_crystallite_size():
     instrumental = caglioti_fwhm(peak.two_theta, *instrument.caglioti)
     size = scherrer_from_peak(peak, instrumental, instrument.wavelength)
     assert size == pytest.approx(200.0, rel=0.15)
+
+
+def test_lattice_hint_reads_the_sequence():
+    from xrdsim.analysis import lattice_hint
+    assert lattice_hint([3, 4, 8, 11]).startswith("face-centred")
+    assert lattice_hint([2, 4, 6]).startswith("body-centred")
+    assert "twice this edge" in lattice_hint([1, 2, 3])

@@ -6,7 +6,7 @@ import argparse
 import pathlib
 
 from . import sources
-from .analysis import find_peaks, index_cubic, scherrer_from_peak
+from .analysis import find_peaks, index_cubic, lattice_hint, scherrer_from_peak
 from .diffractometer import Instrument, reflections, scan
 from .profile import caglioti_fwhm
 from .samples import PHASES, get_phase
@@ -101,6 +101,8 @@ def main(argv: list[str] | None = None) -> int:
             print("indexing   : hkl            2theta")
             for hkl, angle in rows:
                 print(f"             {str(hkl):14s} {angle:7.3f}")
+            n_squared = [hkl[0] ** 2 + hkl[1] ** 2 + hkl[2] ** 2 for hkl, _ in rows]
+            print(f"lattice    : {lattice_hint(n_squared)}")
 
     if args.scherrer:
         print("Scherrer   : peak            size (nm)")

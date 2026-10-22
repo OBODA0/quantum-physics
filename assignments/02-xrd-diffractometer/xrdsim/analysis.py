@@ -94,7 +94,7 @@ def index_cubic(two_thetas: list[float], wavelength: float,
         raise ValueError("no peaks to index")
     s2 = [math.sin(math.radians(t / 2.0)) ** 2 for t in two_thetas]
     base = s2[0]
-    for n2_first in range(3, max_n_squared + 1):
+    for n2_first in range(1, max_n_squared + 1):
         ratios = [value / base * n2_first for value in s2]
         if all(abs(r - round(r)) <= tolerance * max(round(r), 1) for r in ratios):
             assignments = []
@@ -103,6 +103,23 @@ def index_cubic(two_thetas: list[float], wavelength: float,
                 assignments.append((_hkl_from_n2(n2), angle))
             return assignments
     raise ValueError("the pattern does not index as cubic")
+
+
+def lattice_hint(n_squared: list[int]) -> str:
+    """Describe the lattice from the observed n^2 sequence.
+
+    All-even n^2 means a body-centred lattice described on half the cell; the FCC sequence
+    starts 3, 4, 8, 11, 12, 16, 19, 20, 24. Anything else is primitive.
+    """
+    values = sorted({int(value) for value in n_squared})
+    fcc = {3, 4, 8, 11, 12, 16, 19, 20, 24, 27}
+    if values and all(value % 2 == 0 for value in values):
+        return "body-centred, conventional cell twice the refined edge"
+    if set(values) <= fcc:
+        return "face-centred (the 3, 4, 8, 11 sequence)"
+    if 1 in values:
+        return "primitive cell; a body-centred sample would have twice this edge"
+    return "primitive lattice"
 
 
 def _hkl_from_n2(n2: int) -> tuple[int, int, int]:
