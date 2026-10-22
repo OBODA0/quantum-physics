@@ -105,6 +105,14 @@ PHASES: dict[str, Phase] = {
             Site("O", .3047, .3047, 0), Site("O", .6953, .6953, 0),
             Site("O", .8047, .1953, .5), Site("O", .1953, .8047, .5)),
         source="room-temperature conventional values a = 4.5937, c = 2.9587 A; u(O) = 0.3047"),
+    "tio2-anatase": Phase(
+        key="tio2-anatase", name="Anatase", formula="TiO2", space_group="I41/amd (141)",
+        a=3.7892, c=9.537, sites=(
+            Site("Ti", 0, 0, 0), Site("Ti", 0, .5, .25), Site("Ti", .5, .5, .5), Site("Ti", .5, 0, .75),
+            Site("O", 0, 0, .2079), Site("O", 0, .5, .4579), Site("O", .5, .5, .7079),
+            Site("O", .5, 0, .9579), Site("O", 0, .5, .0421), Site("O", 0, 0, .7921),
+            Site("O", .5, 0, .5421), Site("O", .5, .5, .2921)),
+        source="COD 9008214, a = 3.7892, c = 9.537 A; z(O) = 0.2079; basis expanded by gemmi from the deposited CIF"),
 }
 
 
