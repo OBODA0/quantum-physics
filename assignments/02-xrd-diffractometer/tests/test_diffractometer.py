@@ -84,3 +84,24 @@ def test_silicon_relative_intensities_match_the_standard_pattern():
     assert rows[(2, 2, 0)].intensity / top == pytest.approx(0.58, abs=0.04)
     assert rows[(3, 1, 1)].intensity / top == pytest.approx(0.30, abs=0.04)
     assert rows[(4, 0, 0)].intensity / top == pytest.approx(0.06, abs=0.03)
+
+
+def test_sample_displacement_shifts_low_angles_more():
+    from xrdsim.diffractometer import displacement_shift
+    low = displacement_shift(28.44, 0.1, 240.0)
+    high = displacement_shift(120.0, 0.1, 240.0)
+    assert low < 0 and high < 0
+    assert abs(low) > abs(high)
+    assert displacement_shift(28.44, 0.0, 240.0) == 0.0
+
+
+def test_displacement_moves_the_measured_peak():
+    from xrdsim.analysis import find_peaks
+    normal = scan(SI, 27.5, 29.5, 0.005, Instrument(ka2=False, background_rate=0.0,
+                                                    rng_seed=None))
+    shifted = scan(SI, 27.5, 29.5, 0.005, Instrument(ka2=False, background_rate=0.0,
+                                                     rng_seed=None,
+                                                     sample_displacement_mm=0.2))
+    peak_normal = find_peaks(normal.two_theta, normal.counts)[0]
+    peak_shifted = find_peaks(shifted.two_theta, shifted.counts)[0]
+    assert peak_shifted.two_theta < peak_normal.two_theta - 0.05

@@ -33,6 +33,8 @@ class Instrument:
     dead_time_s: float = 0.0
     rng_seed: int | None = 0
     max_two_theta: float = 150.0      # no goniometer reaches 180 deg, and LP diverges there
+    sample_displacement_mm: float = 0.0  # specimen surface off the goniometer axis
+    goniometer_radius_mm: float = 240.0
 
 
 @dataclass(frozen=True)
@@ -113,6 +115,8 @@ def scan(phase: Phase, two_theta_min: float, two_theta_max: float, step: float,
         for wavelength, weight in lines:
             d = d_spacing(*row.hkl, **phase.cell_kwargs())
             centre = 2.0 * math.degrees(math.asin(min(1.0, wavelength / (2.0 * d))))
+            centre += displacement_shift(centre, instrument.sample_displacement_mm,
+                                         instrument.goniometer_radius_mm)
             if not (two_theta_min - 5.0 <= centre <= two_theta_max + 5.0):
                 continue
             width = caglioti_fwhm(centre, *instrument.caglioti)
@@ -148,3 +152,15 @@ def _representative(h: int, k: int, l: int, system: str) -> bool:
     if system == "hexagonal":
         return h >= k
     return True
+
+
+def displacement_shift(two_theta_deg: float, displacement_mm: float,
+                       radius_mm: float) -> float:
+    # 2theta shift in degrees for a flat specimen displaced from the goniometer axis.
+    # Delta(2theta) = -2 s cos(theta) / R, in radians.
+    if displacement_mm == 0.0:
+        return 0.0
+    if radius_mm <= 0:
+        raise ValueError('the goniometer radius must be positive')
+    theta = math.radians(two_theta_deg / 2.0)
+    return math.degrees(-2.0 * displacement_mm * math.cos(theta) / radius_mm)

@@ -20,6 +20,7 @@ def _instrument(args) -> Instrument:
         background_rate=args.background,
         dwell_s=args.dwell,
         rng_seed=None if args.noise == 0 else args.noise,
+        sample_displacement_mm=args.displacement,
     )
 
 
@@ -33,6 +34,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--counts", type=float, default=20_000.0,
                         help="integrated counts at the strongest reflection")
     parser.add_argument("--background", type=float, default=0.5, help="background, counts/s")
+    parser.add_argument("--displacement", type=float, default=0.0, metavar="MM",
+                        help="sample surface displaced from the goniometer axis")
     parser.add_argument("--size", type=float, default=None,
                         help="crystallite size in angstrom (adds size broadening)")
     parser.add_argument("--no-ka2", action="store_true", help="drop the K-alpha2 line")

@@ -37,6 +37,7 @@ uv run python -m xrdsim --phase si --table
 | dwell | `--dwell` | counting time per step |
 | counts | `--counts` | integrated counts at the strongest reflection |
 | size | `--size` | crystallite size in angstrom |
+| displacement | `--displacement` | specimen surface off the goniometer axis, mm |
 | doublet | `--no-ka2` | drop the K-alpha2 line |
 | monochromator | `--monochromator 2THETA` | add the polarisation term |
 | noise | `--noise SEED` | Poisson counts (0 disables) |

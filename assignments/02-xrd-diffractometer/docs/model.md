@@ -71,6 +71,10 @@ background, then a Poisson draw. The dead time, when enabled, compresses the rat
 The K-alpha doublet puts every reflection twice, at its own Bragg angle, weighted 1 and
 0.497, so the shoulder grows with 2theta as it does on a real diffractometer.
 
+A displaced specimen shifts every line by `Delta(2theta) = -2 s cos(theta) / R` with the
+goniometer radius `R = 240 mm`; the shift is largest at low angle, so a misplaced sample
+compresses the pattern towards higher 2theta without moving the high-angle lines as much.
+
 ## 7. What the analysis reads back
 
 `find_peaks` locates local maxima above a height threshold, refines each with a three-point
