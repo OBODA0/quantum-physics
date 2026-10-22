@@ -58,3 +58,39 @@ def test_peak_positions_are_sorted_and_reachable():
     angles = [r[2] for r in rows]
     assert angles == sorted(angles)
     assert all(0 < angle < 180 for angle in angles)
+
+
+def _d_from_metric(a, b, c, alpha, beta, gamma, hkl):
+    """d-spacing from the metric tensor, an independent path to the same number."""
+    import numpy as np
+    al, be, ga = np.radians([alpha, beta, gamma])
+    va = np.array([a, 0.0, 0.0])
+    vb = np.array([b * np.cos(ga), b * np.sin(ga), 0.0])
+    cx = c * np.cos(be)
+    cy = c * (np.cos(al) - np.cos(be) * np.cos(ga)) / np.sin(ga)
+    cz = np.sqrt(max(c * c - cx * cx - cy * cy, 0.0))
+    vc = np.array([cx, cy, cz])
+    metric = np.array([va, vb, vc]) @ np.array([va, vb, vc]).T
+    vector = np.array(hkl, dtype=float)
+    return float(1.0 / np.sqrt(vector @ np.linalg.inv(metric) @ vector))
+
+
+@pytest.mark.parametrize("cell,hkl", [
+    (dict(a=5.431144), (1, 3, 2)),
+    (dict(a=4.0495, c=4.0495), (2, 1, 3)),
+    (dict(a=3.2494, c=5.2038, hexagonal=True), (1, 0, 2)),
+    (dict(a=3.2494, c=5.2038, hexagonal=True), (2, 2, 1)),
+    (dict(a=5.0, b=6.0, c=7.0), (1, 2, 3)),
+])
+def test_d_spacing_agrees_with_the_metric_tensor(cell, hkl):
+    kwargs = dict(cell)
+    if kwargs.pop("hexagonal", False):
+        alpha, beta, gamma = 90.0, 90.0, 120.0
+        b = kwargs["a"]
+    else:
+        b = kwargs.get("b", kwargs["a"])
+        c = kwargs.get("c", b)
+        alpha = beta = gamma = 90.0
+    c = kwargs.get("c", b)
+    expected = _d_from_metric(kwargs["a"], b, c, alpha, beta, gamma, hkl)
+    assert d_spacing(*hkl, **cell) == pytest.approx(expected, rel=1e-12)
