@@ -5,7 +5,7 @@ what it proves. Nothing here is reported from intent.
 
 ## 1. Test suite
 
-`cd assignments/02-xrd-diffractometer && uv run pytest -q` -> **92 passed** (commit `60a57db`).
+`cd assignments/02-xrd-diffractometer && uv run pytest -q` -> **107 passed** (commit `42d6f14`).
 
 What the suite covers, by file:
 
@@ -16,7 +16,8 @@ What the suite covers, by file:
 | `tests/test_geometry_sources.py` | footprint clipping, attenuation, penetration depth, the K-alpha doublet and its weighted mean |
 | `tests/test_structure_samples.py` | f0(0) = Z, the Debye-Waller limit, 24 multiplicity cases, FCC/BCC/diamond absences, rocksalt 111 weak, and every phase against its published strongest line |
 | `tests/test_diffractometer.py` | silicon peaks at the certified angles, 222 absent, doublet changes the width, size broadens the peaks, Poisson reproducibility, dead time, one reflection per family, intensity ratios 100/58/30/6 |
-| `tests/test_analysis.py` | peak finding on synthetic Gaussians, quadrature width subtraction, cubic indexing on silicon, Scherrer recovers a 20 nm crystallite within 15 % |
+| `tests/test_analysis.py` | peak finding on synthetic Gaussians, quadrature width subtraction, cubic indexing on silicon, Scherrer recovers a 20 nm crystallite within 15 %, Williamson-Hall recovers a synthetic size and strain to 2 % and 5 % |
+| `tests/test_structure_samples.py` (end to end) | every phase, simulated and re-measured: each predicted reflection above 5 % is found within 0.1 deg |
 | `tests/test_cli.py` | `--list-phases`, `--table`, PNG output, and the missing-phase error |
 
 ## 2. Independent numeric checks
@@ -59,7 +60,7 @@ site to fit published intensities would be fitting, not physics.
 
 ## 2.2 Clean-room rebuild
 
-Checked at commit `9104084`: a fresh `git clone` of the repository into `/tmp/clean3`,
+Checked at commit `42d6f14`: a fresh `git clone` of the repository into `/tmp/clean3`,
 then
 
 ```
