@@ -6,8 +6,8 @@ import argparse
 import pathlib
 
 from . import sources
-from .analysis import (find_peaks, index_cubic, lattice_hint, scherrer_from_peak,
-                       williamson_hall)
+from .analysis import (find_peaks, identify, index_cubic, lattice_hint,
+                       scherrer_from_peak, williamson_hall)
 from .diffractometer import Instrument, reflections, scan
 from .profile import caglioti_fwhm
 from .samples import PHASES, get_phase
@@ -50,6 +50,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="index the observed peaks as a cubic pattern")
     parser.add_argument("--scherrer", action="store_true",
                         help="report Scherrer sizes for the observed peaks")
+    parser.add_argument("--identify", action="store_true",
+                        help="rank the phase database against the simulated pattern")
     parser.add_argument("--list-phases", action="store_true", help="list the phase database")
     args = parser.parse_args(argv)
 
@@ -124,6 +126,12 @@ def main(argv: list[str] | None = None) -> int:
         else:
             print(f"Williamson-Hall: D = {wh_size / 10.0:.1f} nm, strain = {wh_strain:.5f}"
                   + ("" if args.no_ka2 else " (use --no-ka2: the shoulders bias the fit)"))
+
+    if args.identify:
+        ranking = identify([peak.two_theta for peak in peaks], PHASES, instrument)
+        print("identification: phase          score")
+        for key, score in ranking[:5]:
+            print(f"                {key:14s} {score:5.2f}")
 
     if args.out:
         from .plot import save_scan

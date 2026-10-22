@@ -76,3 +76,25 @@ def test_williamson_hall_recovers_size_and_strain():
     recovered_size, recovered_strain = williamson_hall(peaks, lambda angle: 0.0, 1.540598)
     assert recovered_size == pytest.approx(size, rel=0.02)
     assert recovered_strain == pytest.approx(strain, rel=0.05)
+
+
+def test_identify_ranks_the_true_phase_first():
+    from xrdsim.analysis import find_peaks, identify
+    from xrdsim.diffractometer import Instrument, scan
+    from xrdsim.samples import PHASES
+    instrument = Instrument(ka2=False, background_rate=0.0, rng_seed=None)
+    result = scan(get_phase("zno"), 20.0, 90.0, 0.01, instrument)
+    angles = [peak.two_theta for peak in find_peaks(result.two_theta, result.counts)]
+    ranking = identify(angles, PHASES, instrument)
+    assert ranking[0][0] == "zno"
+    assert ranking[0][1] == pytest.approx(1.0, abs=0.15)
+
+
+def test_identify_scores_a_wrong_phase_lower():
+    from xrdsim.analysis import find_peaks, identify_phase
+    from xrdsim.diffractometer import Instrument, scan
+    instrument = Instrument(ka2=False, background_rate=0.0, rng_seed=None)
+    result = scan(get_phase("zno"), 20.0, 90.0, 0.01, instrument)
+    angles = [peak.two_theta for peak in find_peaks(result.two_theta, result.counts)]
+    assert identify_phase(angles, get_phase("zno"), instrument) > \
+        identify_phase(angles, get_phase("si"), instrument)

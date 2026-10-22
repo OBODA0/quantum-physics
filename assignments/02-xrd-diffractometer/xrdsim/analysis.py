@@ -172,3 +172,33 @@ def williamson_hall(peaks: list[Peak], instrumental_fwhm_for,
     if intercept <= 0:
         raise ValueError("the fit has no positive intercept, so no size can be reported")
     return k * wavelength / intercept, float(slope)
+
+
+def identify_phase(two_thetas: list[float], phase, instrument,
+                   tolerance: float = 0.15,
+                   min_intensity_fraction: float = 0.05) -> float:
+    """Fraction of a phase's strong reflections that the observed peaks contain.
+
+    A score of 1.0 means every predicted line above `min_intensity_fraction` of the
+    phase's strongest has an observed peak within `tolerance` degrees.
+    """
+    from .diffractometer import reflections
+    rows = reflections(phase, instrument)
+    if not rows:
+        return 0.0
+    strongest = max(row.intensity for row in rows)
+    predicted = [row.two_theta for row in rows
+                 if row.intensity > min_intensity_fraction * strongest]
+    if not predicted or not two_thetas:
+        return 0.0
+    matched = sum(1 for angle in predicted
+                  if min(abs(angle - seen) for seen in two_thetas) <= tolerance)
+    return matched / len(predicted)
+
+
+def identify(two_thetas: list[float], phases: dict, instrument,
+             tolerance: float = 0.15) -> list[tuple[str, float]]:
+    """Rank the phases of a database by how well they explain the observed peak positions."""
+    scored = [(key, identify_phase(two_thetas, phase, instrument, tolerance))
+              for key, phase in phases.items()]
+    return sorted(scored, key=lambda row: (-row[1], row[0]))

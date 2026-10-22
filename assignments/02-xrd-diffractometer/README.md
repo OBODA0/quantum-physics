@@ -44,6 +44,7 @@ uv run python -m xrdsim --phase si --table
 | table | `--table` | print the reflection table |
 | index | `--index` | index the observed peaks, and name the lattice from the n^2 sequence |
 | Scherrer | `--scherrer` | size from each peak, corrected for the instrument, plus a Williamson-Hall size and strain |
+| identify | `--identify` | rank the phase database against the simulated pattern |
 
 ## Phases
 
