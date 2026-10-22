@@ -23,12 +23,17 @@ def plot_scan(scan: Scan, ax=None, title: str | None = None, annotate: bool = Tr
     ax.plot(scan.two_theta, scan.counts, lw=0.8, color="#1a3d6d")
     if annotate and scan.reflections:
         strongest = max(row.intensity for row in scan.reflections)
-        for row in scan.reflections:
-            if row.intensity < 0.02 * strongest:
+        placed: list[float] = []
+        for row in sorted(scan.reflections, key=lambda r: -r.intensity):
+            if row.intensity < 0.08 * strongest:
                 continue
+            if any(abs(row.two_theta - angle) < 1.2 for angle in placed):
+                continue
+            placed.append(row.two_theta)
             ax.annotate("".join(str(v) for v in row.hkl), (row.two_theta, 0),
-                        textcoords="offset points", xytext=(0, 6),
-                        fontsize=7, ha="center", color="#8a3b12")
+                        textcoords="offset points", xytext=(0, 4),
+                        fontsize=6.5, rotation=90, ha="center", va="bottom",
+                        color="#8a3b12")
     ax.set_xlabel("2theta (deg)")
     ax.set_ylabel("counts")
     if title:
