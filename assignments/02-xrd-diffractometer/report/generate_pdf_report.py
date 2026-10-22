@@ -11,6 +11,10 @@ from __future__ import annotations
 
 import pathlib
 
+import reportlab.rl_config
+
+reportlab.rl_config.invariant = 1   # fixed timestamps and IDs: the PDF rebuilds byte-identically
+
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
