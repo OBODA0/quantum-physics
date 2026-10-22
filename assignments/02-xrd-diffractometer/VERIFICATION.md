@@ -57,6 +57,25 @@ weak-line cases where the difference of two form factors is small, so the result
 sensitive to the tabulated f0 and to B. This is recorded rather than tuned: adjusting B per
 site to fit published intensities would be fitting, not physics.
 
+## 2.2 Clean-room rebuild
+
+Checked at commit `9104084`: a fresh `git clone` of the repository into `/tmp/clean3`,
+then
+
+```
+uv sync
+uv run pytest
+uv run python -m report.make_figures
+uv run python -m report.tables
+uv run python -m report.generate_pdf_report
+uv run python -m report.check_pdf
+```
+
+produced **92 passed** and **PASS**, and `git status` in the clone was **empty**: every
+figure, the reflection table and the PDF came out byte-identical to the committed ones.
+The PDF is deterministic because `reportlab.rl_config.invariant` fixes its timestamps and
+document id.
+
 ## 3. Defects found and fixed during the build
 
 | defect | how it showed up | fix | proof |
