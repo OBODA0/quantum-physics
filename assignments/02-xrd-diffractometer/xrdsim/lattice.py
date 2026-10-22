@@ -23,10 +23,10 @@ def d_spacing(h: int, k: int, l: int, *, a: float, b: float | None = None,
         if c is None:
             raise ValueError("the hexagonal setting needs c")
         inv_sq = 4.0 / 3.0 * (h * h + h * k + k * k) / a**2 + l * l / c**2
-    elif b is None:
+    elif b is None and c is None:
         inv_sq = (h * h + k * k + l * l) / a**2
-    elif c is None:
-        inv_sq = (h * h + k * k) / a**2 + l * l / b**2
+    elif b is None:
+        inv_sq = (h * h + k * k) / a**2 + l * l / c**2
     else:
         inv_sq = h * h / a**2 + k * k / b**2 + l * l / c**2
     if inv_sq == 0:
