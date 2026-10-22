@@ -33,7 +33,10 @@ uv run python -m report.check_pdf
 ```
 
 `check_pdf.py` is the gate: it fails if the document is missing a section marker, carries
-embedded files, or is shorter than three pages.
+embedded files, or is shorter than three pages. `check_numbers.py` recomputes the numbers the
+text quotes (silicon positions, intensity ratios, the Scherrer range) and refuses a PDF that
+does not contain them. The PDF builder and the gate both read `numbers_source.py`, so the
+text cannot drift from the model.
 
 ## Tables
 

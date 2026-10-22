@@ -17,6 +17,7 @@ STEPS = [
     ("tables", [sys.executable, "-m", "report.tables"]),
     ("pdf", [sys.executable, "-m", "report.generate_pdf_report"]),
     ("gate", [sys.executable, "-m", "report.check_pdf"]),
+    ("numbers", [sys.executable, "-m", "report.check_numbers"]),
 ]
 
 

@@ -25,6 +25,8 @@ from reportlab.platypus import (Image, Paragraph, SimpleDocTemplate,
 from xrdsim.diffractometer import Instrument, reflections
 from xrdsim.samples import PHASES
 
+from .numbers_source import quoted_numbers
+
 HERE = pathlib.Path(__file__).resolve().parent
 REPO_ROOT = HERE.parent
 REPO_URL = "https://github.com/OBODA0/quantum-physics"
@@ -78,6 +80,7 @@ def table(rows, widths, s):
 
 def build() -> None:
     s = styles()
+    numbers = quoted_numbers()
     doc = SimpleDocTemplate(str(PDF_PATH), pagesize=letter, leftMargin=54, rightMargin=54,
                             topMargin=54, bottomMargin=54,
                             title="Assignment 2: XRD Diffractometer Simulation",
@@ -181,7 +184,7 @@ def build() -> None:
         "instrument (U, V, W) and varies the crystallite size; the Scherrer analysis in "
         "<font face=\"Courier\">xrdsim/analysis.py</font> subtracts the instrumental width in "
         "quadrature and recovers the input size to within about 1 % on a noiseless scan "
-        "(30.0-30.1 nm for an input of 30 nm).", s["body"]))
+        f"({numbers['scherrer_range']} nm for an input of 30 nm).", s["body"]))
     story.append(figure("scherrer.png"))
     story.append(Paragraph("Figure 3: the silicon 111 line at 5, 20 and 200 nm. The curves are "
                            "normalised; the K-alpha2 line is switched off so that only the "
@@ -203,10 +206,11 @@ def build() -> None:
         "The suite covers lattice geometry, profiles, the detector, the structure factor and "
         "its absences, the scan, the analysis and the command line interface. Independent "
         "checks compare simulated peak positions with certified and published values: silicon "
-        "111/220/311/400 at 28.441/47.300/56.120/69.126 deg against the NIST SRM 640d values "
-        "28.4425/47.3034/56.1211/69.1295, and the relative intensities 100/58/30/6 against the "
-        "standard 100/55/30/5. The 0.002-0.007 deg residual is the wavelength convention: the "
-        "certificates quote 1.5405929 angstrom, the simulator uses 1.540598.", s["body"]))
+        f"111/220/311/400 at {numbers['si_positions']} deg against the NIST SRM 640d values "
+        "28.4425/47.3034/56.1211/69.1295, and the relative intensities "
+        f"{numbers['si_ratios']} against the standard 100/55/30/5. The 0.002-0.007 deg residual "
+        "is the wavelength convention: the certificates quote 1.5405929 angstrom, the simulator "
+        "uses 1.540598.", s["body"]))
     story.append(Paragraph(
         "Multiplicities are checked against a brute-force enumeration of the symmetry "
         "operations for cubic, tetragonal and hexagonal families, and the intensity ratios "
