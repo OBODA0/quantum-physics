@@ -82,9 +82,12 @@ def scherrer_from_peak(peak: Peak, instrumental_fwhm: float, wavelength: float,
     return scherrer_size(beta, peak.two_theta, wavelength, k)
 
 
-def index_cubic(two_thetas: list[float], wavelength: float,
+def index_cubic(two_thetas: list[float],
                 max_n_squared: int = 30, tolerance: float = 0.02) -> list[tuple[tuple[int, int, int], float]]:
     """Assign (hkl) to a cubic pattern by the sin^2(theta) ratios.
+
+    The cell returned is the smallest one that fits, so a body-centred pattern comes back
+    as a primitive cell with half the conventional edge; `lattice_hint` names that.
 
     Returns the assignments and the implied n^2 = h^2 + k^2 + l^2. The first reflection
     is taken as the lowest-angle one; every other angle must fall on an integer multiple

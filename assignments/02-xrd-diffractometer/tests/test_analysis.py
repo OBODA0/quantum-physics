@@ -43,7 +43,7 @@ def test_pure_width_subtracts_in_quadrature_and_guards_negative():
 
 def test_index_cubic_on_silicon_angles():
     angles = [28.441, 47.300, 56.120, 69.126, 76.372, 88.025]
-    rows = index_cubic(angles, 1.540598)
+    rows = index_cubic(angles)
     assert [hkl for hkl, _ in rows] == [(1, 1, 1), (2, 2, 0), (3, 1, 1), (4, 0, 0), (3, 3, 1), (4, 2, 2)]
 
 

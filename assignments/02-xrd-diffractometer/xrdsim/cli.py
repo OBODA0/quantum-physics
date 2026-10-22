@@ -83,7 +83,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"peaks      : {len(peaks)}")
     for peak in peaks[:12]:
         line = f"  {peak.two_theta:8.3f} deg  height {peak.height:9.0f}  FWHM {peak.fwhm:.4f}"
-        if args.size:
+        if args.size and not args.scherrer:
             try:
                 size = scherrer_from_peak(peak, caglioti_fwhm(peak.two_theta, *instrument.caglioti),
                                           instrument.wavelength)
@@ -94,7 +94,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.index:
         try:
-            rows = index_cubic([peak.two_theta for peak in peaks], instrument.wavelength)
+            rows = index_cubic([peak.two_theta for peak in peaks])
         except ValueError as error:
             print(f"indexing failed: {error}")
         else:
@@ -118,6 +118,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.out:
         from .plot import save_scan
         args.out.parent.mkdir(parents=True, exist_ok=True)
-        save_scan(result, args.out, title=f"{phase.name}, Cu K-alpha")
+        save_scan(result, args.out,
+                  title=f"{phase.name}, {instrument.wavelength:.4f} A")
         print(f"wrote {args.out}")
     return 0

@@ -31,7 +31,7 @@ class Instrument:
     background_rate: float = 0.5           # counts per second, flat
     dwell_s: float = 1.0
     dead_time_s: float = 0.0
-    rng_seed: int | None = 0
+    rng_seed: int | None = None      # None: no counting noise; an int seeds the Poisson draws
     max_two_theta: float = 150.0      # no goniometer reaches 180 deg, and LP diverges there
     sample_displacement_mm: float = 0.0  # specimen surface off the goniometer axis
     goniometer_radius_mm: float = 240.0
