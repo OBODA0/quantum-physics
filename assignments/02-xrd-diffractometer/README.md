@@ -43,7 +43,7 @@ uv run python -m xrdsim --phase si --table
 | noise | `--noise SEED` | Poisson counts (0 disables) |
 | table | `--table` | print the reflection table |
 | index | `--index` | index the observed peaks, and name the lattice from the n^2 sequence |
-| Scherrer | `--scherrer` | size from each peak, corrected for the instrument |
+| Scherrer | `--scherrer` | size from each peak, corrected for the instrument, plus a Williamson-Hall size and strain |
 
 ## Phases
 

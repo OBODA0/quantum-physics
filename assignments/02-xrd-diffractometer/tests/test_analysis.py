@@ -62,3 +62,17 @@ def test_lattice_hint_reads_the_sequence():
     assert lattice_hint([3, 4, 8, 11]).startswith("face-centred")
     assert lattice_hint([2, 4, 6]).startswith("body-centred")
     assert "twice this edge" in lattice_hint([1, 2, 3])
+
+
+def test_williamson_hall_recovers_size_and_strain():
+    from xrdsim.analysis import Peak, williamson_hall
+    size, strain = 250.0, 0.0015
+    peaks = []
+    for angle in [28.441, 47.301, 56.120, 69.127, 76.373, 88.026]:
+        theta = math.radians(angle / 2.0)
+        beta = math.degrees(0.9 * 1.540598 / (size * math.cos(theta)))
+        beta += math.degrees(4.0 * strain * math.tan(theta))
+        peaks.append(Peak(angle, 1.0, beta, 1.0))
+    recovered_size, recovered_strain = williamson_hall(peaks, lambda angle: 0.0, 1.540598)
+    assert recovered_size == pytest.approx(size, rel=0.02)
+    assert recovered_strain == pytest.approx(strain, rel=0.05)

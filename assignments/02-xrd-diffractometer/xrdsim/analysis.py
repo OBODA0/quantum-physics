@@ -147,3 +147,28 @@ def _refine(x: np.ndarray, y: np.ndarray, i: int) -> tuple[float, float]:
     if abs(delta) > 0.5:
         return float(x[i]), float(y[i])
     return float(x[i] + delta * (x[i + 1] - x[i])), float(y1 - 0.25 * (y0 - y2) * delta)
+
+
+def williamson_hall(peaks: list[Peak], instrumental_fwhm_for,
+                    wavelength: float, k: float = 0.9) -> tuple[float, float]:
+    """Crystallite size and microstrain from the Williamson-Hall plot.
+
+    beta cos(theta) = K lambda / D + 4 epsilon sin(theta), fitted by least squares over the
+    peaks given. `instrumental_fwhm_for(two_theta)` returns the instrument width at that
+    angle. Returns (size in angstrom, strain) and raises when fewer than two peaks are
+    usable.
+    """
+    xs, ys = [], []
+    for peak in peaks:
+        beta = pure_width(peak.fwhm, instrumental_fwhm_for(peak.two_theta))
+        if beta <= 0 or peak.two_theta <= 0:
+            continue
+        theta = math.radians(peak.two_theta / 2.0)
+        xs.append(4.0 * math.sin(theta))
+        ys.append(math.radians(beta) * math.cos(theta))
+    if len(xs) < 2:
+        raise ValueError("Williamson-Hall needs at least two peaks broader than the instrument")
+    slope, intercept = np.polyfit(xs, ys, 1)
+    if intercept <= 0:
+        raise ValueError("the fit has no positive intercept, so no size can be reported")
+    return k * wavelength / intercept, float(slope)

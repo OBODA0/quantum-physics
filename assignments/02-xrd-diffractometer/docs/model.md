@@ -81,7 +81,7 @@ compresses the pattern towards higher 2theta without moving the high-angle lines
 parabola, and measures the FWHM by interpolating the half-height crossings. `pure_width`
 subtracts the instrumental width in quadrature, and `scherrer_from_peak` turns the result
 into a size. On a noiseless 30 nm scan the recovered size is 30.0-30.1 nm across six
-reflections.
+reflections, and a Williamson-Hall fit of the same peaks returns 30.0 nm with zero strain.
 
 ## 8. Fidelity limits
 

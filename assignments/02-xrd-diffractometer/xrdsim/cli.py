@@ -6,7 +6,8 @@ import argparse
 import pathlib
 
 from . import sources
-from .analysis import find_peaks, index_cubic, lattice_hint, scherrer_from_peak
+from .analysis import (find_peaks, index_cubic, lattice_hint, scherrer_from_peak,
+                       williamson_hall)
 from .diffractometer import Instrument, reflections, scan
 from .profile import caglioti_fwhm
 from .samples import PHASES, get_phase
@@ -114,6 +115,15 @@ def main(argv: list[str] | None = None) -> int:
             except ValueError:
                 continue
             print(f"             {peak.two_theta:7.3f}         {size / 10.0:6.1f}")
+        try:
+            wh_size, wh_strain = williamson_hall(
+                peaks, lambda angle: caglioti_fwhm(angle, *instrument.caglioti),
+                instrument.wavelength)
+        except ValueError as error:
+            print(f"Williamson-Hall: {error}")
+        else:
+            print(f"Williamson-Hall: D = {wh_size / 10.0:.1f} nm, strain = {wh_strain:.5f}"
+                  + ("" if args.no_ka2 else " (use --no-ka2: the shoulders bias the fit)"))
 
     if args.out:
         from .plot import save_scan
