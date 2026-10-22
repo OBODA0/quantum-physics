@@ -18,6 +18,7 @@ class, quantum physics section (OBODA's words). Class notes for this assignment:
 | `AWAITING BRIEF` — the graded statement (Canvas announcement / whiteboard photo / slide / PDF) | the deliverables, their weights and the submission rules |
 | `AWAITING BRIEF` — class notes, with heading and date | the diffractometer chain the design must model |
 | OBODA, 2026-10-22 | the topic only: "XRD diffractometer simulator", second assignment of the quantum physics section |
+| `docs/research/` | three research notes written before the brief: instrument model, analysis and reference data, assignment-1 document conventions. Corrected where they were wrong; see its README |
 
 `AWAITING BRIEF` — one sentence stating which source grades the work and which defines what
 the simulator must be able to do, and which one wins where they disagree.
