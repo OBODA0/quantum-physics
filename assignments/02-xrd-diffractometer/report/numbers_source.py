@@ -39,4 +39,12 @@ def quoted_numbers() -> dict[str, str]:
         "si_positions": "/".join(f"{rows[hkl].two_theta:.3f}" for hkl in SI_HKLS),
         "si_ratios": "/".join(f"{100 * rows[hkl].intensity / top:.0f}" for hkl in SI_HKLS),
         "scherrer_range": f"{min(sizes):.1f}-{max(sizes):.1f}",
+        "cu_ratios": _ratios("cu", [(1, 1, 1), (2, 0, 0), (2, 2, 0)], instrument),
+        "rutile_ratios": _ratios("tio2-rutile", [(1, 1, 0), (1, 0, 1), (2, 1, 1)], instrument),
     }
+
+
+def _ratios(phase_key: str, hkls, instrument) -> str:
+    rows = {row.hkl: row for row in reflections(get_phase(phase_key), instrument)}
+    top = max(row.intensity for row in rows.values())
+    return "/".join(f"{100 * rows[hkl].intensity / top:.0f}" for hkl in hkls)

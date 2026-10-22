@@ -247,8 +247,8 @@ def build() -> None:
         "Multiplicities are checked against a brute-force enumeration of the symmetry "
         "operations for cubic, tetragonal and hexagonal families, and the intensity ratios "
         "sit inside the spread expected from a uniform Debye-Waller factor and no absorption "
-        "correction: copper 111/200/220 comes out at 100/41/16 against the published 100/46/20, "
-        "and rutile at 100/43/37 for 110/101/211 against 100/50/60. "
+        f"correction: copper 111/200/220 comes out at {numbers['cu_ratios']} against the published 100/46/20, "
+        f"and rutile at {numbers['rutile_ratios']} for 110/101/211 against 100/50/60. "
         "The whole assignment rebuilds from a fresh clone: uv sync, 91 tests, figures, tables, "
         "PDF and the gate.", s["body"]))
     story.append(Paragraph(
