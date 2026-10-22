@@ -13,9 +13,9 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from . import sources
-from .detector import apply_dead_time
+from .detector import apply_dead_time, expected_counts
 from .lattice import d_spacing
-from .profile import caglioti_fwhm, pseudo_voigt, scherrer_size, size_fwhm
+from .profile import add_in_quadrature, caglioti_fwhm, pseudo_voigt, size_fwhm
 from .samples import Phase
 from .structure import lorentz_polarisation, multiplicity, structure_factor
 
@@ -106,7 +106,8 @@ def scan(phase: Phase, two_theta_min: float, two_theta_max: float, step: float,
     if instrument.ka2:
         lines = [(sources.CU_KA1, 1.0), (sources.CU_KA2, sources.KA2_TO_KA1)]
 
-    mean = np.full_like(grid, instrument.background_rate * instrument.dwell_s, dtype=float)
+    mean = np.full_like(grid, expected_counts(instrument.background_rate, instrument.dwell_s),
+                        dtype=float)
     for row in rows:
         area_total = instrument.reference_counts * row.intensity / strongest
         for wavelength, weight in lines:
@@ -116,7 +117,7 @@ def scan(phase: Phase, two_theta_min: float, two_theta_max: float, step: float,
                 continue
             width = caglioti_fwhm(centre, *instrument.caglioti)
             if size_a is not None:
-                width = math.hypot(width, size_fwhm(size_a, centre, wavelength))
+                width = add_in_quadrature(width, size_fwhm(size_a, centre, wavelength))
             profile = np.array([pseudo_voigt(x, centre, width, instrument.eta) for x in grid])
             mean += area_total * weight * profile * step
 
