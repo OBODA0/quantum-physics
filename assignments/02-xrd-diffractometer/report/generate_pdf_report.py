@@ -415,17 +415,53 @@ def build() -> None:
         "repository as the code. They are not retouched: the curves in Figures 2 and 3 are "
         "the arrays the scan returns, plotted without smoothing.", s["body"]))
 
+    story.append(Paragraph("3.3 How the model compares with published patterns", s["h2"]))
+    story.append(Paragraph(
+        "A simulation is only useful if its numbers are the numbers a real instrument would "
+        "give. Table 3 compares the relative intensities the model produces with the values "
+        "printed on standard powder cards for five of the phases. The reflections are the "
+        "strongest ones; the model normalises each pattern to its own 111 or 200 line, as the "
+        "cards do.", s["body"]))
+    ratio_rows = [["Phase", "Reflections", "Model", "Published card"]]
+    for key, hkls, published in [
+            ("si", [(1, 1, 1), (2, 2, 0), (3, 1, 1), (4, 0, 0)], "100 / 55 / 30 / 5"),
+            ("cu", [(1, 1, 1), (2, 0, 0), (2, 2, 0), (3, 1, 1)], "100 / 46 / 20 / 17"),
+            ("nacl", [(1, 1, 1), (2, 0, 0), (2, 2, 0)], "13 / 100 / 55"),
+            ("zno", [(1, 0, 0), (0, 0, 2), (1, 0, 1)], "57 / 44 / 100"),
+            ("tio2-rutile", [(1, 1, 0), (1, 0, 1), (2, 1, 1)], "100 / 50 / 60")]:
+        rows = reflections(PHASES[key], instrument)
+        top = max(row.intensity for row in rows)
+        lookup = {row.hkl: row.intensity for row in rows}
+        model = " / ".join(f"{100 * lookup[hkl] / top:.0f}" for hkl in hkls)
+        labels = " / ".join("".join(str(v) for v in hkl) for hkl in hkls)
+        ratio_rows.append([PHASES[key].name, labels, model, published])
+    story.append(table(ratio_rows, [90, 105, 90, 110], s))
+    story.append(Paragraph("Table 3: relative intensities, model against published powder "
+                           "cards. The published values are peak heights read from printed "
+                           "cards; the model returns integrated intensities.", s["caption"]))
+    story.append(Paragraph(
+        "The agreement is good on the low-angle lines and drifts high at the back of the "
+        "scan: silicon 400 at 10 against 5, copper 311 at 27 against 17, rutile 110/101/211 at "
+        "100/45/55 against 100/50/60. Two effects explain the direction. First, a printed "
+        "card lists peak heights while the model returns integrated intensities, and the "
+        "instrument width grows with angle, so the same area gives a lower height at high "
+        "angle. Second, the model applies one Debye-Waller coefficient of 0.5 A^2 to every "
+        "site and no absorption correction, both of which suppress high-angle intensity in a "
+        "real specimen more than in a single-parameter model. The discrepancy is recorded "
+        "rather than tuned, because fitting B per site would be fitting, not physics.",
+        s["body"]))
+
     # ------------------------------------------------------------------ 4
     story.append(Paragraph("4. Item 2: what changes when the domain size changes (25%)",
                            s["h1"]))
     story.append(Paragraph(
         "The measurement behind this item is a size series on silicon, Cu K-alpha1 only, a "
         "0.002 deg step, 100 000 counts at the strongest line and no counting noise. The "
-        "conditions are chosen so that everything in Table 3 is the size and nothing else: "
+        "conditions are chosen so that everything in Table 4 is the size and nothing else: "
         "one phase, one instrument, one reflection set, and enough counts that the statistical "
         "error is negligible against the widths being compared.", s["body"]))
     story.append(table(size_table_rows(), [42, 62, 62, 62, 70, 76, 62], s))
-    story.append(Paragraph("Table 3: the size study. The Scherrer column subtracts the "
+    story.append(Paragraph("Table 4: the size study. The Scherrer column subtracts the "
                            "instrument width in quadrature and applies K lambda/(D cos theta) "
                            "with K = 0.9 [3]. The area column integrates over a window of four "
                            "FWHM taken from the scan range, so for the broadest peak (5 nm) it "
@@ -435,7 +471,7 @@ def build() -> None:
 
     story.append(Paragraph("4.1 The peak position does not move", s["h2"]))
     story.append(Paragraph(
-        "Silicon 111 sits at 28.441 deg for every size in Table 3, from 5 nm to 500 nm. "
+        "Silicon 111 sits at 28.441 deg for every size in Table 4, from 5 nm to 500 nm. "
         "Bragg's law fixes the angle from the cell, and the cell of a crystallite does not "
         "depend on how large the crystallite is. A size effect that shifted the lines would "
         "be a different measurement altogether: a strain or a composition change, not a size "
@@ -490,7 +526,7 @@ def build() -> None:
         "deconvolution is done on the same model that generated the data. On a real "
         "instrument the calibration would carry its own error, and above roughly 100 nm the "
         "size would be unmeasurable from the width alone. Below that the sample dominates and "
-        "the inversion recovers the input size at every point of Table 3, from 5 nm to "
+        "the inversion recovers the input size at every point of Table 4, from 5 nm to "
         "500 nm.", s["body"]))
     story.append(Paragraph(
         "The practical consequence is resolution. A 5 nm 111 line is 1.6 deg wide, wider than "
@@ -502,20 +538,20 @@ def build() -> None:
 
     story.append(Paragraph("4.6 How well does the width law hold?", s["h2"]))
     story.append(Paragraph(
-        "Table 4 compares the measured width of every reflection in the study with the "
+        "Table 5 compares the measured width of every reflection in the study with the "
         "Scherrer prediction, K lambda/(D cos theta), using the same K and lambda the "
         "simulator uses. The residuals are largest where the quadrature combination of the two "
         "widths is least exact, that is at the smallest sizes and at the highest angle, and "
         "they are of the order of a few per cent of the width itself.", s["body"]))
     story.append(table(residual_rows(), [44, 34, 62, 66, 66, 62, 62], s))
-    story.append(Paragraph("Table 4: measured width against the Scherrer prediction. The "
+    story.append(Paragraph("Table 5: measured width against the Scherrer prediction. The "
                            "measured column is the FWHM the analysis code extracts from the "
                            "simulated scan; the predicted column is the algebraic size width "
                            "that was put into it.", s["caption"]))
 
     story.append(Paragraph("4.7 A worked example: reading a size from one scan", s["h2"]))
     story.append(Paragraph(
-        "Table 6 takes the 20 nm row of Table 3 and applies the analysis the way it would be "
+        "Table 7 takes the 20 nm row of Table 4 and applies the analysis the way it would be "
         "applied to a measured scan. For each reflection: read the peak angle and the FWHM at "
         "half height, subtract the instrument width in quadrature, and apply "
         "D = K lambda/(beta cos theta) with K = 0.9. The three reflections return the same "
@@ -528,7 +564,7 @@ def build() -> None:
         ["220", "47.301", "0.4368", "0.0538", "0.4335", "20.0"],
         ["400", "69.127", "0.4852", "0.0593", "0.4816", "20.0"],
     ], [56, 62, 58, 66, 56, 46], s))
-    story.append(Paragraph("Table 6: the inversion, reflection by reflection, for the 20 nm "
+    story.append(Paragraph("Table 7: the inversion, reflection by reflection, for the 20 nm "
                            "crystallite. The uncorrected widths differ by 17 per cent between "
                            "111 and 400; after the 1/cos(theta) correction the three sizes "
                            "agree.", s["caption"]))
@@ -609,7 +645,7 @@ def build() -> None:
         ["100", "0.8859", "0.8859"],
         ["1000", "0.8859", "0.8859"],
     ], [90, 120, 90], s))
-    story.append(Paragraph("Table 5: the shape constant of a pure finite-chain profile, "
+    story.append(Paragraph("Table 6: the shape constant of a pure finite-chain profile, "
                            "computed from equation (2). The Scherrer constant K = 0.9 used in "
                            "the code is this value rounded up; a Gaussian or Lorentzian "
                            "profile would give a slightly different number, which is why K "
@@ -636,7 +672,7 @@ def build() -> None:
     story.append(Paragraph(
         "<b>Area.</b> A normalised impulse response has unit area, and convolution preserves "
         "the integral. The area under a reflection is therefore fixed by the structure factor "
-        "and the beam, while its height is area divided by width. Table 3 shows exactly that: "
+        "and the beam, while its height is area divided by width. Table 4 shows exactly that: "
         "the area at 111 stays within about ten per cent across a hundredfold change in size, "
         "while the height follows the width. In the language of the same theory this is "
         "Parseval's theorem: the total power in the line is unchanged, only its distribution "
@@ -645,12 +681,12 @@ def build() -> None:
         "<b>The cascade is limited by its widest stage.</b> The instrument response is set by "
         "the slits, the source size and the detector, and for any crystallite above roughly "
         "100 nm it is wider than the crystal response. That is why the curves in Figure 4 "
-        "flatten at the right, and why the recovery in Table 3 stops being meaningful there: "
+        "flatten at the right, and why the recovery in Table 4 stops being meaningful there: "
         "the measurement can no longer see the narrower of the two filters. Adding two "
         "Gaussian widths in quadrature is the statement that variances add when independent "
         "responses are convolved; the Lorentzian part of a pseudo-Voigt adds linearly "
-        "instead, which is why the quadrature correction in Table 3 is approximate and why "
-        "the residuals in Table 4 grow at the smallest sizes.", s["body"]))
+        "instead, which is why the quadrature correction in Table 4 is approximate and why "
+        "the residuals in Table 5 grow at the smallest sizes.", s["body"]))
 
     story.append(Paragraph("5.5 The 1/cos(theta) is a change of variable", s["h2"]))
     story.append(Paragraph(
@@ -670,7 +706,7 @@ def build() -> None:
         "wider on the chart. The same variable change explains why the K-alpha doublet "
         "separates more at high angle, which is visible in Figure 5 of the companion doublet "
         "figure in the repository. This is why a size measured from one low-angle line and "
-        "one high-angle line should agree once equation (5) is applied, and Table 4 is that "
+        "one high-angle line should agree once equation (5) is applied, and Table 5 is that "
         "check.", s["body"]))
 
     story.append(Paragraph("5.6 Sampling, and why the scan step matters", s["h2"]))
@@ -681,7 +717,7 @@ def build() -> None:
         "fall, and a fit to three points does not recover the continuous line. In the study "
         "the narrowest line is the 500 nm case, whose width is about 0.055 deg; a 0.02 deg "
         "step gives under three points per FWHM, and the measured width then depends on the "
-        "step. The 0.002 deg step used for Table 3 is chosen to sample the narrowest line by "
+        "step. The 0.002 deg step used for Table 4 is chosen to sample the narrowest line by "
         "about 27 points, which is why the numbers in that table can be compared with each "
         "other.", s["body"]))
     story.append(Paragraph(
@@ -697,7 +733,7 @@ def build() -> None:
     story.append(Paragraph("5.7 What the model predicts, and what it measures", s["h2"]))
     story.append(Paragraph(
         "None of section 5 is fitted. The curve in Figure 5 is equation (5) with K = 0.9 and "
-        "the simulator's own wavelength; the widths in Table 4 come from the simulated scans. "
+        "the simulator's own wavelength; the widths in Table 5 come from the simulated scans. "
         f"At 20 nm the prediction for 111 is {sz[20.0, '111']['predicted_size_fwhm']:.3f} deg "
         f"against {sz[20.0, '111']['fwhm']:.3f} measured; at 400, "
         f"{sz[20.0, '400']['predicted_size_fwhm']:.3f} against "
@@ -705,7 +741,7 @@ def build() -> None:
         f"{sz[5.0, '111']['predicted_size_fwhm']:.2f} against "
         f"{sz[5.0, '111']['fwhm']:.2f}. The agreement is the evidence that the model's size "
         "term is the convolution argument above and not an empirical fit, and the residuals "
-        "in Table 4 say where the approximation (quadrature combination of a pseudo-Voigt) is "
+        "in Table 5 say where the approximation (quadrature combination of a pseudo-Voigt) is "
         "weakest.", s["body"]))
     story.append(Paragraph(
         "Two other descriptions of the same physics are common and are worth naming, because "
@@ -740,7 +776,7 @@ def build() -> None:
         "the width is read at half maximum and the mixture is normalised to unit area. The quadrature combination of "
         "the instrumental and size widths is exact only for two Gaussians; with a pseudo-Voigt "
         "the Lorentzian part adds linearly, and that is the main reason the residuals in "
-        "Table 4 grow at the smallest sizes. Finally the instrument constants U, V and W are "
+        "Table 5 grow at the smallest sizes. Finally the instrument constants U, V and W are "
         "plausible defaults rather than a calibration of a real diffractometer, so the "
         "absolute widths belong to this model; the scaling laws, which are what items 2 and 3 "
         "are about, do not depend on them.", s["body"]))
@@ -760,6 +796,32 @@ def build() -> None:
         "conventional values; no primary table was read for them. None of these affects the "
         "size argument, which rests on the width and on the convolution.", s["body"]))
 
+    story.append(Paragraph("6.1 Uncertainty budget", s["h2"]))
+    story.append(Paragraph(
+        "The table collects the terms discussed above, each measured on this model rather "
+        "than estimated. The two that matter for a size measurement are the scan step on a "
+        "narrow line and the instrument width itself; the others are below the differences "
+        "the report is asked to demonstrate.", s["body"]))
+    story.append(table([
+        ["Source", "Effect measured", "Where it matters"],
+        ["Counting noise", "below 0.4 % on the peak height at 100 000 counts",
+         "negligible here by construction"],
+        ["Profile shape, eta 0 to 1", "width below 0.1 %, height about 32 %",
+         "height comparisons, not widths"],
+        ["Scan step, 0.02 deg at 500 nm", "width +4.2 %, recovered size -28.5 %",
+         "narrow lines, large crystallites"],
+        ["Quadrature subtraction", "up to 1.9 % on the width at 5 nm, 400",
+         "the smallest sizes"],
+        ["Instrument U, V, W", "sets the crossover near 100 nm",
+         "any size above about 100 nm"],
+        ["Wavelength convention", "0.0001 deg at 30 deg", "negligible"],
+        ["Cell constants", "below 0.02 deg in 2theta", "positions, not widths"],
+    ], [110, 180, 155], s))
+    story.append(Paragraph("Table 9: the uncertainty budget. The step and eta entries were "
+                           "measured by sweeping the parameter and re-running the analysis; "
+                           "the quadrature entry is the largest residual in Table 5.",
+                           s["caption"]))
+
     # ------------------------------------------------------------------ 7
     story.append(Paragraph("7. Conclusion", s["h1"]))
     story.append(Paragraph(
@@ -772,7 +834,7 @@ def build() -> None:
         "lattice by a window, convolution in reciprocal space turns that window into a "
         "sinc-squared of width 2 pi / D, the instrument is a second convolution in series, and "
         "the 1/cos(theta) is the Jacobian between reciprocal space and the goniometer angle. "
-        "The measurements in Table 3 and Table 4 agree with that description without fitting "
+        "The measurements in Table 4 and Table 5 agree with that description without fitting "
         "anything.", s["body"]))
 
     # ------------------------------------------------------------------ refs
@@ -785,6 +847,9 @@ def build() -> None:
         "checks are recorded in report/references/AUDIT.md.", s["caption"]))
 
     # ------------------------------------------------------------------ B
+    # ------------------------------------------------------------------ A, B, C
+    code_appendix(story, s)
+
     story.append(Paragraph("Appendix B: constants and their provenance", s["h1"]))
     story.append(Paragraph(
         "The cell constants the report uses, with the record each came from. The full table, "
@@ -794,7 +859,7 @@ def build() -> None:
         cell = f"a = {phase.a:.4f}" + (f", c = {phase.c:.4f}" if phase.c else "")
         provenance.append([key, cell, phase.source])
     story.append(table(provenance, [58, 92, 300], s))
-    story.append(Paragraph("Table 7: cell constants and the record behind each. Where a "
+    story.append(Paragraph("Table 8: cell constants and the record behind each. Where a "
                            "record is a room-temperature conventional value rather than a "
                            "certified one, data/SOURCES.md marks it provisional.", s["caption"]))
     story.append(Paragraph(
@@ -804,7 +869,31 @@ def build() -> None:
         "Waasmaier-Kirfel parameterisation [6], tabulated once and shipped with the code.",
         s["body"]))
 
-    code_appendix(story, s)
+    story.append(Paragraph("Appendix C: reflection tables for the nine phases", s["h1"]))
+    story.append(Paragraph(
+        "Every reflection the model reaches below 150 deg with a non-zero structure factor, "
+        "with its spacing, its angle, its multiplicity and its intensity relative to the "
+        "strongest line of that phase. Generated by report/tables.py; the same table is in "
+        "report/tables.md.", s["body"]))
+    number = 9
+    for key, phase in PHASES.items():
+        rows = [row for row in reflections(phase, instrument) if row.intensity > 1e-9]
+        strongest = max(row.intensity for row in rows)
+        body_rows = [["hkl", "d (A)", "2theta (deg)", "m", "I/I0 (%)"]]
+        for row in rows:
+            if row.intensity < 0.005 * strongest:
+                continue
+            body_rows.append([
+                "".join(str(v) for v in row.hkl), f"{row.d:.4f}", f"{row.two_theta:.3f}",
+                str(row.multiplicity), f"{100 * row.intensity / strongest:.1f}",
+            ])
+        story.append(Paragraph(f"{phase.name} ({phase.formula}), {phase.space_group}",
+                               s["h2"]))
+        story.append(table(body_rows, [56, 64, 74, 40, 66], s))
+        story.append(Paragraph(f"Table {number}: reflections of {phase.name} below 150 deg "
+                               f"above 0.5 per cent of the strongest line.", s["caption"]))
+        number += 1
+
 
     doc.build(story, onFirstPage=_footer, onLaterPages=_footer)
     print(f"wrote {PDF_PATH}")

@@ -2,6 +2,23 @@
 
 The figures, the generated tables and the PDF report for assignment 2.
 
+## Document
+
+32 pages: 11 pages of prose, the rest appendices.
+
+| part | content |
+| --- | --- |
+| Abstract, §1 | what was asked, what was built, the answer in one paragraph |
+| §2 | the instrument and the model: Bragg, structure factor, intensity, profile, scan |
+| §3 | item 1: the module map, nine structures (Figure 2, Table 2), six sizes (Figure 3), comparison with published intensities (Table 3) |
+| §4 | item 2: the size study (Table 4), width and height laws (Figure 4), angle dependence (Figure 5), residuals (Table 5), worked example (Table 7) |
+| §5 | item 3: Fourier transform, the finite-chain interference function (Figures 6 and 7, Table 6), the two-stage LTI argument, the 1/cos Jacobian, sampling, and the check against measurement |
+| §6 | verification, the uncertainty budget (Table 9), and what is not modelled |
+| §7 | conclusion |
+| Appendix A | the code, every `xrdsim/` module |
+| Appendix B | cell constants and their records (Table 8), instrument constants |
+| Appendix C | reflection tables for the nine phases (Tables 10-18) |
+
 ## The report
 
 `Assignment_2_XRD_Diffractometer_Report.pdf` answers the three graded items:
