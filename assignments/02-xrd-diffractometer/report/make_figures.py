@@ -57,12 +57,13 @@ def instrument_diagram() -> None:
 def phase_panel() -> None:
     """One pattern per phase, on a common 2theta axis."""
     keys = ["si", "al", "cu", "fe", "nacl", "mgo", "zno", "tio2-rutile", "tio2-anatase"]
-    fig, axes = plt.subplots(3, 3, figsize=(11, 7.5), sharex=True)
+    fig, axes = plt.subplots(3, 3, figsize=(10.5, 10.5), sharex=True)
     for ax, key in zip(axes.ravel(), keys):
         phase = get_phase(key)
         result = scan(phase, 20.0, 90.0, 0.01, Instrument(background_rate=0.0, rng_seed=None))
         plot_scan(result, ax=ax, title=f"{phase.name} ({phase.formula})", annotate=True)
         ax.set_ylabel("counts")
+        ax.tick_params(labelsize=8)
     fig.tight_layout()
     fig.savefig(OUT / "phase_panel.png", dpi=150)
     plt.close(fig)
