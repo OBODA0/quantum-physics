@@ -42,13 +42,14 @@ def find_peaks(two_theta: np.ndarray, counts: np.ndarray,
     return peaks
 
 
-def _local_floor(x: np.ndarray, y: np.ndarray, i: int, reach_deg: float = 1.0) -> float:
-    """Lowest point within `reach_deg` of the peak, so the result does not depend on the step."""
+def _local_floor(x: np.ndarray, y: np.ndarray, i: int, reach_deg: float = 10.0) -> float:
+    """Baseline near a peak: the 10th percentile within `reach_deg`, so a neighbouring
+    reflection cannot drag the half-height down and the result does not depend on the step."""
     step = x[1] - x[0] if len(x) > 1 else 1.0
     reach = max(1, int(reach_deg / step))
     left = max(0, i - reach)
     right = min(len(y), i + reach)
-    return float(min(y[left:i + 1].min(), y[i:right].min()))
+    return float(np.percentile(y[left:right], 10))
 
 
 def _width_at(x: np.ndarray, y: np.ndarray, i: int, half: float) -> float:

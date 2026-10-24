@@ -3,6 +3,19 @@
 Checked on 2026-10-22 on Alfred, at the head of `main` that day. Every item states what was run and
 what it proves. Nothing here is reported from intent.
 
+## 0. The three graded items
+
+| item | artifact | checked how |
+| --- | --- | --- |
+| 1. design and screenshots (25%) | `report/figures/instrument.png`, `structures.png` (nine phases), `size_series.png` (six sizes), Appendix A of the PDF | each figure regenerates from `report/make_figures.py`; the appendix carries every `xrdsim/` module |
+| 2. what changes with domain size (25%) | `report/size_table.md`, `report/figures/size_laws.png`, `fwhm_vs_angle.png` | the table is produced by `report/size_study.py`; the numbers quoted in the PDF are gated by `report/check_numbers.py` |
+| 3. the signals explanation (25%) | report section 4, Figure 6 (`convolution.png`), six references | every reference checked against Crossref or OpenLibrary on 2026-10-22 (`report/references/AUDIT.md`) |
+
+Measured behaviour in the size study (silicon, Cu K-alpha1, step 0.002 deg): the 111 width
+goes from 0.0550 deg at 500 nm to 1.633 deg at 5 nm; the height from 2869 to 96 counts; the
+integrated area stays between 148 and 162 counts deg; the position stays at 28.441 deg for
+every size. The Scherrer inversion recovers the input size at every point, 5 to 500 nm.
+
 ## 1. Test suite
 
 `cd assignments/02-xrd-diffractometer && uv run pytest -q` -> **116 passed** (2026-10-22).

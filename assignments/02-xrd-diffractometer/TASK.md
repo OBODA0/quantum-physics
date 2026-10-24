@@ -196,10 +196,10 @@ AWAITING BRIEF
 
 - [x] the brief is quoted verbatim in §2 and every weight in it is listed
 - [x] every requirement in §3 has an artifact named
-- [ ] R1 figures exist: `structures.png`, `size_series.png`, and Appendix A in the PDF
-- [ ] R2 figures and the size table exist, with heights, areas, FWHM and recovered sizes
-- [ ] R3 explanation is written and every claim in it points at a verified source
-- [ ] every reference checked for existence and relevance (`report/references/AUDIT.md`)
+- [x] R1 figures exist: `phase_panel.png` (structures), `size_series.png`, and Appendix A in the PDF
+- [x] R2 figures and the size table exist, with heights, areas, FWHM and recovered sizes
+- [x] R3 explanation is written and every claim in it points at a verified source
+- [x] every reference checked for existence and relevance (`report/references/AUDIT.md`)
 - [ ] every number quoted in the report is produced by `report/numbers_source.py` or the
       generated tables
 - [ ] clean-room rebuild: figures, tables and PDF byte-identical

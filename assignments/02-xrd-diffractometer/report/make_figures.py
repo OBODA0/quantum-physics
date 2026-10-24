@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import pathlib
 
+import numpy as np
 import matplotlib
 
 matplotlib.use("Agg")
@@ -104,12 +105,122 @@ def doublet_demo() -> None:
     plt.close(fig)
 
 
+def size_series() -> None:
+    """R1: the same phase at six crystallite sizes, raw and normalised."""
+    sizes = [(50.0, "5 nm"), (100.0, "10 nm"), (250.0, "25 nm"),
+             (500.0, "50 nm"), (1000.0, "100 nm"), (5000.0, "500 nm")]
+    fig, (left, right) = plt.subplots(1, 2, figsize=(11, 4.2), sharex=True)
+    colours = ["#8a3b12", "#b5651d", "#c98a2b", "#7a8b3a", "#2f7d32", "#1a3d6d"]
+    for (size, label), colour in zip(sizes, colours):
+        result = scan(get_phase("si"), 27.4, 29.4, 0.002,
+                      Instrument(ka2=False, background_rate=0.0, rng_seed=None), size_a=size)
+        left.plot(result.two_theta, result.counts, lw=1.1, color=colour, label=label)
+        right.plot(result.two_theta, result.counts / result.counts.max(), lw=1.1,
+                   color=colour, label=label)
+    left.set_title("same reflection, counts as measured")
+    right.set_title("same curves, each normalised to its own peak")
+    for ax in (left, right):
+        ax.set_xlabel("2theta (deg)")
+        ax.grid(alpha=0.25, lw=0.5)
+    left.set_ylabel("counts")
+    right.set_ylabel("normalised counts")
+    right.legend(frameon=False, fontsize=8, title="crystallite size")
+    fig.suptitle("Silicon 111: crystallite size changes the width, not the position", y=1.0)
+    fig.tight_layout()
+    fig.savefig(OUT / "size_series.png", dpi=160, bbox_inches="tight")
+    plt.close(fig)
+
+
+def size_laws() -> None:
+    """R2: FWHM against 1/D, and peak height against D."""
+    from .size_study import rows as size_rows
+    data = size_rows()
+    fig, (left, right) = plt.subplots(1, 2, figsize=(11, 4.0))
+    for hkl, colour in [("111", "#1a3d6d"), ("220", "#8a3b12"), ("400", "#2f7d32")]:
+        subset = [row for row in data if row["hkl"] == hkl]
+        sizes = [row["size_nm"] for row in subset]
+        widths = [row["fwhm"] for row in subset]
+        left.loglog(1.0 / np.array(sizes), widths, "o-", ms=4, lw=1.1, color=colour, label=f"{hkl}")
+        heights = [row["height"] for row in subset]
+        right.loglog(sizes, heights, "o-", ms=4, lw=1.1, color=colour, label=f"{hkl}")
+    left.set_xlabel("1 / D (1/nm)")
+    left.set_ylabel("measured FWHM (deg)")
+    left.set_title("width against inverse size")
+    left.legend(frameon=False, fontsize=8)
+    left.grid(alpha=0.25, lw=0.5, which="both")
+    right.set_xlabel("D (nm)")
+    right.set_ylabel("peak height (counts)")
+    right.set_title("height against size")
+    right.legend(frameon=False, fontsize=8)
+    right.grid(alpha=0.25, lw=0.5, which="both")
+    fig.tight_layout()
+    fig.savefig(OUT / "size_laws.png", dpi=160)
+    plt.close(fig)
+
+
+def fwhm_vs_angle() -> None:
+    """R2: the same size broadens by 1/cos(theta), so width grows with angle."""
+    from xrdsim.analysis import find_peaks
+    fig, ax = plt.subplots(figsize=(8, 4))
+    for size, colour in [(200.0, "#1a3d6d"), (500.0, "#8a3b12")]:
+        result = scan(get_phase("si"), 20.0, 120.0, 0.005,
+                      Instrument(ka2=False, background_rate=0.0, rng_seed=None), size_a=size)
+        peaks = [peak for peak in find_peaks(result.two_theta, result.counts)
+                 if peak.fwhm > 0 and peak.height > 0.02 * result.counts.max()]
+        ax.plot([peak.two_theta for peak in peaks], [peak.fwhm for peak in peaks],
+                "o", ms=4, color=colour, label=f"D = {size / 10:.0f} nm")
+    angles = np.linspace(22.0, 118.0, 200)
+    scale = 0.9 * 1.540598 / (200.0 * np.cos(np.radians(angles / 2.0))) * 180 / np.pi
+    ax.plot(angles, scale, lw=1.0, ls="--", color="#666666",
+            label="0.9 lambda / (D cos theta), D = 20 nm")
+    ax.set_xlabel("2theta (deg)")
+    ax.set_ylabel("FWHM (deg)")
+    ax.set_yscale("log")
+    ax.set_title("the same crystallite broadens more at high angle")
+    ax.legend(frameon=False, fontsize=8)
+    ax.grid(alpha=0.25, lw=0.5, which="both")
+    fig.tight_layout()
+    fig.savefig(OUT / "fwhm_vs_angle.png", dpi=160)
+    plt.close(fig)
+
+
+def convolution_demo() -> None:
+    """R3: ideal comb -> size response -> instrument response -> instrument-limited."""
+    fig, axes = plt.subplots(4, 1, figsize=(9, 8.0), sharex=True)
+    x = np.linspace(27.4, 29.4, 2000)
+    comb = np.zeros_like(x)
+    comb[np.argmin(np.abs(x - 28.441))] = 1.0 / (x[1] - x[0])
+    axes[0].plot(x, comb, lw=1.0, color="#1a3d6d")
+    axes[0].set_title("ideal crystal: a line at the Bragg angle")
+    for ax, size, label, colour in [
+            (axes[1], 200.0, "40 nm crystallite, size broadening only (narrow instrument)", "#8a3b12"),
+            (axes[2], 200.0, "same crystal seen through the real instrument: a second convolution", "#2f7d32"),
+            (axes[3], 5000.0, "500 nm crystallite: the instrument now sets the width", "#6a3d9a")]:
+        instrument = Instrument(ka2=False, background_rate=0.0, rng_seed=None,
+                                caglioti=((0.0, 0.0, 0.0001) if ax is axes[1]
+                                          else (0.004, -0.002, 0.003)))
+        result = scan(get_phase("si"), 27.4, 29.4, 0.002, instrument, size_a=size)
+        ax.plot(result.two_theta, result.counts, lw=1.2, color=colour)
+        ax.set_title(label)
+    for ax in axes:
+        ax.set_ylabel("intensity")
+        ax.grid(alpha=0.25, lw=0.5)
+    axes[-1].set_xlabel("2theta (deg)")
+    fig.tight_layout()
+    fig.savefig(OUT / "convolution.png", dpi=160)
+    plt.close(fig)
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     instrument_diagram()
     phase_panel()
     scherrer_demo()
     doublet_demo()
+    size_series()
+    size_laws()
+    fwhm_vs_angle()
+    convolution_demo()
     print(f"wrote {len(list(OUT.glob('*.png')))} figures to {OUT}")
 
 
