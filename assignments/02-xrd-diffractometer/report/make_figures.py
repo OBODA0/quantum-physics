@@ -212,6 +212,23 @@ def convolution_demo() -> None:
     plt.close(fig)
 
 
+def laue_plot() -> None:
+    """R3: the interference function of a finite chain, width proportional to 1/N."""
+    v = np.linspace(-0.5, 0.5, 4000)
+    fig, ax = plt.subplots(figsize=(8, 4))
+    for planes, colour in [(5, "#8a3b12"), (20, "#1a3d6d"), (100, "#2f7d32")]:
+        y = (np.sin(planes * np.pi * v) / np.sin(np.pi * v)) ** 2
+        ax.plot(v, y / planes ** 2, lw=1.1, color=colour, label=f"N = {planes} planes")
+    ax.set_xlabel("reduced reciprocal coordinate between Bragg points, q d / 2 pi")
+    ax.set_ylabel("normalised intensity")
+    ax.set_title("the finite chain: width ~ 1/N, height ~ N^2, area constant")
+    ax.legend(frameon=False, fontsize=8)
+    ax.grid(alpha=0.25, lw=0.5)
+    fig.tight_layout()
+    fig.savefig(OUT / "laue.png", dpi=160)
+    plt.close(fig)
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     instrument_diagram()
@@ -222,6 +239,7 @@ def main() -> None:
     size_laws()
     fwhm_vs_angle()
     convolution_demo()
+    laue_plot()
     print(f"wrote {len(list(OUT.glob('*.png')))} figures to {OUT}")
 
 
