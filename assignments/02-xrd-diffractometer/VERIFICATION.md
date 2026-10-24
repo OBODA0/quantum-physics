@@ -7,9 +7,9 @@ what it proves. Nothing here is reported from intent.
 
 | item | artifact | checked how |
 | --- | --- | --- |
-| 1. design and screenshots (25%) | `report/figures/instrument.png`, `structures.png` (nine phases), `size_series.png` (six sizes), Appendix A of the PDF | each figure regenerates from `report/make_figures.py`; the appendix carries every `xrdsim/` module |
+| 1. design and screenshots (25%) | `report/figures/instrument.png`, `phase_panel.png` (nine phases), `size_series.png` (six sizes), Appendix A of the PDF | each figure regenerates from `report/make_figures.py`; the appendix carries every `xrdsim/` module |
 | 2. what changes with domain size (25%) | `report/size_table.md`, `report/figures/size_laws.png`, `fwhm_vs_angle.png` | the table is produced by `report/size_study.py`; the numbers quoted in the PDF are gated by `report/check_numbers.py` |
-| 3. the signals explanation (25%) | report section 4, Figure 6 (`convolution.png`), six references | every reference checked against Crossref or OpenLibrary on 2026-10-22 (`report/references/AUDIT.md`) |
+| 3. the signals explanation (25%) | report section 5, Figures 6 and 7 (`convolution.png`, `laue.png`), Table 5, ten references | every reference checked against Crossref or OpenLibrary on 2026-10-22 (`report/references/AUDIT.md`) |
 
 Measured behaviour in the size study (silicon, Cu K-alpha1, step 0.002 deg): the 111 width
 goes from 0.0550 deg at 500 nm to 1.633 deg at 5 nm; the height from 2869 to 96 counts; the

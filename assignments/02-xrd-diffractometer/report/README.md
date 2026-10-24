@@ -35,6 +35,7 @@ refuses a PDF that does not contain it; the builder and the gate both read
 | `figures/size_laws.png` | FWHM against 1/D and height against D (item 2) | `size_laws()` |
 | `figures/fwhm_vs_angle.png` | the same size broadens as 1/cos(theta) (item 2) | `fwhm_vs_angle()` |
 | `figures/convolution.png` | ideal line, size convolution, instrument convolution (item 3) | `convolution_demo()` |
+| `figures/laue.png` | the finite-chain interference function, width ~ 1/N (item 3) | `laue_plot()` |
 | `figures/scherrer.png` | the 111 line at 5, 20 and 200 nm | `scherrer_demo()` |
 | `figures/doublet.png` | the K-alpha doublet with and without K-alpha2 | `doublet_demo()` |
 
