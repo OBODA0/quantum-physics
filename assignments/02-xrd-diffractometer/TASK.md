@@ -1,13 +1,13 @@
 # TASK.md — Assignment 2: XRD diffractometer simulation
 
-Status: working spec, compiled 2026-10-22. The assignment brief has **not been received
-yet**; every place that needs it is marked `AWAITING BRIEF` and stays empty until the
-brief arrives. Sources are quoted verbatim; anything that is our reading rather than the
+Status: working spec, brief received 2026-10-22 (pasted by OBODA from the course
+announcement). Sources are quoted verbatim; anything that is our reading rather than the
 assignment's own words is marked **Inference**.
 
 Course framing: "Nanotechnology & Quantum Physics" (report title page) / the nano capsule
-class, quantum physics section (OBODA's words). Class notes for this assignment:
-`AWAITING BRIEF`.
+class, quantum physics section (OBODA's words). The brief refers back to "the part we had
+done in the class"; no sketch or notes from that session were supplied, so the report
+describes the standard Bragg-Brentano chain the simulator implements and says so.
 
 ---
 
@@ -15,15 +15,14 @@ class, quantum physics section (OBODA's words). Class notes for this assignment:
 
 | source | what it gives us |
 | --- | --- |
-| `AWAITING BRIEF` — the graded statement (Canvas announcement / whiteboard photo / slide / PDF) | the deliverables, their weights and the submission rules |
-| `AWAITING BRIEF` — class notes, with heading and date | the diffractometer chain the design must model |
-| OBODA, 2026-10-22 | the topic only: "XRD diffractometer simulator", second assignment of the quantum physics section |
-| `docs/research/` | three research notes written before the brief: instrument model, analysis and reference data, assignment-1 document conventions. Corrected where they were wrong; see its README |
+| Course announcement, pasted verbatim by OBODA on 2026-10-22 | the three graded items, their weights and the two PS rules |
+| "The part we had done in the class" (referenced by item 1) | the design the report reproduces; no artefact from that session was supplied |
+| `docs/research/` | instrument model, analysis and reference data, and assignment-1 document conventions, written before the brief arrived |
+| `data/SOURCES.md` | the provenance of every constant the simulator ships |
 
-`AWAITING BRIEF` — one sentence stating which source grades the work and which defines what
-the simulator must be able to do, and which one wins where they disagree.
-[Assignment 1's rule was: "The announcement grades the work; the board defines what the
-simulator must be able to do." Copy that sentence only if the same split is true here.]
+The announcement grades the work and defines what must be demonstrated; the simulator's
+physics defines what can honestly be claimed. Where the two disagree, the report says which
+one it follows.
 
 ---
 
@@ -31,62 +30,89 @@ simulator must be able to do." Copy that sentence only if the same split is true
 
 ### 2.1 Announcement (verbatim)
 
-> AWAITING BRIEF — paste whole. Keep the brief's own numbering, spelling, units and
-> punctuation; do not correct or omit anything.
+> In this assignment, you are expected the followings:
+> 1. Design a XRD system using an AI tool (the part we had done in the class). Show using screen shots that your XRD system can simulate the diffraction patterns of materials with varying crystal structures and size of the crystalline unit . Add your code as appendix. (25%)
+>
+> 2. What happens to the XRD data if you change the crystal domain size? (25%)
+>
+> 3. Explain why your observation in part b occurs using your knowledge in signals and systems. (25)  Feel free to use credible sources in your explanations. 
+>
+> PS: If your references turn out to be hallucinated or irrelevant, you will get 0 from the whole assignment. 
+>
+> PS2: Upload a single pdf file.
 
-Note on the weights: `AWAITING BRIEF` — list the weights exactly as printed, show their sum,
-and mark any arithmetic repair as **Inference**.
+Note on the weights: items are printed `25%`, `25%` and `(25)`. **Inference:** item 3 is
+worth 25% and its percent sign was lost in typing; the three items are equally weighted.
+Their printed sum is 75%, which the brief does not explain. Assignment 1's three items summed
+to 100%. The report therefore treats each item as worth a quarter of the marked work and does
+not claim a total.
 
-### 2.2 Instrument statement (verbatim transcription)
+**Inference:** "part b" in item 3 is item 2. The brief has no part (a)/(b) labels anywhere
+else, and item 2 is the only question about changing the domain size.
 
-> AWAITING BRIEF — the whiteboard/slide sketch of the diffractometer: source, optics,
-> goniometer, sample, detector.
+**Inference:** "size of the crystalline unit" and "crystal domain size" mean the same thing
+in this brief: the size of the coherently diffracting domain, that is the crystallite size
+`D` in the Scherrer relation. The report states that reading once and uses one word,
+*crystallite size*, from then on.
 
-[Transcribe labels as written. Where a symbol is uncertain, write "transcribed as … could be …
-**Verify against the lecture**" and check it before the report quotes it. If the sketch and
-the notes conflict, state the conflict and pick a rule.]
+### 2.2 The design from the class
 
-### 2.3 Class notes (verbatim transcription, with the drawing read left to right)
+No sketch, slide or note from the class session was supplied with the brief. The simulator
+models the standard laboratory chain and the report presents it as such: Cu K-alpha tube,
+divergence slit, Soller slits, flat specimen on a theta/2theta goniometer, receiving slit,
+optional monochromator, detector. Nothing here is attributed to the class.
 
-> AWAITING BRIEF — note heading and date first, then the chain and any equations written
-> beside components.
+### 2.3 Class notes
+
+None supplied. The design and the physics in the report are documented from the sources in
+section 5, not from lecture notes.
 
 ---
 
 ## 3. Requirement-by-requirement, mapped to what exists
 
-### R1 — AWAITING BRIEF (short name, as the brief words it) (AWAITING BRIEF weight)
+### R1 — design, screenshots, code appendix (25%)
 
-Verbatim asks: *AWAITING BRIEF*, *AWAITING BRIEF*.
+Verbatim ask: *"Design a XRD system using an AI tool (the part we had done in the class).
+Show using screen shots that your XRD system can simulate the diffraction patterns of
+materials with varying crystal structures and size of the crystalline unit . Add your code
+as appendix."*
 
-| ask | current artifact | status |
+| ask | artifact | status |
 | --- | --- | --- |
-| AWAITING BRIEF | AWAITING BRIEF (name files, not intentions) | AWAITING BRIEF |
+| an XRD system, built with an AI tool | `xrdsim/` (12 modules), built in this repository with the AI assistant named on the title page | done |
+| screenshots of **varying crystal structures** | `report/figures/structures.png`: nine phases spanning diamond, FCC, BCC, rocksalt, wurtzite, tetragonal and rhombohedral-description cells | to produce |
+| screenshots of **varying crystallite size** | `report/figures/size_series.png`: one phase at 5, 10, 25, 50, 100 and 500 nm | to produce |
+| code appendix | Appendix A of the PDF: every `xrdsim/` module | done |
 
-[A dated Resolution / IMPLEMENTED / Artifact found and FIXED block goes here as defects are
-found: what was wrong, what the corrected behaviour is, which file proves it.]
+### R2 — what changes when the domain size changes (25%)
 
-### R2 — AWAITING BRIEF (<weight>%)
+Verbatim ask: *"What happens to the XRD data if you change the crystal domain size? (25%)"*
 
-Verbatim asks: AWAITING BRIEF.
-
-| ask | current artifact | status |
+| ask | artifact | status |
 | --- | --- | --- |
-| AWAITING BRIEF | AWAITING BRIEF | AWAITING BRIEF |
+| the observation, quantified | `report/figures/size_fwhm.png` (FWHM against 1/D, log-log) and the size table in section 4 | to produce |
+| peak height and area behaviour | same table: height, integrated area and FWHM for each size | to produce |
+| angular dependence | `report/figures/fwhm_vs_angle.png`: FWHM against 2theta at a fixed size | to produce |
 
-[If the brief admits two readings, implement both and say which is which.]
+### R3 — why, in signals-and-systems terms (25%)
 
-### R3 — AWAITING BRIEF (<weight>%)
+Verbatim ask: *"Explain why your observation in part b occurs using your knowledge in
+signals and systems. (25) Feel free to use credible sources in your explanations."*
 
-Verbatim asks: AWAITING BRIEF.
-
-| ask | current artifact | status |
+| ask | artifact | status |
 | --- | --- | --- |
-| AWAITING BRIEF | AWAITING BRIEF | AWAITING BRIEF |
+| an explanation grounded in signals and systems | report section 4.3: the crystal as a finite window on a lattice, the diffraction pattern as the magnitude of a Fourier transform, convolution with the instrument response | to write |
+| credible sources | five verified sources: Patterson 1939 (DOI), Warren (ISBN), Cullity & Stock (ISBN), Oppenheim & Willsky (ISBN), Bracewell (ISBN) — every one checked against Crossref or OpenLibrary on 2026-10-22 | done |
 
-### R<n> … repeat until every graded clause and every submission rule has one block.
+### PS rules
 
----
+- **PS1, references.** Every citation in the report is checked for existence **and**
+  relevance before it ships; `report/references/AUDIT.md` records what was checked and how.
+  No source is cited that was not opened or resolved.
+- **PS2, one PDF.** The report is built as a single PDF that carries its screenshots,
+  figures, references and code appendix. `report/check_pdf.py` refuses a file with embedded
+  attachments or a missing section.
 
 ## 4. Sample data the simulator actually uses
 
@@ -141,40 +167,44 @@ AWAITING BRIEF
 
 ## 6. Submission format
 
-- `AWAITING BRIEF` — reproduce every administrative rule verbatim: file type, single-file
-  rule, naming, deadline, rules about references and code appendix.
-- Standing assumption from Assignment 1, to be confirmed against the brief: the report is a
-  single PDF that carries its own screenshots, figures, references and code appendix, it is
-  regenerable with `uv sync`, and `report/check_pdf.py` gates the built file before upload.
+- **PS2: one PDF file.** Everything the marker needs — screenshots, figures, references and
+  the code appendix required by item 1 — goes inside that one file. Nothing is attached
+  separately.
+- The PDF is regenerable: `uv sync`, then `uv run python -m report.generate_pdf_report`;
+  `report/check_pdf.py` and `report/check_numbers.py` gate the built file before upload.
+- No deadline is printed in the brief. The file name follows Assignment 1's pattern:
+  `Assignment_2_XRD_Diffractometer_Report.pdf`.
 
 ---
 
 ## 7. Open questions for the team
 
-1. `AWAITING BRIEF` — every genuine ambiguity in the brief, phrased as a question with two
-   answers.
-2. `AWAITING BRIEF` — what counts as "using an AI tool" here, and whether prompts are shown.
-3. `AWAITING BRIEF` — which model detail is a modelling choice rather than physics
-   (Assignment 1's equivalent: measured reference bands vs Gaussian model).
-4. What counts as a "screen shot" for this assignment — simulator output written to an image
-   file, as in Assignment 1, or a capture of an interactive window?
+1. **The weights sum to 75%, not 100%.** Items are printed 25%, 25%, (25). Is the assignment
+   marked out of 75, is one item worth 50%, or is a fourth item missing?
+2. **What counts as a "screen shot"?** The report shows simulator output written straight to
+   image files, as Assignment 1 did. If a capture of an interactive window is required, the
+   figures have to be re-shot.
+3. **What must be attributed to the class session?** Item 1 says "the part we had done in the
+   class". No artefact from that session was supplied, so the report presents the design as
+   the standard Bragg-Brentano chain and does not claim it reproduces a specific sketch.
+4. **Citation style.** The brief only requires credible sources. The report uses numbered
+   references with DOI or ISBN for every entry.
 
 ---
 
 ## 8. Definition of done
 
-Report-phase items are unchecked; everything the report depends on is done and verified
-(`VERIFICATION.md`).
-
-- [ ] the brief is quoted verbatim in §2 and every weight in it is listed
-- [ ] every requirement in §3 has an artifact and a status of done
-- [ ] every number the report quotes appears in `report/tables.md` or is produced by `report/numbers_source.py`
-- [ ] every shipped datum has a source and a confidence in `data/SOURCES.md`
-- [ ] every reference verified for existence and relevance (`report/references/AUDIT.md`, to be created with the draft)
-- [ ] figures audited against their own numbers (`VERIFICATION.md`)
-- [ ] clean-room rebuild: figures byte-identical, `tables.md` identical, PDF byte-identical
-- [ ] `report/check_pdf.py` passes on the built PDF
-- [ ] §7 questions answered or explicitly declared open
+- [x] the brief is quoted verbatim in §2 and every weight in it is listed
+- [x] every requirement in §3 has an artifact named
+- [ ] R1 figures exist: `structures.png`, `size_series.png`, and Appendix A in the PDF
+- [ ] R2 figures and the size table exist, with heights, areas, FWHM and recovered sizes
+- [ ] R3 explanation is written and every claim in it points at a verified source
+- [ ] every reference checked for existence and relevance (`report/references/AUDIT.md`)
+- [ ] every number quoted in the report is produced by `report/numbers_source.py` or the
+      generated tables
+- [ ] clean-room rebuild: figures, tables and PDF byte-identical
+- [ ] `report/check_pdf.py` and `report/check_numbers.py` pass on the built PDF
+- [ ] the PDF carries no external attachments (PS2)
 
 ---
 
