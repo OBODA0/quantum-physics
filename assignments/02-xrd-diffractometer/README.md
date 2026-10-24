@@ -15,8 +15,11 @@ beam, the Lorentz-polarisation factor, the powder multiplicity, the Debye-Waller
 Cu K-alpha1/K-alpha2 doublet, a Caglioti peak width, optional crystallite-size broadening
 and Poisson counting statistics.
 
-**Status:** the simulator core is complete and tested; the assignment brief has not been
-received, so `TASK.md` carries the spec with its brief slots still marked `AWAITING BRIEF`.
+**Status:** complete. The brief asks for three things, all answered in
+`report/Assignment_2_XRD_Diffractometer_Report.pdf` (one PDF, as PS2 requires): the design
+with screenshots across nine crystal structures and six crystallite sizes, the measured
+effect of the domain size, and the signals-and-systems explanation of it, with six verified
+references.
 
 ## Running it
 
