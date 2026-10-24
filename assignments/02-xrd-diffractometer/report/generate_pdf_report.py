@@ -704,8 +704,9 @@ def build() -> None:
         "the spectrum and the goniometer angle on which it is displayed. At high angle a "
         "degree of 2theta spans fewer reciprocal-space units, so the same spectral width looks "
         "wider on the chart. The same variable change explains why the K-alpha doublet "
-        "separates more at high angle, which is visible in Figure 5 of the companion doublet "
-        "figure in the repository. This is why a size measured from one low-angle line and "
+        "separates more at high angle: the 0.072 deg separation at 28 deg grows to 0.275 deg "
+        "at 88 deg in the simulator's own scans. This is why a size measured from one "
+        "low-angle line and "
         "one high-angle line should agree once equation (5) is applied, and Table 5 is that "
         "check.", s["body"]))
 
