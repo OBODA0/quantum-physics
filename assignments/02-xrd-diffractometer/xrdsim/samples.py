@@ -73,40 +73,42 @@ PHASES: dict[str, Phase] = {
             [Site("Si", x, y, z) for x, y, z in
              [(0, 0, 0), (0, .5, .5), (.5, 0, .5), (.5, .5, 0),
               (.25, .25, .25), (.25, .75, .75), (.75, .25, .75), (.75, .75, .25)]]),
-        source="NIST SRM 640f certificate, a = 5.431144(8) A at 22.5 C"),
+        source="NIST SRM 640f certificate [14], a = 5.431144(8) A at 22.5 C"),
     "al": Phase(
         key="al", name="Aluminium", formula="Al", space_group="Fm-3m (225)",
         a=4.0495, sites=_fcc("Al"),
-        source="room-temperature conventional lattice parameter, a = 4.0495 A"),
+        source="Cullity & Stock [3], Appendix 3 (20 C: a = 4.0495 A)"),
     "cu": Phase(
         key="cu", name="Copper", formula="Cu", space_group="Fm-3m (225)",
         a=3.6149, sites=_fcc("Cu"),
-        source="room-temperature conventional lattice parameter, a = 3.6149 A"),
+        source="Cullity & Stock [3], Appendix 3 (20 C: a = 3.615 A)"),
     "fe": Phase(
         key="fe", name="alpha-Iron", formula="Fe", space_group="Im-3m (229)",
         a=2.8665, sites=(Site("Fe", 0, 0, 0), Site("Fe", .5, .5, .5)),
-        source="room-temperature conventional lattice parameter, a = 2.8665 A"),
+        source="Cullity & Stock [3], Appendix 3 (20 C: a = 2.8665 A)"),
     "nacl": Phase(
         key="nacl", name="Rock salt", formula="NaCl", space_group="Fm-3m (225)",
         a=5.6402, sites=_rocksalt("Na", "Cl"),
-        source="room-temperature conventional lattice parameter, a = 5.6402 A"),
+        source="ICDD PDF 05-0628 [13] / Cullity & Stock [3] (26 C: a = 5.6402 A)"),
     "mgo": Phase(
         key="mgo", name="Periclase", formula="MgO", space_group="Fm-3m (225)",
         a=4.2112, sites=_rocksalt("Mg", "O"),
-        source="room-temperature conventional lattice parameter, a = 4.2112 A"),
+        source="ICDD PDF 04-0829 [13] (26 C: a = 4.2112 A)"),
     "zno": Phase(
         key="zno", name="Zincite", formula="ZnO", space_group="P63mc (186)",
         a=3.2494, c=5.2038, hexagonal=True, sites=(
             Site("Zn", 1/3, 2/3, 0.0), Site("Zn", 2/3, 1/3, 0.5),
             Site("O", 1/3, 2/3, 0.3830), Site("O", 2/3, 1/3, 0.8830)),
-        source="COD 9004180, a = 3.2494, c = 5.2038 A; u(O) = 0.3830"),
+        source=("Kihara & Donnay (1985) [15], COD 9004180 [12] "
+                "(293 K: a = 3.2494, c = 5.2038 A; u(O) = 0.3830)")),
     "tio2-rutile": Phase(
         key="tio2-rutile", name="Rutile", formula="TiO2", space_group="P42/mnm (136)",
         a=4.5937, c=2.9587, sites=(
             Site("Ti", 0, 0, 0), Site("Ti", .5, .5, .5),
             Site("O", .3047, .3047, 0), Site("O", .6953, .6953, 0),
             Site("O", .8047, .1953, .5), Site("O", .1953, .8047, .5)),
-        source="room-temperature conventional cell, a = 4.5937, c = 2.9587 A; u(O) = 0.3047"),
+        source=("Burdett et al. (1987) [16] "
+                "(295 K neutron: a = 4.5937, c = 2.9587 A; u(O) = 0.3047)")),
     "tio2-anatase": Phase(
         key="tio2-anatase", name="Anatase", formula="TiO2", space_group="I41/amd (141)",
         a=3.7845, c=9.5143, sites=(
@@ -116,7 +118,8 @@ PHASES: dict[str, Phase] = {
             Site("O", .5, .5, .7079), Site("O", .5, 0, .9579),
             Site("O", 0, .5, .0421), Site("O", 0, 0, .7921),
             Site("O", .5, 0, .5421), Site("O", .5, .5, .2921)),
-        source="room-temperature conventional cell, a = 3.7845, c = 9.5143 A; z(O) = 0.2079"),
+        source=("Burdett et al. (1987) [16] "
+                "(295 K neutron: a = 3.7845, c = 9.5143 A; z(O) = 0.2079)")),
 }
 
 

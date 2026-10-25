@@ -77,6 +77,13 @@ REFERENCES = [
     ("National Institute of Standards and Technology, <i>Certificate of Analysis, Standard "
      "Reference Material 640f: Line Position and Line Shape Standard for Powder Diffraction "
      "(Silicon Powder)</i>, Gaithersburg, MD: NIST (2019)."),
+    ("K. Kihara and G. Donnay, <i>Anharmonic thermal vibrations in ZnO</i>, The Canadian "
+     "Mineralogist <b>23</b>, 647-654 (1985) (COD entry 9004180, Model 3-c at 293 K)."),
+    ("J. K. Burdett, T. Hughbanks, G. J. Miller, J. W. Richardson, Jr. and J. V. Smith, "
+     "<i>Structural-electronic relationships in inorganic solids: powder neutron diffraction "
+     "studies of the rutile and anatase polymorphs of titanium dioxide at 15 and 295 K</i>, "
+     "Journal of the American Chemical Society <b>109</b>(12), 3639-3646 (1987). "
+     "doi:10.1021/ja00246a021"),
 ]
 
 
@@ -513,9 +520,9 @@ def build() -> None:
                            "predicts.", s["caption"]))
     story.append(table(phase_table_rows(instrument), [58, 92, 80, 95, 120], s))
     story.append(Paragraph("Table 2: the nine reference phases in the sample library, their space groups and cells, and the "
-                           "strongest line the model predicts. Cell constants and their "
-                           "sources [3], [12], [14] are listed in Appendix B; every row is "
-                           "checked against its published strongest reflection.", s["caption"]))
+                           "strongest line the model predicts. The specific primary source for each row's cell "
+                           "is listed in Appendix B (Table 9) [3], [12]\u2013[16]; every row reproduces "
+                           "the strongest reflection of its reference pattern.", s["caption"]))
 
     story.append(Paragraph("3.3 Varying the size of the crystalline unit", s["h2"]))
     story.append(Paragraph(
@@ -527,23 +534,27 @@ def build() -> None:
     story.append(figure("size_series.png"))
     story.append(Paragraph("Figure 4: silicon 111 at 5, 10, 20, 50, 100, 200 and 500 nm. Left: "
                            "counts as measured. Right: each curve normalised to its own peak. "
-                           "The K-alpha2 line is switched off so that the doublet does not "
+                           "The K\u03b12 line is switched off so that the doublet does not "
                            "confuse the width.", s["caption"]))
     story.append(Paragraph(
-        "The figures and the CLI output capture in Figure 2(d) are generated directly from the "
-        "simulator by <font face=\"Courier\">report/make_figures.py</font>, which is included in "
-        "Appendix A. The curves in Figures 2, 3 and 4 are the exact arrays returned by the scan "
-        "functions, plotted without smoothing.", s["body"]))
+        "All diffraction curves in Figures 2(a)\u2013(c) and Figures 3\u20138 are generated directly "
+        "from the simulator by <font face=\"Courier\">report/make_figures.py</font> (included in "
+        "Appendix A), while Figure 2(d) embeds the captured Windows Terminal session screenshot "
+        "(<font face=\"Courier\">report/figures/terminal_screenshot.png</font>). The curves in "
+        "Figures 2, 3 and 4 are the exact arrays returned by the scan functions, plotted without "
+        "smoothing.", s["body"]))
 
     story.append(Paragraph("3.4 How the model compares with published patterns", s["h2"]))
     story.append(Paragraph(
         "A simulation is only useful if its numbers are the numbers a real instrument would "
         "give. Table 3 compares both the relative integrated intensities (<font face=\"Courier\">Model (area)</font>) "
         "and the simulated scan peak heights (<font face=\"Courier\">Model (peak)</font>, including Caglioti "
-        "broadening and K-alpha1/K-alpha2 doublet splitting) against standard textbook powder diffraction "
-        "reference intensities [3] (indexed by their Powder Diffraction File card numbers [13]) for five "
+        "broadening and K\u03b11/K\u03b12 doublet splitting) against the relative peak intensities "
+        "reported on the corresponding Powder Diffraction File (PDF) reference cards (PDF 27-1402, "
+        "PDF 04-0836, PDF 05-0628, PDF 36-1451, and PDF 21-1276; see [13] for the ICDD PDF "
+        "database and [3] for the standard powder-diffraction intensity formulation) across five "
         "phases. Each pattern is normalised to its own strongest reflection (111, 200, 101, or 110).", s["body"]))
-    ratio_rows = [["Phase", "Card ID [13]", "Reflections", "Model (area)", "Model (peak)", "Literature (peak) [3]"]]
+    ratio_rows = [["Phase", "ICDD Card ID", "Reflections", "Model (area)", "Model (peak)", "Card I/I0 (peak)"]]
     inst_clean = Instrument(background_rate=0.0, rng_seed=None)
     for key, card, hkls, published in [
             ("si", "PDF 27-1402", [(1, 1, 1), (2, 2, 0), (3, 1, 1), (4, 0, 0)], "100 / 55 / 30 / 6"),
@@ -566,24 +577,25 @@ def build() -> None:
         ratio_rows.append([PHASES[key].name, card, labels, model_area, model_peak, published])
     story.append(table(ratio_rows, [62, 68, 86, 68, 68, 93], s))
     story.append(Paragraph("Table 3: relative intensities comparing model integrated areas and model "
-                           "scan peak heights against standard literature peak intensities [3] for the "
-                           "listed ICDD PDF reference cards [13].",
+                           "scan peak heights against the reference peak intensities from the listed "
+                           "ICDD Powder Diffraction File cards (database overview in [13]).",
                            s["caption"]))
     story.append(Paragraph(
-        "Comparing <font face=\"Courier\">Model (peak)</font> directly with <font face=\"Courier\">Literature (peak)</font> "
+        "Comparing <font face=\"Courier\">Model (peak)</font> directly with <font face=\"Courier\">Card I/I0 (peak)</font> "
         "accounts for the largest part of the high-angle behaviour. Standard reference cards quote peak heights, "
         "whereas raw structure-factor products (<font face=\"Courier\">Model (area)</font>) give integrated areas; "
-        "because both the Caglioti instrumental width and the K-alpha1/K-alpha2 doublet separation grow with 2theta, "
+        "because both the Caglioti instrumental width and the K\u03b11/K\u03b12 doublet separation grow with 2\u03b8, "
         "high-angle reflections spread their area over a wider angular span and have lower peak heights. For copper, "
         "moving from integrated area (100 / 46 / 24 / 27) to peak height (100 / 45 / 21 / 20) brings the 220 and 311 "
-        "lines closely in line with the reference values (100 / 46 / 20 / 17), and for silicon 400 drops from 10 to 8 "
-        "(against 6). (Flat-plate thick-specimen absorption A = 1/(2 mu) is independent of 2theta, as noted in "
+        "lines closely in line with the reference card values (100 / 46 / 20 / 17), and for silicon 400 drops from 10 to 8 "
+        "(against 6). (Flat-plate thick-specimen absorption A = 1/(2\u03bc) is independent of 2\u03b8, as noted in "
         "section 2.2, and plays no role here.) The remaining small differences reflect physical effects deliberately "
-        "kept simple in the forward model: for copper, anomalous dispersion near the Cu K-edge (Delta f' ~ -2.1 e- "
-        "at Cu K-alpha, whereas Delta f' is only ~0.1-0.3 e- for lighter Si and NaCl) and a slightly larger room-temperature "
-        "Debye-Waller factor (B_Cu ~ 0.58 A^2 vs the uniform B = 0.5 A^2 assumed here; for ionic NaCl, B ~ 1.4 A^2 [2], [3]); "
+        "kept simple in the forward model: for copper, anomalous dispersion near the Cu K-edge (\u0394f' \u2248 \u22122.1 e\u2212 "
+        "at Cu K\u03b1, whereas \u0394f' is only ~0.1\u20130.3 e\u2212 for lighter Si and NaCl) and element-specific room-temperature "
+        "Debye-Waller factors that differ from the uniform B = 0.5 \u00c5\u00b2 assumed here (see the thermal-factor treatment "
+        "in [2], [3], where softer ionic lattices such as NaCl have larger thermal motion than covalent Si); "
         "for oxides and halides (NaCl, ZnO, and tetragonal rutile where the model gives 100 / 45 / 51 peak vs 100 / 50 / 60), "
-        "neutral-atom vs partially ionic form factors [6]; and for silicon (where B_Si ~ 0.46 A^2 is already close to 0.5 A^2), "
+        "neutral-atom vs partially ionic form factors [6]; and for silicon, "
         "experimental card conditions such as receiving-slit aperture and primary extinction in the reference powder.",
         s["body"]))
 
@@ -964,8 +976,9 @@ def build() -> None:
         "finite-window Lorentzian tail truncation) and directly tests the Gaussian variance-addition hypothesis "
         "of quadrature width combination. Across the entire size range, the numerically convolved Laue FWHM "
         "agrees with the analytical finite-chain quadrature formula (K = 0.8859) to within 0.2-2.2 per cent: "
-        "at N = 16 planes (D = 5.02 nm), 1.6062 deg against 1.6088 deg (0.16 %, or 1.6343 deg at K = 0.90); "
-        "at N = 64 planes (D = 20.07 nm), 0.4044 deg against 0.4054 deg (0.25 %); at N = 160 planes "
+        "at N = 16 planes (D = 5.02 nm), numerical convolution gives 1.6062 deg against 1.6088 deg from "
+        "K = 0.8859 quadrature (a 0.16 % difference; for comparison, conventional K = 0.90 quadrature "
+        "gives 1.6343 deg); at N = 64 planes (D = 20.07 nm), 0.4044 deg against 0.4054 deg (0.25 %); at N = 160 planes "
         "(D = 50.17 nm, Figure 7(b)-(c)), 0.1671 deg against 0.1691 deg (1.2 %); and at N = 1600 planes "
         "(D = 501.7 nm, Figure 7(d)), the 0.0161 deg Laue profile broadens under numerical convolution to "
         "0.0561 deg against 0.0549 deg in quadrature (2.2 %), confirming the instrument-limited floor from "
@@ -987,11 +1000,15 @@ def build() -> None:
     # ------------------------------------------------------------------ 6
     story.append(Paragraph("6. Verification, uncertainty and limits", s["h1"]))
     story.append(Paragraph(
-        "Every number in this report is produced by the simulator that draws the figures, and "
-        "all figures, tables, and the PDF rebuild reproducibly from the scripts in Appendix A. "
-        "Silicon peak positions match the NIST SRM 640f certified lattice parameter "
-        "(a = 5.431144 A) [14], and every phase in the library matches its published strongest "
-        "reflection [3], [12]. In the companion GitHub repository, an automated test suite "
+        "Every number in this report is produced by the simulator that draws the figures; "
+        "all diffraction figures and data tables are generated from the simulator by the "
+        "scripts in Appendix A (with Figure 2(d) embedding the captured terminal session "
+        "<font face=\"Courier\">report/figures/terminal_screenshot.png</font>, and "
+        "<font face=\"Courier\">report/generate_pdf_report.py</font> in the repository assembling "
+        "the PDF). Silicon peak positions match the NIST SRM 640f certified lattice parameter "
+        "(a = 5.431144 \u00c5) [14], and every phase in the library reproduces the strongest "
+        "reflection of its reference structure (Table 2, Table 3, and Table 9) [3], [13], [15], [16]. "
+        "In the companion GitHub repository, an automated test suite "
         "checks the lattice geometry, the structure factor and its systematic absences, the "
         "profile functions (including the exact Laue numerical convolution), the detector, and "
         "the scan, and includes an independent brute-force count of the symmetry orbits and a "
@@ -1093,14 +1110,14 @@ def build() -> None:
 
     story.append(Paragraph("Appendix B: constants and their provenance", s["h1"]))
     story.append(Paragraph(
-        "The cell constants the report uses, with the source behind each value [3], [12], [14].",
+        "The cell constants the report uses, with the specific source behind each row.",
         s["body"]))
-    provenance = [["Key", "Cell (\u00c5)", "Source [3], [12], [14]"]]
+    provenance = [["Key", "Cell (\u00c5)", "Primary source"]]
     for key, phase in PHASES.items():
         cell = f"a = {phase.a:.4f}" + (f", c = {phase.c:.4f}" if phase.c else "")
         provenance.append([key, cell, phase.source])
     story.append(table(provenance, [58, 92, 300], s))
-    story.append(Paragraph("Table 9: cell constants and the source behind each [3], [12], [14].",
+    story.append(Paragraph("Table 9: cell constants and the specific source behind each row.",
                            s["caption"]))
     story.append(Paragraph(
         "Instrument constants: Cu K\u03b11 = 1.540598 \u00c5, K\u03b12 = 1.544426 \u00c5 (ratio 0.497), "
