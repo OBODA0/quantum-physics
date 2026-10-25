@@ -344,23 +344,23 @@ def class_spec_figure() -> None:
     ax_lattices.plot(
         sc_scan.two_theta, sc_scan.counts / sc_scan.counts.max() + 2.1,
         lw=1.1, color="#1a3d6d",
-        label="Generic SC (a = 3.359 A): all hkl",
+        label="Generic SC (a = 3.359 \u00c5): all hkl",
     )
     ax_lattices.plot(
         bcc_scan.two_theta, bcc_scan.counts / bcc_scan.counts.max() + 1.05,
         lw=1.1, color="#8a3b12",
-        label="BCC (a = 2.867 A): h+k+l = even",
+        label="BCC (a = 2.867 \u00c5): h+k+l = even",
     )
     ax_lattices.plot(
         fcc_scan.two_theta, fcc_scan.counts / fcc_scan.counts.max(),
         lw=1.1, color="#2f7d32",
-        label="FCC (a = 3.615 A): unmixed parity",
+        label="FCC (a = 3.615 \u00c5): unmixed parity",
     )
     ax_lattices.set_title(
         "(a) Crystal Types: SC vs. BCC vs. FCC",
         fontsize=9.2, fontweight="bold",
     )
-    ax_lattices.set_xlabel("2theta (deg)", fontsize=8.5)
+    ax_lattices.set_xlabel("2\u03b8 (\u00b0)", fontsize=8.5)
     ax_lattices.set_ylabel("Normalized Intensity (stacked)", fontsize=8.5)
     ax_lattices.set_xlim(20, 95)
     ax_lattices.set_ylim(-0.08, 3.85)
@@ -372,7 +372,7 @@ def class_spec_figure() -> None:
     ax_amorph.plot(
         am_scan.two_theta, am_scan.counts / am_scan.counts.max(),
         lw=1.8, color="#d95f02",
-        label="Amorphous SiO2 (halo at 21.8 deg, FWHM = 8.8 deg)",
+        label="Amorphous SiO2 (halo at 21.8\u00b0, FWHM = 8.8\u00b0)",
     )
     si_scan = scan(get_phase("si"), 10.0, 90.0, 0.02, inst)
     ax_amorph.plot(
@@ -384,7 +384,7 @@ def class_spec_figure() -> None:
         "(b) Crystalline vs. Amorphous Phase",
         fontsize=9.2, fontweight="bold",
     )
-    ax_amorph.set_xlabel("2theta (deg)", fontsize=8.5)
+    ax_amorph.set_xlabel("2\u03b8 (\u00b0)", fontsize=8.5)
     ax_amorph.set_ylabel("Normalized Intensity", fontsize=8.5)
     ax_amorph.set_xlim(10, 90)
     ax_amorph.set_ylim(-0.04, 1.32)
@@ -400,18 +400,18 @@ def class_spec_figure() -> None:
     )
     for a_val, col in zip(a_values, colors_a):
         phase_a = Phase(
-            key=f"fcc_{a_val}", name=f"FCC (a = {a_val:.2f} A)",
+            key=f"fcc_{a_val}", name=f"FCC (a = {a_val:.2f} \u00c5)",
             formula="M", space_group="Fm-3m", a=a_val, sites=fcc_sites,
         )
         res_a = scan(phase_a, 20.0, 85.0, 0.02, inst)
         ax_param.plot(res_a.two_theta, res_a.counts / res_a.counts.max(),
-                      lw=1.2, color=col, label=f"--a {a_val:.2f} A")
+                      lw=1.2, color=col, label=f"--a {a_val:.2f} \u00c5")
 
     ax_param.set_title(
         "(c) Varying Lattice Constant a (--a)",
         fontsize=9.2, fontweight="bold",
     )
-    ax_param.set_xlabel("2theta (deg)", fontsize=8.5)
+    ax_param.set_xlabel("2\u03b8 (\u00b0)", fontsize=8.5)
     ax_param.set_ylabel("Normalized Intensity", fontsize=8.5)
     ax_param.set_xlim(20, 85)
     ax_param.set_ylim(-0.04, 1.28)
@@ -419,58 +419,23 @@ def class_spec_figure() -> None:
     ax_param.grid(alpha=0.2, lw=0.5)
 
     ax_cli = fig.add_subplot(gs[1, :])
-    ax_cli.set_facecolor("#151921")
-    ax_cli.set_xticks([])
-    ax_cli.set_yticks([])
-
-    left_cmds = [
-        ["--phase", "sc", "--a", "3.359", "--range", "20", "70", "--no-ka2"],
-        ["--phase", "amorphous", "--range", "10", "90"],
-    ]
-    left_blocks = []
-    for cmd in left_cmds:
-        b = io.StringIO()
-        with contextlib.redirect_stdout(b):
-            cli_main(cmd)
-        out_lines = [ln for ln in b.getvalue().splitlines() if ln.strip()]
-        left_blocks.append(
-            "$ python -m xrdsim " + " ".join(cmd) + "\n" + "\n".join(out_lines)
-        )
-    left_text = ("\n" + "-" * 58 + "\n").join(left_blocks)
-
-    right_cmd = [
-        "--phase", "si", "--range", "20", "90", "--step", "0.01",
-        "--size-nm", "20", "--no-ka2", "--index", "--scherrer",
-    ]
-    b_right = io.StringIO()
-    with contextlib.redirect_stdout(b_right):
-        cli_main(right_cmd)
-    right_lines = [ln for ln in b_right.getvalue().splitlines() if ln.strip()]
-    right_cmd_str = (
-        "$ python -m xrdsim --phase si --range 20 90 --step 0.01 \\\n"
-        "    --size-nm 20 --no-ka2 --index --scherrer"
-    )
-    right_text = right_cmd_str + "\n" + "\n".join(right_lines)
-
-    ax_cli.text(
-        0.015, 0.95, left_text, transform=ax_cli.transAxes,
-        fontfamily="monospace", fontsize=7.4, color="#e6edf3",
-        va="top", ha="left", linespacing=1.18,
-    )
-    ax_cli.plot([0.465, 0.465], [0.04, 0.96], color="#3b4454", lw=1.0,
-                transform=ax_cli.transAxes)
-    ax_cli.text(
-        0.48, 0.95, right_text, transform=ax_cli.transAxes,
-        fontfamily="monospace", fontsize=7.0, color="#e6edf3",
-        va="top", ha="left", linespacing=1.10,
-    )
+    shot_path = OUT / "terminal_screenshot.png"
+    if shot_path.exists():
+        ax_cli.imshow(plt.imread(shot_path), interpolation="lanczos")
+        ax_cli.axis("off")
+    else:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            cli_main(["--phase", "si", "--size-nm", "20", "--index", "--scherrer"])
+        ax_cli.text(0.02, 0.95, buf.getvalue(), transform=ax_cli.transAxes,
+                    fontfamily="monospace", fontsize=8.0, va="top")
     ax_cli.set_title(
-        "(d) Captured Terminal Session Output: SC + Lattice Override (--a), "
-        "Amorphous Halo (--phase amorphous), and Si Size Analysis (--size-nm 20)",
+        "(d) Windows Terminal Session Screenshot: SC (--a 3.359), "
+        "Amorphous (--phase amorphous), and Si (--size-nm 20)",
         fontsize=9.2, fontweight="bold",
     )
 
-    fig.savefig(OUT / "class_spec.png", dpi=160)
+    fig.savefig(OUT / "class_spec.png", dpi=180)
     plt.close(fig)
 
 
