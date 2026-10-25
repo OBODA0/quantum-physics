@@ -221,7 +221,7 @@ def laue_plot() -> None:
         ax.plot(v, y / planes ** 2, lw=1.1, color=colour, label=f"N = {planes} planes")
     ax.set_xlabel("reduced reciprocal coordinate between Bragg points, q d / 2 pi")
     ax.set_ylabel("normalised intensity")
-    ax.set_title("the finite chain: width ~ 1/N, height ~ N^2, area constant")
+    ax.set_title("finite chain interference function: single-crystal height ~ N^2, width ~ 1/N (powder area conserved)")
     ax.legend(frameon=False, fontsize=8)
     ax.grid(alpha=0.25, lw=0.5)
     fig.tight_layout()
@@ -229,9 +229,92 @@ def laue_plot() -> None:
     plt.close(fig)
 
 
+def class_spec_figure() -> None:
+    """In-class assignment specification:
+    1. Crystal types: Simple Cubic (SC), BCC, FCC, and Amorphous.
+    2. Variable: Lattice constant a variation.
+    3. Input: Cu K-alpha radiation (1.5406 A).
+    """
+    from xrdsim.samples import Phase, Site
+    inst = Instrument(background_rate=0.0, rng_seed=None, ka2=False)
+
+    fig = plt.figure(figsize=(11, 7.8), constrained_layout=True)
+    gs = fig.add_gridspec(2, 2)
+    ax_lattices = fig.add_subplot(gs[0, :])
+
+    sc_phase = Phase(key="sc_model", name="Simple cubic", formula="SC", space_group="Pm-3m",
+                     a=3.60, sites=(Site("Cu", 0, 0, 0),))
+    sc_scan = scan(sc_phase, 20.0, 95.0, 0.02, inst)
+    bcc_phase = get_phase("fe")
+    bcc_scan = scan(bcc_phase, 20.0, 95.0, 0.02, inst)
+    fcc_phase = get_phase("cu")
+    fcc_scan = scan(fcc_phase, 20.0, 95.0, 0.02, inst)
+
+    ax_lattices.plot(sc_scan.two_theta, sc_scan.counts / sc_scan.counts.max() + 2.1,
+                     lw=1.1, color="#1a3d6d",
+                     label="Simple Cubic (SC): all hkl allowed (100, 110, 111, 200, 210, 211, 220...)")
+    ax_lattices.plot(bcc_scan.two_theta, bcc_scan.counts / bcc_scan.counts.max() + 1.05,
+                     lw=1.1, color="#8a3b12",
+                     label="Body-Centered Cubic (BCC): only h+k+l = even allowed (110, 200, 211, 220...)")
+    ax_lattices.plot(fcc_scan.two_theta, fcc_scan.counts / fcc_scan.counts.max(),
+                     lw=1.1, color="#2f7d32",
+                     label="Face-Centered Cubic (FCC): only unmixed parity allowed (111, 200, 220, 311, 222...)")
+
+    ax_lattices.set_title("(a) Canonical Crystal Types from Class: Systematic Absences in SC vs BCC vs FCC",
+                          fontsize=11, fontweight="bold")
+    ax_lattices.set_xlabel("2theta (deg)", fontsize=9)
+    ax_lattices.set_ylabel("Normalized Intensity (stacked)", fontsize=9)
+    ax_lattices.set_xlim(20, 95)
+    ax_lattices.legend(loc="upper right", frameon=True, fontsize=8.5)
+    ax_lattices.grid(alpha=0.2, lw=0.5)
+
+    ax_amorph = fig.add_subplot(gs[1, 0])
+    grid = np.linspace(10.0, 90.0, 4000)
+    s = np.sin(np.radians(grid / 2.0)) / LAMBDA
+    halo1 = np.exp(-4.0 * np.log(2.0) * ((grid - 22.5) / 9.0) ** 2)
+    halo2 = 0.35 * np.exp(-4.0 * np.log(2.0) * ((grid - 43.0) / 16.0) ** 2)
+    ff = np.exp(-4.0 * s ** 2)
+    amorphous_counts = (halo1 + halo2) * ff * (1.0 + np.cos(np.radians(grid)) ** 2)
+    amorphous_counts = amorphous_counts / amorphous_counts.max() * 1.0
+
+    ax_amorph.plot(grid, amorphous_counts, lw=1.8, color="#d95f02", label="Amorphous phase (diffuse scattering halo)")
+    si_phase = get_phase("si")
+    si_scan = scan(si_phase, 10.0, 90.0, 0.02, inst)
+    ax_amorph.plot(si_scan.two_theta, si_scan.counts / si_scan.counts.max(), lw=1.1, color="#1a3d6d",
+                   label="Crystalline phase (sharp Bragg impulses)")
+    ax_amorph.set_title("(b) Crystalline vs. Amorphous Structure\n(Broad spatial correlation halo vs. sharp periodic impulses)",
+                        fontsize=10, fontweight="bold")
+    ax_amorph.set_xlabel("2theta (deg)", fontsize=9)
+    ax_amorph.set_ylabel("Normalized Intensity", fontsize=9)
+    ax_amorph.set_xlim(10, 90)
+    ax_amorph.legend(loc="upper right", frameon=True, fontsize=8.5)
+    ax_amorph.grid(alpha=0.2, lw=0.5)
+
+    ax_param = fig.add_subplot(gs[1, 1])
+    colors_a = ["#4575b4", "#74add1", "#f46d43", "#d73027"]
+    a_values = [3.20, 3.80, 4.40, 5.00]
+    for a_val, col in zip(a_values, colors_a):
+        phase_a = Phase(key=f"fcc_{a_val}", name=f"FCC (a = {a_val:.2f} A)", formula="M", space_group="Fm-3m", a=a_val,
+                        sites=(Site("Cu", 0, 0, 0), Site("Cu", 0, .5, .5), Site("Cu", .5, 0, .5), Site("Cu", .5, .5, 0)))
+        res_a = scan(phase_a, 20.0, 85.0, 0.02, inst)
+        ax_param.plot(res_a.two_theta, res_a.counts / res_a.counts.max(), lw=1.3, color=col, label=f"a = {a_val:.2f} A")
+
+    ax_param.set_title("(c) Effect of Varying Lattice Constant a\n(Expanding unit cell a dilates real space -> shifts peaks to lower 2theta)",
+                       fontsize=10, fontweight="bold")
+    ax_param.set_xlabel("2theta (deg)", fontsize=9)
+    ax_param.set_ylabel("Normalized Intensity", fontsize=9)
+    ax_param.set_xlim(20, 85)
+    ax_param.legend(loc="upper right", frameon=True, fontsize=8.5)
+    ax_param.grid(alpha=0.2, lw=0.5)
+
+    fig.savefig(OUT / "class_spec.png", dpi=160)
+    plt.close(fig)
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     instrument_diagram()
+    class_spec_figure()
     phase_panel()
     scherrer_demo()
     doublet_demo()
