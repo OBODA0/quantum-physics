@@ -34,8 +34,10 @@ def linear_attenuation(density_g_cm3: float, mass_attenuation_cm2_g: float) -> f
     return density_g_cm3 * mass_attenuation_cm2_g
 
 
-def is_infinitely_thick(mu_per_cm: float, thickness_cm: float, threshold: float = 0.01) -> bool:
-    """True when exp(-2 mu t / sin(theta)) is negligible; here the worst case theta -> 90 deg."""
+def is_infinitely_thick(
+    mu_per_cm: float, thickness_cm: float, threshold: float = 0.01
+) -> bool:
+    """True when exp(-2 mu t / sin(theta)) is negligible (worst case theta -> 90 deg)."""
     return math.exp(-2.0 * mu_per_cm * thickness_cm) < threshold
 
 
@@ -46,7 +48,9 @@ def flat_plate_absorption(mu_per_cm: float) -> float:
     return 1.0 / (2.0 * mu_per_cm)
 
 
-def penetration_depth(mu_per_cm: float, two_theta_deg: float, fraction: float = 0.99) -> float:
+def penetration_depth(
+    mu_per_cm: float, two_theta_deg: float, fraction: float = 0.99
+) -> float:
     """Depth in cm that carries `fraction` of the diffracted intensity."""
     if not 0.0 < fraction < 1.0:
         raise ValueError("fraction must lie in (0, 1)")

@@ -81,8 +81,9 @@ def _run(args) -> int:
                 if row.intensity < 1e-4 * strongest:
                     continue
                 label = "".join(str(v) for v in row.hkl)
-                print(f"{label:>10s} {row.d:8.4f} {row.two_theta:8.3f} {row.multiplicity:3d} "
-                      f"{100 * row.intensity / strongest:7.2f}")
+                rel_i = 100 * row.intensity / strongest
+                print(f"{label:>10s} {row.d:8.4f} {row.two_theta:8.3f} "
+                      f"{row.multiplicity:3d} {rel_i:7.2f}")
             return 0
 
         peaks = find_peaks(result.two_theta, result.counts)
@@ -92,11 +93,14 @@ def _run(args) -> int:
         print(f"range      : {args.range[0]} - {args.range[1]} deg, step {args.step}")
         print(f"peaks      : {len(peaks)}")
         for peak in peaks[:12]:
-            line = f"  {peak.two_theta:8.3f} deg  height {peak.height:9.0f}  FWHM {peak.fwhm:.4f}"
+            line = (
+                f"  {peak.two_theta:8.3f} deg  height {peak.height:9.0f}  "
+                f"FWHM {peak.fwhm:.4f}"
+            )
             if args.size and not args.scherrer:
                 try:
-                    size = scherrer_from_peak(peak, caglioti_fwhm(peak.two_theta, *instrument.caglioti),
-                                              instrument.wavelength)
+                    inst_w = caglioti_fwhm(peak.two_theta, *instrument.caglioti)
+                    size = scherrer_from_peak(peak, inst_w, instrument.wavelength)
                     line += f"  Scherrer {size / 10.0:.1f} nm"
                 except ValueError:
                     pass
@@ -118,9 +122,8 @@ def _run(args) -> int:
             print("Scherrer   : peak            size (nm)")
             for peak in peaks:
                 try:
-                    size = scherrer_from_peak(
-                        peak, caglioti_fwhm(peak.two_theta, *instrument.caglioti),
-                        instrument.wavelength)
+                    inst_w = caglioti_fwhm(peak.two_theta, *instrument.caglioti)
+                    size = scherrer_from_peak(peak, inst_w, instrument.wavelength)
                 except ValueError:
                     continue
                 print(f"             {peak.two_theta:7.3f}         {size / 10.0:6.1f}")
@@ -131,8 +134,11 @@ def _run(args) -> int:
             except ValueError as error:
                 print(f"Williamson-Hall: {error}")
             else:
-                print(f"Williamson-Hall: D = {wh_size / 10.0:.1f} nm, strain = {wh_strain:.5f}"
-                      + ("" if args.no_ka2 else " (use --no-ka2: the shoulders bias the fit)"))
+                note = "" if args.no_ka2 else " (use --no-ka2: shoulders bias the fit)"
+                print(
+                    f"Williamson-Hall: D = {wh_size / 10.0:.1f} nm, "
+                    f"strain = {wh_strain:.5f}{note}"
+                )
 
         if args.identify:
             ranking = identify([peak.two_theta for peak in peaks], PHASES, instrument)

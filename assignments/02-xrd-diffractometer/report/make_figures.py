@@ -8,10 +8,12 @@ the model. Run it with:
 
 from __future__ import annotations
 
+import contextlib
+import io
 import pathlib
 
-import numpy as np
 import matplotlib
+import numpy as np
 
 matplotlib.use("Agg")
 
@@ -37,7 +39,8 @@ def instrument_diagram() -> None:
         ("detector", 9.4),
     ]
     for label, x in boxes:
-        ax.add_patch(Rectangle((x, 0.40), 1.1, 0.42, fill=False, lw=1.2, color="#1a3d6d"))
+        rect = Rectangle((x, 0.40), 1.1, 0.42, fill=False, lw=1.2, color="#1a3d6d")
+        ax.add_patch(rect)
         ax.text(x + 0.55, 0.61, label, ha="center", va="center", fontsize=8)
     for (_, x1), (_, x2) in zip(boxes, boxes[1:]):
         ax.add_patch(FancyArrowPatch((x1 + 0.55, 0.61), (x2 + 0.05, 0.61),
@@ -56,11 +59,15 @@ def instrument_diagram() -> None:
 
 def phase_panel() -> None:
     """One pattern per phase, on a common 2theta axis."""
-    keys = ["si", "al", "cu", "fe", "nacl", "mgo", "zno", "tio2-rutile", "tio2-anatase"]
+    keys = [
+        "si", "al", "cu", "fe", "nacl",
+        "mgo", "zno", "tio2-rutile", "tio2-anatase",
+    ]
     fig, axes = plt.subplots(3, 3, figsize=(10.5, 10.5), sharex=True)
+    inst = Instrument(background_rate=0.0, rng_seed=None)
     for ax, key in zip(axes.ravel(), keys):
         phase = get_phase(key)
-        result = scan(phase, 20.0, 90.0, 0.01, Instrument(background_rate=0.0, rng_seed=None))
+        result = scan(phase, 20.0, 90.0, 0.01, inst)
         plot_scan(result, ax=ax, title=f"{phase.name} ({phase.formula})", annotate=True)
         ax.set_ylabel("counts")
         ax.tick_params(labelsize=8)
@@ -72,14 +79,16 @@ def phase_panel() -> None:
 def scherrer_demo() -> None:
     """The same phase at three crystallite sizes, on the 111 line."""
     fig, ax = plt.subplots(figsize=(8, 4))
+    inst = Instrument(ka2=False, background_rate=0.0, rng_seed=None)
     for size, colour in [(50.0, "#8a3b12"), (200.0, "#1a3d6d"), (2000.0, "#2f7d32")]:
-        result = scan(get_phase("si"), 25.5, 31.0, 0.005,
-                      Instrument(ka2=False, background_rate=0.0, rng_seed=None), size_a=size)
+        result = scan(get_phase("si"), 25.5, 31.0, 0.005, inst, size_a=size)
         ax.plot(result.two_theta, result.counts / result.counts.max(),
                 lw=1.2, color=colour, label=f"D = {size / 10:.0f} nm")
     ax.set_xlabel("2theta (deg)")
     ax.set_ylabel("normalised counts")
-    ax.set_title("Silicon 111: instrumental broadening plus crystallite size (K-alpha1 only)")
+    ax.set_title(
+        "Silicon 111: instrumental broadening plus crystallite size (K-alpha1 only)"
+    )
     ax.legend(frameon=False)
     ax.grid(alpha=0.25, lw=0.5)
     fig.tight_layout()
@@ -92,8 +101,8 @@ def doublet_demo() -> None:
     fig, ax = plt.subplots(figsize=(8, 4))
     for ka2, label, colour in [(False, "K-alpha1 only", "#1a3d6d"),
                                (True, "K-alpha1 + K-alpha2", "#8a3b12")]:
-        result = scan(get_phase("si"), 87.0, 89.0, 0.002,
-                      Instrument(ka2=ka2, background_rate=0.0, rng_seed=None))
+        inst = Instrument(ka2=ka2, background_rate=0.0, rng_seed=None)
+        result = scan(get_phase("si"), 87.0, 89.0, 0.002, inst)
         ax.plot(result.two_theta, result.counts / result.counts.max(),
                 lw=1.2, color=colour, label=label)
     ax.set_xlabel("2theta (deg)")
@@ -112,9 +121,9 @@ def size_series() -> None:
              (500.0, "50 nm"), (1000.0, "100 nm"), (5000.0, "500 nm")]
     fig, (left, right) = plt.subplots(1, 2, figsize=(11, 4.2), sharex=True)
     colours = ["#8a3b12", "#b5651d", "#c98a2b", "#7a8b3a", "#2f7d32", "#1a3d6d"]
+    inst = Instrument(ka2=False, background_rate=0.0, rng_seed=None)
     for (size, label), colour in zip(sizes, colours):
-        result = scan(get_phase("si"), 27.4, 29.4, 0.002,
-                      Instrument(ka2=False, background_rate=0.0, rng_seed=None), size_a=size)
+        result = scan(get_phase("si"), 27.4, 29.4, 0.002, inst, size_a=size)
         left.plot(result.two_theta, result.counts, lw=1.1, color=colour, label=label)
         right.plot(result.two_theta, result.counts / result.counts.max(), lw=1.1,
                    color=colour, label=label)
@@ -126,7 +135,9 @@ def size_series() -> None:
     left.set_ylabel("counts")
     right.set_ylabel("normalised counts")
     right.legend(frameon=False, fontsize=8, title="crystallite size")
-    fig.suptitle("Silicon 111: crystallite size changes the width, not the position", y=1.0)
+    fig.suptitle(
+        "Silicon 111: crystallite size changes the width, not the position", y=1.0
+    )
     fig.tight_layout()
     fig.savefig(OUT / "size_series.png", dpi=160, bbox_inches="tight")
     plt.close(fig)
@@ -141,7 +152,8 @@ def size_laws() -> None:
         subset = [row for row in data if row["hkl"] == hkl]
         sizes = [row["size_nm"] for row in subset]
         widths = [row["fwhm"] for row in subset]
-        left.loglog(1.0 / np.array(sizes), widths, "o-", ms=4, lw=1.1, color=colour, label=f"{hkl}")
+        left.loglog(1.0 / np.array(sizes), widths, "o-", ms=4, lw=1.1,
+                    color=colour, label=f"{hkl}")
         heights = [row["height"] for row in subset]
         right.loglog(sizes, heights, "o-", ms=4, lw=1.1, color=colour, label=f"{hkl}")
     left.set_xlabel("1 / D (1/nm)")
@@ -163,15 +175,16 @@ def fwhm_vs_angle() -> None:
     """R2: the same size broadens by 1/cos(theta), so width grows with angle."""
     from xrdsim.analysis import find_peaks
     fig, ax = plt.subplots(figsize=(8, 4))
+    inst = Instrument(ka2=False, background_rate=0.0, rng_seed=None)
     for size, colour in [(200.0, "#1a3d6d"), (500.0, "#8a3b12")]:
-        result = scan(get_phase("si"), 20.0, 120.0, 0.005,
-                      Instrument(ka2=False, background_rate=0.0, rng_seed=None), size_a=size)
+        result = scan(get_phase("si"), 20.0, 120.0, 0.005, inst, size_a=size)
         peaks = [peak for peak in find_peaks(result.two_theta, result.counts)
                  if peak.fwhm > 0 and peak.height > 0.02 * result.counts.max()]
         ax.plot([peak.two_theta for peak in peaks], [peak.fwhm for peak in peaks],
                 "o", ms=4, color=colour, label=f"D = {size / 10:.0f} nm")
     angles = np.linspace(22.0, 118.0, 200)
-    scale = 0.9 * 1.540598 / (200.0 * np.cos(np.radians(angles / 2.0))) * 180 / np.pi
+    cos_th = np.cos(np.radians(angles / 2.0))
+    scale = 0.9 * 1.540598 / (200.0 * cos_th) * 180 / np.pi
     ax.plot(angles, scale, lw=1.0, ls="--", color="#666666",
             label="0.9 lambda / (D cos theta), D = 20 nm")
     ax.set_xlabel("2theta (deg)")
@@ -186,7 +199,7 @@ def fwhm_vs_angle() -> None:
 
 
 def convolution_demo() -> None:
-    """R3: ideal comb -> exact Laue sinc^2 -> numerical instrument convolution -> instrument-limited."""
+    """R3: ideal comb -> exact Laue sinc^2 -> numerical convolution -> inst-limited."""
     import math
     from xrdsim.profile import (add_in_quadrature, caglioti_fwhm,
                                 convolve_laue_with_instrument,
@@ -200,50 +213,79 @@ def convolution_demo() -> None:
 
     comb = np.zeros_like(x)
     comb[np.argmin(np.abs(x - tth_b))] = 1.0
-    axes[0].plot(x, comb, lw=1.2, color="#1a3d6d", label="Dirac impulse at 2theta_B = 28.441 deg")
+    axes[0].plot(x, comb, lw=1.2, color="#1a3d6d",
+                 label="Dirac impulse at 2theta_B = 28.441 deg")
     axes[0].set_ylim(-0.05, 1.25)
-    axes[0].set_title("(a) Ideal infinite lattice: Dirac impulse train at the Bragg angle", fontsize=9.5)
+    axes[0].set_title(
+        "(a) Ideal infinite lattice: Dirac impulse train at the Bragg angle",
+        fontsize=9.5,
+    )
     axes[0].legend(loc="upper right", frameon=False, fontsize=8)
 
     n_mid = 160  # D = 160 * 0.31357 nm = 50.2 nm
     laue_mid = laue_interference_array(x, tth_b, d_111, n_mid, LAMBDA)
-    axes[1].plot(x, laue_mid, lw=1.3, color="#8a3b12",
-                 label=f"Exact Laue sinc^2 (N = {n_mid} planes, D = 50.2 nm, FWHM = 0.161 deg)")
-    axes[1].plot(x, np.clip(laue_mid * 8.0, 0, laue_mid.max() * 0.85), lw=0.9, ls="--", color="#d95f02",
+    axes[1].plot(
+        x, laue_mid, lw=1.3, color="#8a3b12",
+        label=f"Exact Laue sinc^2 (N = {n_mid} planes, D = 50.2 nm, FWHM = 0.1608 deg)",
+    )
+    zoom_curve = np.clip(laue_mid * 8.0, 0, laue_mid.max() * 0.85)
+    axes[1].plot(x, zoom_curve, lw=0.9, ls="--", color="#d95f02",
                  label="8x vertical zoom showing sinc^2 secondary sidelobes")
     axes[1].set_ylim(-0.2, laue_mid.max() * 1.25)
-    axes[1].set_title("(b) Spatial window w(r): exact finite-chain Laue sinc^2 response |W(q)|^2", fontsize=9.5)
+    axes[1].set_title(
+        "(b) Spatial window w(r): exact finite-chain Laue sinc^2 response |W(q)|^2",
+        fontsize=9.5,
+    )
     axes[1].legend(loc="upper right", frameon=False, fontsize=8)
 
     conv_mid = convolve_laue_with_instrument(x, tth_b, d_111, n_mid, LAMBDA, inst_w)
-    pv_w_mid = add_in_quadrature(size_fwhm(n_mid * d_111, tth_b, LAMBDA, k=0.8859), inst_w)
+    size_w_mid = size_fwhm(n_mid * d_111, tth_b, LAMBDA, k=0.8859)
+    pv_w_mid = add_in_quadrature(size_w_mid, inst_w)
     pv_mid = pseudo_voigt_array(x, tth_b, pv_w_mid, 0.5)
+    sigma_inst = inst_w / (2.0 * math.sqrt(2.0 * math.log(2.0)))
+    h_inst_curve = (
+        np.exp(-0.5 * ((x - tth_b) / sigma_inst) ** 2)
+        / (sigma_inst * math.sqrt(2.0 * math.pi))
+    )
     axes[2].plot(x, laue_mid, lw=0.9, ls="--", color="#8a3b12", alpha=0.65,
-                 label="Unbroadened crystal sinc^2 (before instrument)")
+                 label="Pure Laue |W(q)|^2 before instrument (FWHM = 0.1608 deg)")
+    axes[2].plot(x, h_inst_curve * 0.18, lw=0.9, ls="-.", color="#666666",
+                 label="Gaussian instrument kernel h_inst (FWHM = 0.0524 deg, x0.18)")
     axes[2].plot(x, conv_mid, lw=1.4, color="#2f7d32",
-                 label="Numerical convolution |W|^2 * h_inst (FWHM = 0.167 deg)")
-    axes[2].plot(x, pv_mid, lw=1.1, ls=":", color="#1a3d6d",
-                 label="Analytical pseudo-Voigt quadrature model (FWHM = 0.169 deg)")
-    axes[2].set_ylim(-0.2, laue_mid.max() * 1.25)
-    axes[2].set_title("(c) Second LTI stage: numerical convolution with instrument h_inst damps sidelobes & broadens peak",
-                      fontsize=9.5)
-    axes[2].legend(loc="upper right", frameon=False, fontsize=8)
+                 label="Numerical convolution |W|^2 * h_inst (FWHM = 0.1671 deg)")
+    axes[2].plot(
+        x, pv_mid, lw=1.1, ls=":", color="#1a3d6d",
+        label="Analytical pseudo-Voigt quadrature (K = 0.8859, FWHM = 0.1691 deg)",
+    )
+    axes[2].set_ylim(-0.2, laue_mid.max() * 1.28)
+    axes[2].set_title(
+        "(c) Second LTI stage: numerical convolution |W|^2 * h_inst damps sidelobes",
+        fontsize=9.5,
+    )
+    axes[2].legend(loc="upper right", frameon=False, fontsize=7.6)
 
     n_big = 1600  # D = 501.7 nm
     laue_big = laue_interference_array(x, tth_b, d_111, n_big, LAMBDA)
     conv_big = convolve_laue_with_instrument(x, tth_b, d_111, n_big, LAMBDA, inst_w)
-    pv_w_big = add_in_quadrature(size_fwhm(n_big * d_111, tth_b, LAMBDA, k=0.8859), inst_w)
+    size_w_big = size_fwhm(n_big * d_111, tth_b, LAMBDA, k=0.8859)
+    pv_w_big = add_in_quadrature(size_w_big, inst_w)
     pv_big = pseudo_voigt_array(x, tth_b, pv_w_big, 0.5)
-    axes[3].plot(x, laue_big * 0.35, lw=0.9, ls="--", color="#666666",
-                 label="Crystal sinc^2 alone (N = 1600, D = 502 nm, FWHM = 0.016 deg, scaled 0.35x)")
+    axes[3].plot(
+        x, laue_big * 0.35, lw=0.9, ls="--", color="#666666",
+        label="Pure Laue |W(q)|^2 (N = 1600, D = 501.7 nm, FWHM = 0.0161 deg, x0.35)",
+    )
     axes[3].plot(x, conv_big, lw=1.4, color="#6a3d9a",
-                 label="Numerical convolution |W|^2 * h_inst (FWHM = 0.056 deg)")
-    axes[3].plot(x, pv_big, lw=1.1, ls=":", color="#1a3d6d",
-                 label="Analytical pseudo-Voigt quadrature model (FWHM = 0.055 deg)")
-    axes[3].set_ylim(-0.8, (laue_big.max() * 0.35) * 1.22)
-    axes[3].set_title("(d) Instrument-limited regime (D = 502 nm): widest filter stage (h_inst = 0.052 deg) sets the width",
-                      fontsize=9.5)
-    axes[3].legend(loc="upper right", frameon=False, fontsize=8)
+                 label="Numerical convolution |W|^2 * h_inst (FWHM = 0.0561 deg)")
+    axes[3].plot(
+        x, pv_big, lw=1.1, ls=":", color="#1a3d6d",
+        label="Analytical pseudo-Voigt quadrature (K = 0.8859, FWHM = 0.0549 deg)",
+    )
+    axes[3].set_ylim(-0.8, (laue_big.max() * 0.35) * 1.25)
+    axes[3].set_title(
+        "(d) Instrument-limited regime (D = 501.7 nm): h_inst sets the observed width",
+        fontsize=9.5,
+    )
+    axes[3].legend(loc="upper right", frameon=False, fontsize=7.6)
 
     for ax in axes:
         ax.set_ylabel("density")
@@ -263,8 +305,11 @@ def laue_plot() -> None:
         ax.plot(v, y / planes ** 2, lw=1.1, color=colour, label=f"N = {planes} planes")
     ax.set_xlabel("reduced reciprocal coordinate between Bragg points, q d / 2 pi")
     ax.set_ylabel("normalised intensity")
-    ax.set_title("Finite-chain interference |sin(N pi v)/sin(pi v)|^2: width ~ 1/N, powder area conserved",
-                 fontsize=9.5)
+    ax.set_title(
+        "Finite-chain interference |sin(N pi v)/sin(pi v)|^2: "
+        "width ~ 1/N, powder area conserved",
+        fontsize=9.5,
+    )
     ax.legend(frameon=False, fontsize=8)
     ax.grid(alpha=0.25, lw=0.5)
     fig.tight_layout()
@@ -276,73 +321,127 @@ def class_spec_figure() -> None:
     """In-class assignment specification:
     1. Crystal types: Simple Cubic (SC), BCC, FCC, and Amorphous.
     2. Variable: Lattice constant a variation.
-    3. Input: Cu K-alpha radiation (1.5406 A).
+    3. Input: Cu K-alpha radiation (1.5406 A) and live CLI interface capture.
     """
+    from xrdsim.cli import main as cli_main
     from xrdsim.diffractometer import amorphous_scan
     from xrdsim.samples import Phase, Site, simple_cubic
+
     inst = Instrument(background_rate=0.0, rng_seed=None, ka2=False)
 
-    fig = plt.figure(figsize=(11, 7.8), constrained_layout=True)
+    fig = plt.figure(figsize=(11.2, 8.2), constrained_layout=True)
     gs = fig.add_gridspec(2, 2)
-    ax_lattices = fig.add_subplot(gs[0, :])
 
-    sc_phase = simple_cubic(a=3.359, element="Cu")
-    sc_scan = scan(sc_phase, 20.0, 95.0, 0.02, inst)
-    bcc_phase = get_phase("fe")
-    bcc_scan = scan(bcc_phase, 20.0, 95.0, 0.02, inst)
-    fcc_phase = get_phase("cu")
-    fcc_scan = scan(fcc_phase, 20.0, 95.0, 0.02, inst)
+    ax_lattices = fig.add_subplot(gs[0, 0])
+    sc_scan = scan(simple_cubic(a=3.359, element="Cu"), 20.0, 95.0, 0.02, inst)
+    bcc_scan = scan(get_phase("fe"), 20.0, 95.0, 0.02, inst)
+    fcc_scan = scan(get_phase("cu"), 20.0, 95.0, 0.02, inst)
 
-    ax_lattices.plot(sc_scan.two_theta, sc_scan.counts / sc_scan.counts.max() + 2.1,
-                     lw=1.1, color="#1a3d6d",
-                     label="Simple Cubic (SC, a = 3.359 A): all hkl allowed (100, 110, 111, 200, 210, 211...)")
-    ax_lattices.plot(bcc_scan.two_theta, bcc_scan.counts / bcc_scan.counts.max() + 1.05,
-                     lw=1.1, color="#8a3b12",
-                     label="Body-Centered Cubic (BCC, a = 2.867 A): h+k+l = even allowed (110, 200, 211, 220...)")
-    ax_lattices.plot(fcc_scan.two_theta, fcc_scan.counts / fcc_scan.counts.max(),
-                     lw=1.1, color="#2f7d32",
-                     label="Face-Centered Cubic (FCC, a = 3.615 A): unmixed parity allowed (111, 200, 220, 311...)")
-
-    ax_lattices.set_title("(a) Canonical Crystal Types from Class: Systematic Absences in SC vs. BCC vs. FCC",
-                          fontsize=10.5, fontweight="bold")
+    ax_lattices.plot(
+        sc_scan.two_theta, sc_scan.counts / sc_scan.counts.max() + 2.1,
+        lw=1.1, color="#1a3d6d",
+        label="SC (a = 3.359 A): all hkl (100, 110, 111, 200...)",
+    )
+    ax_lattices.plot(
+        bcc_scan.two_theta, bcc_scan.counts / bcc_scan.counts.max() + 1.05,
+        lw=1.1, color="#8a3b12",
+        label="BCC (a = 2.867 A): h+k+l = even (110, 200, 211...)",
+    )
+    ax_lattices.plot(
+        fcc_scan.two_theta, fcc_scan.counts / fcc_scan.counts.max(),
+        lw=1.1, color="#2f7d32",
+        label="FCC (a = 3.615 A): unmixed parity (111, 200, 220...)",
+    )
+    ax_lattices.set_title(
+        "(a) Canonical Crystal Types: SC vs. BCC vs. FCC",
+        fontsize=9.5, fontweight="bold",
+    )
     ax_lattices.set_xlabel("2theta (deg)", fontsize=9)
     ax_lattices.set_ylabel("Normalized Intensity (stacked)", fontsize=9)
     ax_lattices.set_xlim(20, 95)
-    ax_lattices.legend(loc="upper right", frameon=True, fontsize=8.2)
+    ax_lattices.set_ylim(-0.08, 3.85)
+    ax_lattices.legend(loc="upper right", frameon=True, fontsize=7.6)
     ax_lattices.grid(alpha=0.2, lw=0.5)
 
-    ax_amorph = fig.add_subplot(gs[1, 0])
+    ax_amorph = fig.add_subplot(gs[0, 1])
     am_scan = amorphous_scan(10.0, 90.0, 0.02, inst, center_deg=21.8, fwhm_deg=8.8)
-    ax_amorph.plot(am_scan.two_theta, am_scan.counts / am_scan.counts.max(), lw=1.8, color="#d95f02",
-                   label="Amorphous SiO2 (diffuse halo at 21.8 deg, FWHM ~ 8.8 deg)")
-    si_phase = get_phase("si")
-    si_scan = scan(si_phase, 10.0, 90.0, 0.02, inst)
-    ax_amorph.plot(si_scan.two_theta, si_scan.counts / si_scan.counts.max(), lw=1.1, color="#1a3d6d",
-                   label="Crystalline Si (sharp periodic Bragg reflections)")
-    ax_amorph.set_title("(b) Crystalline vs. Amorphous Phase\n(Intermediate-range halo D_eff ~ 0.9 nm vs. Bragg peaks)",
-                        fontsize=9.5, fontweight="bold")
+    ax_amorph.plot(
+        am_scan.two_theta, am_scan.counts / am_scan.counts.max(),
+        lw=1.8, color="#d95f02",
+        label="Amorphous SiO2 (phenomenological halo at 21.8 deg, FWHM = 8.8 deg)",
+    )
+    si_scan = scan(get_phase("si"), 10.0, 90.0, 0.02, inst)
+    ax_amorph.plot(
+        si_scan.two_theta, si_scan.counts / si_scan.counts.max(),
+        lw=1.1, color="#1a3d6d",
+        label="Crystalline Si (sharp periodic Bragg reflections)",
+    )
+    ax_amorph.set_title(
+        "(b) Crystalline vs. Amorphous Phase\n"
+        "(Diffuse silica halo vs. periodic Bragg peaks)",
+        fontsize=9.5, fontweight="bold",
+    )
     ax_amorph.set_xlabel("2theta (deg)", fontsize=9)
     ax_amorph.set_ylabel("Normalized Intensity", fontsize=9)
     ax_amorph.set_xlim(10, 90)
-    ax_amorph.legend(loc="upper right", frameon=True, fontsize=8.0)
+    ax_amorph.set_ylim(-0.04, 1.32)
+    ax_amorph.legend(loc="upper right", frameon=True, fontsize=7.6)
     ax_amorph.grid(alpha=0.2, lw=0.5)
 
-    ax_param = fig.add_subplot(gs[1, 1])
+    ax_param = fig.add_subplot(gs[1, 0])
     colors_a = ["#4575b4", "#74add1", "#f46d43", "#d73027"]
     a_values = [3.20, 3.80, 4.40, 5.00]
+    fcc_sites = (
+        Site("Cu", 0, 0, 0), Site("Cu", 0, 0.5, 0.5),
+        Site("Cu", 0.5, 0, 0.5), Site("Cu", 0.5, 0.5, 0),
+    )
     for a_val, col in zip(a_values, colors_a):
-        phase_a = Phase(key=f"fcc_{a_val}", name=f"FCC (a = {a_val:.2f} A)", formula="M", space_group="Fm-3m", a=a_val,
-                        sites=(Site("Cu", 0, 0, 0), Site("Cu", 0, .5, .5), Site("Cu", .5, 0, .5), Site("Cu", .5, .5, 0)))
+        phase_a = Phase(
+            key=f"fcc_{a_val}", name=f"FCC (a = {a_val:.2f} A)",
+            formula="M", space_group="Fm-3m", a=a_val, sites=fcc_sites,
+        )
         res_a = scan(phase_a, 20.0, 85.0, 0.02, inst)
-        ax_param.plot(res_a.two_theta, res_a.counts / res_a.counts.max(), lw=1.3, color=col, label=f"a = {a_val:.2f} A")
+        ax_param.plot(res_a.two_theta, res_a.counts / res_a.counts.max(),
+                      lw=1.3, color=col, label=f"a = {a_val:.2f} A")
 
-    ax_param.set_title("(c) Effect of Varying Lattice Constant a\n(Larger cell edge a shifts Bragg peaks to lower 2theta)",
-                       fontsize=9.5, fontweight="bold")
+    ax_param.set_title(
+        "(c) Effect of Varying Lattice Constant a\n"
+        "(Larger cell edge a shifts Bragg peaks to lower 2theta)",
+        fontsize=9.5, fontweight="bold",
+    )
     ax_param.set_xlabel("2theta (deg)", fontsize=9)
     ax_param.set_ylabel("Normalized Intensity", fontsize=9)
     ax_param.set_xlim(20, 85)
+    ax_param.set_ylim(-0.04, 1.28)
     ax_param.legend(loc="upper right", frameon=True, fontsize=8.0)
     ax_param.grid(alpha=0.2, lw=0.5)
+
+    ax_cli = fig.add_subplot(gs[1, 1])
+    ax_cli.set_facecolor("#151921")
+    ax_cli.set_xticks([])
+    ax_cli.set_yticks([])
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        cli_main([
+            "--phase", "si", "--range", "20", "90", "--step", "0.01",
+            "--size", "200", "--no-ka2", "--index", "--scherrer",
+        ])
+    cli_lines = [line for line in buf.getvalue().splitlines() if line.strip()][:23]
+    terminal_text = (
+        "$ python -m xrdsim --phase si --size 200 --no-ka2 --index --scherrer\n"
+        "  [Controls: Cu K-alpha=1.5406 A | Phase=SC/BCC/FCC/Amorphous/Si | D=20 nm]\n"
+        + "-" * 72 + "\n"
+        + "\n".join(cli_lines)
+    )
+    ax_cli.text(
+        0.03, 0.96, terminal_text, transform=ax_cli.transAxes,
+        fontfamily="monospace", fontsize=6.4, color="#e6edf3",
+        va="top", ha="left", linespacing=1.15,
+    )
+    ax_cli.set_title(
+        "(d) Live Simulator CLI Interface Screenshot (python -m xrdsim)",
+        fontsize=9.5, fontweight="bold",
+    )
 
     fig.savefig(OUT / "class_spec.png", dpi=160)
     plt.close(fig)

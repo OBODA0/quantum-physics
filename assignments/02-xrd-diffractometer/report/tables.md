@@ -145,7 +145,7 @@ Cell: a = 3.2494, c = 5.2038 A. Source: COD 9004180, a = 3.2494, c = 5.2038 A; u
 
 ## Rutile (TiO2), P42/mnm (136)
 
-Cell: a = 4.5937, c = 2.9587 A. Source: room-temperature conventional values a = 4.5937, c = 2.9587 A; u(O) = 0.3047. COD 9004143 is a 600 C record, which is why its cell reads 4.616/2.977 A
+Cell: a = 4.5937, c = 2.9587 A. Source: room-temperature conventional values a = 4.5937, c = 2.9587 A; u(O) = 0.3047. COD 9004143 is a 600 C record (4.616/2.977 A)
 
 | hkl | d (A) | 2theta (deg) | m | I/I0 (%) |
 | --- | --- | --- | --- | --- |
@@ -197,7 +197,7 @@ Cell: a = 4.5937, c = 2.9587 A. Source: room-temperature conventional values a =
 
 ## Anatase (TiO2), I41/amd (141)
 
-Cell: a = 3.7845, c = 9.5143 A. Source: room-temperature cell a = 3.7845, c = 9.5143 A; z(O) = 0.2079 with the basis expanded by gemmi from COD 9008214, a 300 C record
+Cell: a = 3.7845, c = 9.5143 A. Source: room-temperature cell a = 3.7845, c = 9.5143 A; z(O) = 0.2079 with the basis expanded by gemmi from COD 9008214 (300 C record)
 
 | hkl | d (A) | 2theta (deg) | m | I/I0 (%) |
 | --- | --- | --- | --- | --- |

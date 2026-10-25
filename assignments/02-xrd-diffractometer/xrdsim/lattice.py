@@ -28,7 +28,10 @@ def d_spacing(h: int, k: int, l: int, *, a: float, b: float | None = None,
     elif b is None:
         inv_sq = (h * h + k * k) / a**2 + l * l / c**2
     elif c is None:
-        raise ValueError("an orthorhombic cell needs both b and c; for a tetragonal cell pass c and leave b None")
+        raise ValueError(
+            "an orthorhombic cell needs both b and c; "
+            "for a tetragonal cell pass c and leave b None"
+        )
     else:
         inv_sq = h * h / a**2 + k * k / b**2 + l * l / c**2
     if inv_sq == 0:
@@ -37,13 +40,15 @@ def d_spacing(h: int, k: int, l: int, *, a: float, b: float | None = None,
 
 
 def two_theta(d: float, wavelength: float) -> float:
-    """Bragg angle in degrees for a d-spacing, or ValueError if the reflection is unreachable."""
+    """Bragg angle in degrees for a d-spacing, or ValueError if unreachable."""
     if d <= 0:
         raise ValueError("d-spacing must be positive")
     s = wavelength / (2.0 * d)
     if s > 1.0:
         raise ValueError(
-            f"d = {d:.4f} A is unreachable at lambda = {wavelength:.4f} A (needs sin(theta) > 1)")
+            f"d = {d:.4f} A is unreachable at lambda = {wavelength:.4f} A "
+            "(needs sin(theta) > 1)"
+        )
     return math.degrees(2.0 * math.asin(s))
 
 
@@ -56,7 +61,9 @@ def d_from_two_theta(two_theta_deg: float, wavelength: float) -> float:
     return wavelength / (2.0 * s)
 
 
-def refine_cubic_a(peaks: list[tuple[float, int, int, int]], wavelength: float) -> float:
+def refine_cubic_a(
+    peaks: list[tuple[float, int, int, int]], wavelength: float
+) -> float:
     """Least-squares cubic lattice parameter from indexed peaks.
 
     `peaks` is a list of (two_theta_deg, h, k, l). The fit is an unweighted least squares
@@ -79,8 +86,10 @@ def refine_cubic_a(peaks: list[tuple[float, int, int, int]], wavelength: float) 
     return wavelength / (2.0 * math.sqrt(slope))
 
 
-def peak_positions(hkls, wavelength: float, **cell) -> list[tuple[tuple[int, int, int], float, float]]:
-    """(hkl, d, 2theta) for every reflection the wavelength can reach, sorted by 2theta."""
+def peak_positions(
+    hkls, wavelength: float, **cell
+) -> list[tuple[tuple[int, int, int], float, float]]:
+    """(hkl, d, 2theta) for every reachable reflection, sorted by 2theta."""
     out = []
     for h, k, l in hkls:
         d = d_spacing(h, k, l, **cell)

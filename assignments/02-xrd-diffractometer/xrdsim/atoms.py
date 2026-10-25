@@ -11,7 +11,9 @@ import json
 import math
 import pathlib
 
-DATA_PATH = pathlib.Path(__file__).resolve().parent.parent / "data" / "scattering_factors.json"
+DATA_PATH = (
+    pathlib.Path(__file__).resolve().parent.parent / "data" / "scattering_factors.json"
+)
 
 _table: dict | None = None
 
@@ -33,7 +35,9 @@ def f0(element: str, s: float) -> float:
     table = _load()
     values = table["elements"].get(element)
     if values is None:
-        raise KeyError(f"no scattering factor for {element!r}; rebuild data/scattering_factors.json")
+        raise KeyError(
+            f"no scattering factor for {element!r}; rebuild data/scattering_factors.json"
+        )
     if s < 0:
         raise ValueError("s must be non-negative")
     position = s / table["step"]

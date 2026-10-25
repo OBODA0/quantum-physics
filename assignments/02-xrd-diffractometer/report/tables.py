@@ -1,7 +1,7 @@
 """Write report/tables.md: the reflection tables the report quotes.
 
-Generated, never edited by hand, so a number in the report can always be traced to the
-model that produced it.
+Generated, never edited by hand, so a number in the report can always be traced to
+the model that produced it.
 """
 
 from __future__ import annotations

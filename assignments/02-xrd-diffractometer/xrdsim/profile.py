@@ -81,7 +81,7 @@ def pseudo_voigt_array(x, center: float, fwhm: float, eta: float):
 
 def laue_interference_array(two_theta_deg, two_theta_bragg_deg: float, d_a: float,
                             n_planes: int, wavelength: float):
-    """Unit-area exact N-plane Laue interference profile |sin(N u) / (N sin u)|^2 in 2theta.
+    """Unit-area exact N-plane Laue profile |sin(N u) / (N sin u)|^2 in 2theta.
 
     Contains no empirical Scherrer constant K: the width and sinc^2 sidelobes emerge
     solely from summing N coherent atomic planes of spacing `d_a`.
@@ -91,22 +91,29 @@ def laue_interference_array(two_theta_deg, two_theta_bragg_deg: float, d_a: floa
         raise ValueError("n_planes must be at least 1")
     angles = np.asarray(two_theta_deg, dtype=float)
     theta_b = math.radians(two_theta_bragg_deg / 2.0)
-    u = 2.0 * math.pi * d_a * (np.sin(np.radians(angles / 2.0)) - math.sin(theta_b)) / wavelength
+    sin_diff = np.sin(np.radians(angles / 2.0)) - math.sin(theta_b)
+    u = 2.0 * math.pi * d_a * sin_diff / wavelength
     denom = n_planes * np.sin(u)
     safe_denom = np.where(np.abs(denom) < 1e-12, 1.0, denom)
-    profile = np.where(np.abs(denom) < 1e-12, 1.0, (np.sin(n_planes * u) / safe_denom) ** 2)
+    profile = np.where(
+        np.abs(denom) < 1e-12, 1.0, (np.sin(n_planes * u) / safe_denom) ** 2
+    )
     trapz = getattr(np, "trapezoid", getattr(np, "trapz", None))
     area = float(trapz(profile, angles))
     return profile / area if area > 0 else profile
 
 
-def convolve_laue_with_instrument(two_theta_deg, two_theta_bragg_deg: float, d_a: float,
-                                  n_planes: int, wavelength: float, inst_fwhm_deg: float):
-    """Direct numerical convolution of the exact N-plane Laue profile with a Gaussian instrument."""
+def convolve_laue_with_instrument(
+    two_theta_deg, two_theta_bragg_deg: float, d_a: float,
+    n_planes: int, wavelength: float, inst_fwhm_deg: float,
+):
+    """Direct numerical convolution of the N-plane Laue profile with h_inst."""
     import numpy as np
     angles = np.asarray(two_theta_deg, dtype=float)
     step = float(angles[1] - angles[0])
-    laue = laue_interference_array(angles, two_theta_bragg_deg, d_a, n_planes, wavelength)
+    laue = laue_interference_array(
+        angles, two_theta_bragg_deg, d_a, n_planes, wavelength
+    )
     sigma = inst_fwhm_deg / (2.0 * math.sqrt(TWO_LN2))
     half_span = max(0.5, 6.0 * sigma)
     kx = np.arange(-half_span, half_span + step / 2.0, step)

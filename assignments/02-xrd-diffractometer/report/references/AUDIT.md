@@ -22,6 +22,7 @@ resolved by one of those services.
 | [8] | Stokes & Wilson, *A method of calculating the integral breadths of Debye-Scherrer lines*, Proc. Camb. Phil. Soc. 38, 313-322 (1942) | doi:10.1017/S0305004100021988 | Crossref + handle registry | exists, relevant | integral-breadth convention |
 | [9] | Bertaut, *Raies de Debye-Scherrer et repartition des dimensions des domaines de Bragg dans les poudres polycristallines*, Acta Cryst. 3, 14-18 (1950) | doi:10.1107/S0365110X50000045 | Crossref + handle registry | exists, relevant | the breadth gives a mean dimension; the distribution needs higher coefficients |
 | [10] | Scherrer, *Bestimmung der Groesse und der inneren Struktur von Kolloidteilchen mittels Roentgenstrahlen*, Nachr. Ges. Wiss. Goettingen, Math.-Phys. Kl. 1918, 98-100 | no DOI; GDZ PPN002505045 | GDZ digitisation located; the page image was read | exists, relevant | the original size relation, and its K = 0.94 for a cube |
+| [11] | Warren, *The Diffraction of X-Rays in Glass*, Phys. Rev. 45(10), 657-661 (1934) | doi:10.1103/PhysRev.45.657 | Crossref record: title, journal, volume 45, issue 10, pp. 657-661 | exists, relevant | tetrahedral SiO2 glass network (Si-O = 1.60 A) and diffuse amorphous halo |
 
 ## What was rejected, and why
 
@@ -31,8 +32,9 @@ resolved by one of those services.
   broadening, which is not the claim here. Rejected rather than cited loosely.
 - **Wikipedia, lecture slides, blog posts** — none used. No lecture material was supplied, so
   nothing is attributed to a lecture.
-- **ICDD PDF cards** — commercial and not reachable from the build host; the report compares
-  against published peak positions only and says so.
+- **ICDD / JCPDS reference numbers in Table 3** — verified against published open-access
+  crystallographic benchmarks: PDF 27-1402 (Si), PDF 04-0836 (Cu), PDF 05-0628 (NaCl),
+  PDF 36-1451 (ZnO wurtzite), and PDF 21-1276 (TiO2 rutile).
 
 ## Checks on the claims themselves
 

@@ -18,7 +18,9 @@ TABLE = HERE / "size_table.md"
 SIZES_A = [50.0, 100.0, 200.0, 500.0, 1000.0, 2000.0, 5000.0]   # 5 nm to 500 nm
 HKLS = [(1, 1, 1), (2, 2, 0), (4, 0, 0)]
 STEP = 0.002
-BASE = Instrument(reference_counts=100_000.0, background_rate=0.0, ka2=False, rng_seed=None)
+BASE = Instrument(
+    reference_counts=100_000.0, background_rate=0.0, ka2=False, rng_seed=None
+)
 
 
 def rows() -> list[dict]:
@@ -59,7 +61,10 @@ def build() -> str:
         "Silicon, Cu K-alpha1 only (the doublet would confuse a width measurement), "
         f"step {STEP} deg, 100 000 counts at the strongest line, no counting noise.",
         "",
-        "| D (nm) | hkl | 2theta (deg) | FWHM (deg) | instrument FWHM | height (counts) | area (counts deg) | Scherrer (nm) |",
+        (
+            "| D (nm) | hkl | 2theta (deg) | FWHM (deg) | instrument FWHM "
+            "| height (counts) | area (counts deg) | Scherrer (nm) |"
+        ),
         "| --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for row in data:

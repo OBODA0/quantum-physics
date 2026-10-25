@@ -77,23 +77,38 @@ PHASES: dict[str, Phase] = {
     "al": Phase(
         key="al", name="Aluminium", formula="Al", space_group="Fm-3m (225)",
         a=4.0495, sites=_fcc("Al"),
-        source="room-temperature conventional value 4.0495 A; the AFLOW Al1_ICSD_52611 primitive (2.856 A) converts to 4.0398 A, a different entry"),
+        source=(
+            "room-temperature conventional value 4.0495 A; the AFLOW Al1_ICSD_52611 "
+            "primitive (2.856 A) converts to 4.0398 A, a different entry"
+        )),
     "cu": Phase(
         key="cu", name="Copper", formula="Cu", space_group="Fm-3m (225)",
         a=3.6149, sites=_fcc("Cu"),
-        source="room-temperature conventional value 3.6149 A; AFLOW Cu1_ICSD_53755 converts to 3.6146 A"),
+        source=(
+            "room-temperature conventional value 3.6149 A; "
+            "AFLOW Cu1_ICSD_53755 converts to 3.6146 A"
+        )),
     "fe": Phase(
         key="fe", name="alpha-Iron", formula="Fe", space_group="Im-3m (229)",
         a=2.8665, sites=(Site("Fe", 0, 0, 0), Site("Fe", .5, .5, .5)),
-        source="room-temperature conventional value; the AFLOW ICSD entry reads 2.9647 A and is flagged as expanded"),
+        source=(
+            "room-temperature conventional value; the AFLOW ICSD entry reads "
+            "2.9647 A and is flagged as expanded"
+        )),
     "nacl": Phase(
         key="nacl", name="Rock salt", formula="NaCl", space_group="Fm-3m (225)",
         a=5.6402, sites=_rocksalt("Na", "Cl"),
-        source="room-temperature conventional value 5.6402 A; AFLOW Cl1Na1_ICSD_60280 converts to 5.665 A"),
+        source=(
+            "room-temperature conventional value 5.6402 A; "
+            "AFLOW Cl1Na1_ICSD_60280 converts to 5.665 A"
+        )),
     "mgo": Phase(
         key="mgo", name="Periclase", formula="MgO", space_group="Fm-3m (225)",
         a=4.2112, sites=_rocksalt("Mg", "O"),
-        source="room-temperature conventional value 4.2112 A; AFLOW Mg1O1_ICSD_173128 converts to 4.253 A"),
+        source=(
+            "room-temperature conventional value 4.2112 A; "
+            "AFLOW Mg1O1_ICSD_173128 converts to 4.253 A"
+        )),
     "zno": Phase(
         key="zno", name="Zincite", formula="ZnO", space_group="P63mc (186)",
         a=3.2494, c=5.2038, hexagonal=True, sites=(
@@ -106,15 +121,23 @@ PHASES: dict[str, Phase] = {
             Site("Ti", 0, 0, 0), Site("Ti", .5, .5, .5),
             Site("O", .3047, .3047, 0), Site("O", .6953, .6953, 0),
             Site("O", .8047, .1953, .5), Site("O", .1953, .8047, .5)),
-        source="room-temperature conventional values a = 4.5937, c = 2.9587 A; u(O) = 0.3047. COD 9004143 is a 600 C record, which is why its cell reads 4.616/2.977 A"),
+        source=(
+            "room-temperature conventional values a = 4.5937, c = 2.9587 A; "
+            "u(O) = 0.3047. COD 9004143 is a 600 C record (4.616/2.977 A)"
+        )),
     "tio2-anatase": Phase(
         key="tio2-anatase", name="Anatase", formula="TiO2", space_group="I41/amd (141)",
         a=3.7845, c=9.5143, sites=(
-            Site("Ti", 0, 0, 0), Site("Ti", 0, .5, .25), Site("Ti", .5, .5, .5), Site("Ti", .5, 0, .75),
-            Site("O", 0, 0, .2079), Site("O", 0, .5, .4579), Site("O", .5, .5, .7079),
-            Site("O", .5, 0, .9579), Site("O", 0, .5, .0421), Site("O", 0, 0, .7921),
+            Site("Ti", 0, 0, 0), Site("Ti", 0, .5, .25),
+            Site("Ti", .5, .5, .5), Site("Ti", .5, 0, .75),
+            Site("O", 0, 0, .2079), Site("O", 0, .5, .4579),
+            Site("O", .5, .5, .7079), Site("O", .5, 0, .9579),
+            Site("O", 0, .5, .0421), Site("O", 0, 0, .7921),
             Site("O", .5, 0, .5421), Site("O", .5, .5, .2921)),
-        source="room-temperature cell a = 3.7845, c = 9.5143 A; z(O) = 0.2079 with the basis expanded by gemmi from COD 9008214, a 300 C record"),
+        source=(
+            "room-temperature cell a = 3.7845, c = 9.5143 A; z(O) = 0.2079 "
+            "with the basis expanded by gemmi from COD 9008214 (300 C record)"
+        )),
 }
 
 
@@ -124,11 +147,12 @@ def get_phase(key: str) -> Phase:
     try:
         return PHASES[key]
     except KeyError:
-        raise KeyError(f"unknown phase {key!r}; choose from {', '.join(sorted(PHASES))}") from None
+        choices = ", ".join(sorted(PHASES))
+        raise KeyError(f"unknown phase {key!r}; choose from {choices}") from None
 
 
 def simple_cubic(a: float = 3.359, element: str = "Cu") -> Phase:
-    """Canonical simple-cubic (Pm-3m) single-atom basis at lattice edge `a` (default 3.359 A, alpha-Po edge)."""
+    """Canonical simple-cubic (Pm-3m) single-atom basis at cell edge `a` (default 3.359 A)."""
     return Phase(
         key="sc", name="Simple cubic", formula=f"{element} (SC)",
         space_group="Pm-3m (221)", a=a, sites=(Site(element, 0, 0, 0),),

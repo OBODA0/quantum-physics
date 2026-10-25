@@ -32,9 +32,9 @@ class Instrument:
     background_rate: float = 0.5           # counts per second, flat
     dwell_s: float = 1.0
     dead_time_s: float = 0.0
-    rng_seed: int | None = None      # None: no counting noise; an int seeds the Poisson draws
-    max_two_theta: float = 150.0      # no goniometer reaches 180 deg, and LP diverges there
-    sample_displacement_mm: float = 0.0  # specimen surface off the goniometer axis
+    rng_seed: int | None = None      # None: no noise; int seeds Poisson draws
+    max_two_theta: float = 150.0      # goniometer limit; LP diverges at 180 deg
+    sample_displacement_mm: float = 0.0  # specimen surface off goniometer axis
     goniometer_radius_mm: float = 240.0
 
 
@@ -111,8 +111,8 @@ def scan(phase: Phase, two_theta_min: float, two_theta_max: float, step: float,
         ka2 = instrument.wavelength * sources.CU_KA2 / sources.CU_KA1
         lines = [(instrument.wavelength, 1.0), (ka2, sources.KA2_TO_KA1)]
 
-    mean = np.full_like(grid, expected_counts(instrument.background_rate, instrument.dwell_s),
-                        dtype=float)
+    bg = expected_counts(instrument.background_rate, instrument.dwell_s)
+    mean = np.full_like(grid, bg, dtype=float)
     for row in rows:
         area_total = instrument.reference_counts * row.intensity / strongest
         for wavelength, weight in lines:
@@ -174,12 +174,12 @@ def displacement_shift(two_theta_deg: float, displacement_mm: float,
 def amorphous_scan(two_theta_min: float, two_theta_max: float, step: float,
                    instrument: Instrument | None = None,
                    center_deg: float = 21.8, fwhm_deg: float = 8.8) -> Scan:
-    """Simulate an amorphous silica-like diffuse scattering pattern.
+    """Simulate a phenomenological amorphous silica-like diffuse scattering pattern.
 
-    Models intermediate-range tetrahedral network order (~4.0 A inter-tetrahedral cage
+    Models intermediate-range tetrahedral network order (~4.0 A inter-tetrahedral
     correlations) producing a First Sharp Diffraction Peak (FSDP) near 21.8 deg with
-    FWHM ~ 8.8 deg (corresponding to an effective Scherrer coherence length D_eff ~ 0.9 nm),
-    plus a weak secondary oscillation near 43 deg, modulated by form-factor decay and polarisation.
+    FWHM ~ 8.8 deg (illustrative Scherrer coherence length D_eff ~ 0.9 nm), plus a
+    secondary hump near 43 deg, modulated by form-factor decay and polarisation.
     """
     if instrument is None:
         instrument = Instrument()

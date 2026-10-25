@@ -44,7 +44,7 @@ def find_peaks(two_theta: np.ndarray, counts: np.ndarray,
 
 def _local_floor(x: np.ndarray, y: np.ndarray, i: int, reach_deg: float = 10.0) -> float:
     """Baseline near a peak: the 10th percentile within `reach_deg`, so a neighbouring
-    reflection cannot drag the half-height down and the result does not depend on the step."""
+    reflection cannot drag the half-height down and the result is step-independent."""
     step = x[1] - x[0] if len(x) > 1 else 1.0
     reach = max(1, int(reach_deg / step))
     left = max(0, i - reach)
@@ -87,8 +87,9 @@ def scherrer_from_peak(peak: Peak, instrumental_fwhm: float, wavelength: float,
     return scherrer_size(beta, peak.two_theta, wavelength, k)
 
 
-def index_cubic(two_thetas: list[float],
-                max_n_squared: int = 30, tolerance: float = 0.02) -> list[tuple[tuple[int, int, int], float]]:
+def index_cubic(
+    two_thetas: list[float], max_n_squared: int = 30, tolerance: float = 0.02
+) -> list[tuple[tuple[int, int, int], float]]:
     """Assign (hkl) to a cubic pattern by the sin^2(theta) ratios.
 
     The cell returned is the smallest one that fits, so a body-centred pattern comes back
@@ -152,7 +153,9 @@ def _refine(x: np.ndarray, y: np.ndarray, i: int) -> tuple[float, float]:
     delta = 0.5 * (y0 - y2) / denom
     if abs(delta) > 0.5:
         return float(x[i]), float(y[i])
-    return float(x[i] + delta * (x[i + 1] - x[i])), float(y1 - 0.25 * (y0 - y2) * delta)
+    pos = float(x[i] + delta * (x[i + 1] - x[i]))
+    height = float(y1 - 0.25 * (y0 - y2) * delta)
+    return pos, height
 
 
 def williamson_hall(peaks: list[Peak], instrumental_fwhm_for,
@@ -173,7 +176,9 @@ def williamson_hall(peaks: list[Peak], instrumental_fwhm_for,
         xs.append(4.0 * math.sin(theta))
         ys.append(math.radians(beta) * math.cos(theta))
     if len(xs) < 2:
-        raise ValueError("Williamson-Hall needs at least two peaks broader than the instrument")
+        raise ValueError(
+            "Williamson-Hall needs at least two peaks broader than the instrument"
+        )
     slope, intercept = np.polyfit(xs, ys, 1)
     if intercept <= 0:
         raise ValueError("the fit has no positive intercept, so no size can be reported")
@@ -204,7 +209,7 @@ def identify_phase(two_thetas: list[float], phase, instrument,
 
 def identify(two_thetas: list[float], phases: dict, instrument,
              tolerance: float = 0.15) -> list[tuple[str, float]]:
-    """Rank the phases of a database by how well they explain the observed peak positions."""
+    """Rank database phases by how well they explain the observed peak positions."""
     scored = [(key, identify_phase(two_thetas, phase, instrument, tolerance))
               for key, phase in phases.items()]
     return sorted(scored, key=lambda row: (-row[1], row[0]))
