@@ -23,7 +23,7 @@ Cell: a = 5.4311 A. Source: NIST SRM 640f certificate, a = 5.431144(8) A at 22.5
 
 ## Aluminium (Al), Fm-3m (225)
 
-Cell: a = 4.0495 A. Source: room-temperature conventional value 4.0495 A; the AFLOW Al1_ICSD_52611 primitive (2.856 A) converts to 4.0398 A, a different entry
+Cell: a = 4.0495 A. Source: room-temperature conventional lattice parameter, a = 4.0495 A
 
 | hkl | d (A) | 2theta (deg) | m | I/I0 (%) |
 | --- | --- | --- | --- | --- |
@@ -39,7 +39,7 @@ Cell: a = 4.0495 A. Source: room-temperature conventional value 4.0495 A; the AF
 
 ## Copper (Cu), Fm-3m (225)
 
-Cell: a = 3.6149 A. Source: room-temperature conventional value 3.6149 A; AFLOW Cu1_ICSD_53755 converts to 3.6146 A
+Cell: a = 3.6149 A. Source: room-temperature conventional lattice parameter, a = 3.6149 A
 
 | hkl | d (A) | 2theta (deg) | m | I/I0 (%) |
 | --- | --- | --- | --- | --- |
@@ -54,7 +54,7 @@ Cell: a = 3.6149 A. Source: room-temperature conventional value 3.6149 A; AFLOW 
 
 ## alpha-Iron (Fe), Im-3m (229)
 
-Cell: a = 2.8665 A. Source: room-temperature conventional value; the AFLOW ICSD entry reads 2.9647 A and is flagged as expanded
+Cell: a = 2.8665 A. Source: room-temperature conventional lattice parameter, a = 2.8665 A
 
 | hkl | d (A) | 2theta (deg) | m | I/I0 (%) |
 | --- | --- | --- | --- | --- |
@@ -67,7 +67,7 @@ Cell: a = 2.8665 A. Source: room-temperature conventional value; the AFLOW ICSD 
 
 ## Rock salt (NaCl), Fm-3m (225)
 
-Cell: a = 5.6402 A. Source: room-temperature conventional value 5.6402 A; AFLOW Cl1Na1_ICSD_60280 converts to 5.665 A
+Cell: a = 5.6402 A. Source: room-temperature conventional lattice parameter, a = 5.6402 A
 
 | hkl | d (A) | 2theta (deg) | m | I/I0 (%) |
 | --- | --- | --- | --- | --- |
@@ -93,7 +93,7 @@ Cell: a = 5.6402 A. Source: room-temperature conventional value 5.6402 A; AFLOW 
 
 ## Periclase (MgO), Fm-3m (225)
 
-Cell: a = 4.2112 A. Source: room-temperature conventional value 4.2112 A; AFLOW Mg1O1_ICSD_173128 converts to 4.253 A
+Cell: a = 4.2112 A. Source: room-temperature conventional lattice parameter, a = 4.2112 A
 
 | hkl | d (A) | 2theta (deg) | m | I/I0 (%) |
 | --- | --- | --- | --- | --- |
@@ -145,7 +145,7 @@ Cell: a = 3.2494, c = 5.2038 A. Source: COD 9004180, a = 3.2494, c = 5.2038 A; u
 
 ## Rutile (TiO2), P42/mnm (136)
 
-Cell: a = 4.5937, c = 2.9587 A. Source: room-temperature conventional values a = 4.5937, c = 2.9587 A; u(O) = 0.3047. COD 9004143 is a 600 C record (4.616/2.977 A)
+Cell: a = 4.5937, c = 2.9587 A. Source: room-temperature conventional cell, a = 4.5937, c = 2.9587 A; u(O) = 0.3047
 
 | hkl | d (A) | 2theta (deg) | m | I/I0 (%) |
 | --- | --- | --- | --- | --- |
@@ -197,7 +197,7 @@ Cell: a = 4.5937, c = 2.9587 A. Source: room-temperature conventional values a =
 
 ## Anatase (TiO2), I41/amd (141)
 
-Cell: a = 3.7845, c = 9.5143 A. Source: room-temperature cell a = 3.7845, c = 9.5143 A; z(O) = 0.2079 with the basis expanded by space-group symmetry from COD 9008214 (300 C record)
+Cell: a = 3.7845, c = 9.5143 A. Source: room-temperature conventional cell, a = 3.7845, c = 9.5143 A; z(O) = 0.2079
 
 | hkl | d (A) | 2theta (deg) | m | I/I0 (%) |
 | --- | --- | --- | --- | --- |

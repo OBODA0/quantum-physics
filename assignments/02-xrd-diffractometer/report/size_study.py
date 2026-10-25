@@ -27,7 +27,7 @@ def rows() -> list[dict]:
     si = get_phase("si")
     out = []
     for size in SIZES_A:
-        result = scan(si, 27.0, 70.5, STEP, BASE, size_a=size)
+        result = scan(si, 12.0, 75.0, STEP, BASE, size_a=size)
         peaks = find_peaks(result.two_theta, result.counts)
         by_angle = {round(peak.two_theta, 1): peak for peak in peaks}
         for hkl in HKLS:

@@ -116,11 +116,15 @@ def doublet_demo() -> None:
 
 
 def size_series() -> None:
-    """R1: the same phase at six crystallite sizes, raw and normalised."""
-    sizes = [(50.0, "5 nm"), (100.0, "10 nm"), (250.0, "25 nm"),
-             (500.0, "50 nm"), (1000.0, "100 nm"), (5000.0, "500 nm")]
+    """R1: the same phase at the seven crystallite sizes of Table 4, raw and normalised."""
+    sizes = [
+        (50.0, "5 nm"), (100.0, "10 nm"), (200.0, "20 nm"),
+        (500.0, "50 nm"), (1000.0, "100 nm"), (2000.0, "200 nm"), (5000.0, "500 nm"),
+    ]
     fig, (left, right) = plt.subplots(1, 2, figsize=(11, 4.2), sharex=True)
-    colours = ["#8a3b12", "#b5651d", "#c98a2b", "#7a8b3a", "#2f7d32", "#1a3d6d"]
+    colours = [
+        "#8a3b12", "#b5651d", "#d9822b", "#7a8b3a", "#2f7d32", "#1f6f8b", "#1a3d6d",
+    ]
     inst = Instrument(ka2=False, background_rate=0.0, rng_seed=None)
     for (size, label), colour in zip(sizes, colours):
         result = scan(get_phase("si"), 27.4, 29.4, 0.002, inst, size_a=size)
@@ -321,7 +325,7 @@ def class_spec_figure() -> None:
     """In-class assignment specification:
     1. Crystal types: Simple Cubic (SC), BCC, FCC, and Amorphous.
     2. Variable: Lattice constant a variation.
-    3. Input: Cu K-alpha radiation (1.5406 A) and live CLI interface capture.
+    3. Input: Cu K-alpha radiation (1.5406 A) and full-width CLI session capture.
     """
     from xrdsim.cli import main as cli_main
     from xrdsim.diffractometer import amorphous_scan
@@ -329,8 +333,8 @@ def class_spec_figure() -> None:
 
     inst = Instrument(background_rate=0.0, rng_seed=None, ka2=False)
 
-    fig = plt.figure(figsize=(11.2, 8.2), constrained_layout=True)
-    gs = fig.add_gridspec(2, 2)
+    fig = plt.figure(figsize=(11.6, 8.6), constrained_layout=True)
+    gs = fig.add_gridspec(2, 3, height_ratios=[1.05, 1.0])
 
     ax_lattices = fig.add_subplot(gs[0, 0])
     sc_scan = scan(simple_cubic(a=3.359, element="Cu"), 20.0, 95.0, 0.02, inst)
@@ -340,27 +344,27 @@ def class_spec_figure() -> None:
     ax_lattices.plot(
         sc_scan.two_theta, sc_scan.counts / sc_scan.counts.max() + 2.1,
         lw=1.1, color="#1a3d6d",
-        label="Generic SC (a = 3.359 A): all hkl (100, 110, 111, 200...)",
+        label="Generic SC (a = 3.359 A): all hkl",
     )
     ax_lattices.plot(
         bcc_scan.two_theta, bcc_scan.counts / bcc_scan.counts.max() + 1.05,
         lw=1.1, color="#8a3b12",
-        label="BCC (a = 2.867 A): h+k+l = even (110, 200, 211...)",
+        label="BCC (a = 2.867 A): h+k+l = even",
     )
     ax_lattices.plot(
         fcc_scan.two_theta, fcc_scan.counts / fcc_scan.counts.max(),
         lw=1.1, color="#2f7d32",
-        label="FCC (a = 3.615 A): unmixed parity (111, 200, 220...)",
+        label="FCC (a = 3.615 A): unmixed parity",
     )
     ax_lattices.set_title(
-        "(a) Canonical Crystal Types: SC vs. BCC vs. FCC",
-        fontsize=9.5, fontweight="bold",
+        "(a) Crystal Types: SC vs. BCC vs. FCC",
+        fontsize=9.2, fontweight="bold",
     )
-    ax_lattices.set_xlabel("2theta (deg)", fontsize=9)
-    ax_lattices.set_ylabel("Normalized Intensity (stacked)", fontsize=9)
+    ax_lattices.set_xlabel("2theta (deg)", fontsize=8.5)
+    ax_lattices.set_ylabel("Normalized Intensity (stacked)", fontsize=8.5)
     ax_lattices.set_xlim(20, 95)
     ax_lattices.set_ylim(-0.08, 3.85)
-    ax_lattices.legend(loc="upper right", frameon=True, fontsize=7.6)
+    ax_lattices.legend(loc="upper right", frameon=True, fontsize=7.2)
     ax_lattices.grid(alpha=0.2, lw=0.5)
 
     ax_amorph = fig.add_subplot(gs[0, 1])
@@ -368,27 +372,26 @@ def class_spec_figure() -> None:
     ax_amorph.plot(
         am_scan.two_theta, am_scan.counts / am_scan.counts.max(),
         lw=1.8, color="#d95f02",
-        label="Amorphous SiO2 (phenomenological halo at 21.8 deg, FWHM = 8.8 deg)",
+        label="Amorphous SiO2 (halo at 21.8 deg, FWHM = 8.8 deg)",
     )
     si_scan = scan(get_phase("si"), 10.0, 90.0, 0.02, inst)
     ax_amorph.plot(
         si_scan.two_theta, si_scan.counts / si_scan.counts.max(),
         lw=1.1, color="#1a3d6d",
-        label="Crystalline Si (sharp periodic Bragg reflections)",
+        label="Crystalline Si (sharp Bragg peaks)",
     )
     ax_amorph.set_title(
-        "(b) Crystalline vs. Amorphous Phase\n"
-        "(Diffuse silica halo vs. periodic Bragg peaks)",
-        fontsize=9.5, fontweight="bold",
+        "(b) Crystalline vs. Amorphous Phase",
+        fontsize=9.2, fontweight="bold",
     )
-    ax_amorph.set_xlabel("2theta (deg)", fontsize=9)
-    ax_amorph.set_ylabel("Normalized Intensity", fontsize=9)
+    ax_amorph.set_xlabel("2theta (deg)", fontsize=8.5)
+    ax_amorph.set_ylabel("Normalized Intensity", fontsize=8.5)
     ax_amorph.set_xlim(10, 90)
     ax_amorph.set_ylim(-0.04, 1.32)
-    ax_amorph.legend(loc="upper right", frameon=True, fontsize=7.6)
+    ax_amorph.legend(loc="upper right", frameon=True, fontsize=7.2)
     ax_amorph.grid(alpha=0.2, lw=0.5)
 
-    ax_param = fig.add_subplot(gs[1, 0])
+    ax_param = fig.add_subplot(gs[0, 2])
     colors_a = ["#4575b4", "#74add1", "#f46d43", "#d73027"]
     a_values = [3.20, 3.80, 4.40, 5.00]
     fcc_sites = (
@@ -402,45 +405,69 @@ def class_spec_figure() -> None:
         )
         res_a = scan(phase_a, 20.0, 85.0, 0.02, inst)
         ax_param.plot(res_a.two_theta, res_a.counts / res_a.counts.max(),
-                      lw=1.3, color=col, label=f"a = {a_val:.2f} A")
+                      lw=1.2, color=col, label=f"--a {a_val:.2f} A")
 
     ax_param.set_title(
-        "(c) Effect of Varying Lattice Constant a\n"
-        "(Larger cell edge a shifts Bragg peaks to lower 2theta)",
-        fontsize=9.5, fontweight="bold",
+        "(c) Varying Lattice Constant a (--a)",
+        fontsize=9.2, fontweight="bold",
     )
-    ax_param.set_xlabel("2theta (deg)", fontsize=9)
-    ax_param.set_ylabel("Normalized Intensity", fontsize=9)
+    ax_param.set_xlabel("2theta (deg)", fontsize=8.5)
+    ax_param.set_ylabel("Normalized Intensity", fontsize=8.5)
     ax_param.set_xlim(20, 85)
     ax_param.set_ylim(-0.04, 1.28)
-    ax_param.legend(loc="upper right", frameon=True, fontsize=8.0)
+    ax_param.legend(loc="upper right", frameon=True, fontsize=7.5)
     ax_param.grid(alpha=0.2, lw=0.5)
 
-    ax_cli = fig.add_subplot(gs[1, 1])
+    ax_cli = fig.add_subplot(gs[1, :])
     ax_cli.set_facecolor("#151921")
     ax_cli.set_xticks([])
     ax_cli.set_yticks([])
-    cli_args = [
+
+    left_cmds = [
+        ["--phase", "sc", "--a", "3.359", "--range", "20", "70", "--no-ka2"],
+        ["--phase", "amorphous", "--range", "10", "90"],
+    ]
+    left_blocks = []
+    for cmd in left_cmds:
+        b = io.StringIO()
+        with contextlib.redirect_stdout(b):
+            cli_main(cmd)
+        out_lines = [ln for ln in b.getvalue().splitlines() if ln.strip()]
+        left_blocks.append(
+            "$ python -m xrdsim " + " ".join(cmd) + "\n" + "\n".join(out_lines)
+        )
+    left_text = ("\n" + "-" * 58 + "\n").join(left_blocks)
+
+    right_cmd = [
         "--phase", "si", "--range", "20", "90", "--step", "0.01",
         "--size-nm", "20", "--no-ka2", "--index", "--scherrer",
     ]
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        cli_main(cli_args)
-    cli_lines = [line for line in buf.getvalue().splitlines() if line.strip()]
-    cmd_line = (
+    b_right = io.StringIO()
+    with contextlib.redirect_stdout(b_right):
+        cli_main(right_cmd)
+    right_lines = [ln for ln in b_right.getvalue().splitlines() if ln.strip()]
+    right_cmd_str = (
         "$ python -m xrdsim --phase si --range 20 90 --step 0.01 \\\n"
         "    --size-nm 20 --no-ka2 --index --scherrer"
     )
-    terminal_text = cmd_line + "\n" + "-" * 66 + "\n" + "\n".join(cli_lines)
+    right_text = right_cmd_str + "\n" + "\n".join(right_lines)
+
     ax_cli.text(
-        0.03, 0.965, terminal_text, transform=ax_cli.transAxes,
-        fontfamily="monospace", fontsize=5.8, color="#e6edf3",
+        0.015, 0.95, left_text, transform=ax_cli.transAxes,
+        fontfamily="monospace", fontsize=7.4, color="#e6edf3",
+        va="top", ha="left", linespacing=1.18,
+    )
+    ax_cli.plot([0.465, 0.465], [0.04, 0.96], color="#3b4454", lw=1.0,
+                transform=ax_cli.transAxes)
+    ax_cli.text(
+        0.48, 0.95, right_text, transform=ax_cli.transAxes,
+        fontfamily="monospace", fontsize=7.0, color="#e6edf3",
         va="top", ha="left", linespacing=1.10,
     )
     ax_cli.set_title(
-        "(d) Captured CLI Session Output (python -m xrdsim)",
-        fontsize=9.5, fontweight="bold",
+        "(d) Captured Terminal Session Output: SC + Lattice Override (--a), "
+        "Amorphous Halo (--phase amorphous), and Si Size Analysis (--size-nm 20)",
+        fontsize=9.2, fontweight="bold",
     )
 
     fig.savefig(OUT / "class_spec.png", dpi=160)

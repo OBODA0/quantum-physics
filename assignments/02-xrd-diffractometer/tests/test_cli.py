@@ -46,6 +46,15 @@ def test_size_nm_flag(capsys):
     assert "20.0" in out or "20.1" in out
 
 
+def test_amorphous_and_lattice_override_flags(capsys):
+    assert main(["--phase", "amorphous", "--range", "10", "80"]) == 0
+    out_am = capsys.readouterr().out
+    assert "Amorphous silica" in out_am and "21.800 deg" in out_am
+    assert main(["--phase", "sc", "--a", "4.000", "--no-ka2"]) == 0
+    out_sc = capsys.readouterr().out
+    assert "a = 4.0000 A" in out_sc
+
+
 def test_identify_ranks_the_simulated_phase_first(capsys):
     assert main(["--phase", "zno", "--range", "20", "90", "--step", "0.01",
                  "--no-ka2", "--identify"]) == 0

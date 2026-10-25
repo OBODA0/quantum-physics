@@ -62,7 +62,7 @@ def test_lattice_hint_reads_the_sequence():
     from xrdsim.analysis import lattice_hint
     assert lattice_hint([3, 4, 8, 11]).startswith("face-centred")
     assert lattice_hint([2, 4, 6]).startswith("body-centred")
-    assert "twice this edge" in lattice_hint([1, 2, 3])
+    assert "sqrt(2)" in lattice_hint([1, 2, 3])
 
 
 def test_williamson_hall_recovers_size_and_strain():

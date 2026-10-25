@@ -35,21 +35,22 @@ def find_peaks(two_theta: np.ndarray, counts: np.ndarray,
         if not (y[i] >= y[i - 1] and y[i] > y[i + 1] and y[i] >= threshold):
             continue
         centre, height = _refine(x, y, i)
-        half = (height + _local_floor(x, y, i)) / 2.0
+        floor = _local_floor(x, y, i)
+        half = (height + floor) / 2.0
         fwhm = _width_at(x, y, i, half)
-        area = _area(x, y, i, 4.0 * fwhm if fwhm > 0 else x[1] - x[0])
+        area = _area(x, y, i, 8.0 * fwhm if fwhm > 0 else x[1] - x[0], floor)
         peaks.append(Peak(centre, height, fwhm, area))
     return peaks
 
 
-def _local_floor(x: np.ndarray, y: np.ndarray, i: int, reach_deg: float = 10.0) -> float:
-    """Baseline near a peak: the 10th percentile within `reach_deg`, so a neighbouring
-    reflection cannot drag the half-height down and the result is step-independent."""
+def _local_floor(x: np.ndarray, y: np.ndarray, i: int, reach_deg: float = 15.0) -> float:
+    """Baseline near a peak: the 2nd percentile within `reach_deg`, so neither the peak's
+    own Lorentzian flanks nor a neighbouring reflection biases the baseline."""
     step = x[1] - x[0] if len(x) > 1 else 1.0
     reach = max(1, int(reach_deg / step))
     left = max(0, i - reach)
     right = min(len(y), i + reach)
-    return float(np.percentile(y[left:right], 10))
+    return float(np.percentile(y[left:right], 2))
 
 
 def _width_at(x: np.ndarray, y: np.ndarray, i: int, half: float) -> float:
@@ -66,10 +67,11 @@ def _width_at(x: np.ndarray, y: np.ndarray, i: int, half: float) -> float:
     return float(x_right - x_left)
 
 
-def _area(x: np.ndarray, y: np.ndarray, i: int, half_window: float) -> float:
+def _area(x: np.ndarray, y: np.ndarray, i: int, half_window: float,
+          floor: float = 0.0) -> float:
     window = np.abs(x - x[i]) <= half_window
     trapz = getattr(np, "trapezoid", getattr(np, "trapz", None))
-    return float(trapz(y[window] - np.median(y[window]), x[window]))
+    return float(trapz(np.clip(y[window] - floor, 0.0, None), x[window]))
 
 
 def pure_width(observed: float, instrumental: float) -> float:
@@ -92,12 +94,10 @@ def index_cubic(
 ) -> list[tuple[tuple[int, int, int], float]]:
     """Assign (hkl) to a cubic pattern by the sin^2(theta) ratios.
 
-    The cell returned is the smallest one that fits, so a body-centred pattern comes back
-    as a primitive cell with half the conventional edge; `lattice_hint` names that.
-
-    Returns the assignments and the implied n^2 = h^2 + k^2 + l^2. The first reflection
-    is taken as the lowest-angle one; every other angle must fall on an integer multiple
-    of its sin^2(theta) to within `tolerance` (relative).
+    The cell returned is the smallest one that fits: when fewer than seven reflections are
+    present, a body-centred pattern shares the 1:2:3:4:5:6 ratio sequence of a primitive
+    cell with edge a_BCC / sqrt(2) (until the 7th reflection 321 at N^2 = 14 forces
+    n2_first = 2); `lattice_hint` notes this ambiguity.
     """
     if not two_thetas:
         raise ValueError("no peaks to index")
@@ -108,9 +108,12 @@ def index_cubic(
         ratios = [value / base * n2_first for value in s2]
         if all(abs(r - round(r)) <= tolerance * max(round(r), 1) for r in ratios):
             assignments = []
-            for angle, ratio in zip(two_thetas, ratios):
-                n2 = int(round(ratio))
-                assignments.append((_hkl_from_n2(n2), angle))
+            try:
+                for angle, ratio in zip(two_thetas, ratios):
+                    n2 = int(round(ratio))
+                    assignments.append((_hkl_from_n2(n2), angle))
+            except ValueError:
+                continue
             return assignments
     raise ValueError("the pattern does not index as cubic")
 
@@ -118,17 +121,18 @@ def index_cubic(
 def lattice_hint(n_squared: list[int]) -> str:
     """Describe the lattice from the observed n^2 sequence.
 
-    All-even n^2 means a body-centred lattice described on half the cell; the FCC sequence
-    starts 3, 4, 8, 11, 12, 16, 19, 20, 24. Anything else is primitive.
+    All-even n^2 means a body-centred lattice; the FCC sequence starts 3, 4, 8, 11, 12,
+    16, 19, 20, 24. A 1, 2, 3, ... sequence is primitive cubic (or BCC with conventional
+    cell edge sqrt(2) times this primitive spacing when fewer than 7 lines are observed).
     """
     values = sorted({int(value) for value in n_squared})
     fcc = {3, 4, 8, 11, 12, 16, 19, 20, 24, 27, 32, 35, 36, 40, 43, 44, 48}
     if values and all(value % 2 == 0 for value in values):
-        return "body-centred, conventional cell twice the refined edge"
+        return "body-centred (even N^2 sequence: 2, 4, 6, ...)"
     if set(values) <= fcc:
         return "face-centred (the 3, 4, 8, 11 sequence)"
     if 1 in values:
-        return "primitive cell; a body-centred sample would have twice this edge"
+        return "primitive cell (or BCC with conventional edge sqrt(2) times this spacing)"
     return "primitive lattice"
 
 

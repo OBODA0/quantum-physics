@@ -3,14 +3,15 @@
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import pathlib
 
 from . import sources
 from .analysis import (find_peaks, identify, index_cubic, lattice_hint,
                        scherrer_from_peak, williamson_hall)
-from .diffractometer import Instrument, reflections, scan
-from .profile import caglioti_fwhm
-from .samples import PHASES, get_phase
+from .diffractometer import Instrument, amorphous_scan, reflections, scan
+from .profile import caglioti_fwhm, scherrer_size
+from .samples import PHASES, get_phase, simple_cubic
 
 
 def _instrument(args) -> Instrument:
@@ -28,6 +29,8 @@ def _instrument(args) -> Instrument:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="xrdsim", description=__doc__)
     parser.add_argument("--phase", help="phase key (see --list-phases)")
+    parser.add_argument("--a", type=float, default=None,
+                        help="override lattice constant a in angstrom")
     parser.add_argument("--range", nargs=2, type=float, metavar=("MIN", "MAX"),
                         default=[20.0, 90.0], help="2theta scan range in degrees")
     parser.add_argument("--step", type=float, default=0.02, help="2theta step in degrees")
@@ -60,6 +63,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.list_phases:
         for key, phase in sorted(PHASES.items()):
             print(f"{key:14s} {phase.formula:8s} {phase.space_group:18s} {phase.source}")
+        sc = simple_cubic()
+        print(f"{'sc':14s} {sc.formula:8s} {sc.space_group:18s} {sc.source}")
+        print(f"{'amorphous':14s} {'SiO2':8s} {'non-crystalline':18s} "
+              "phenomenological diffuse silica halo at 21.8 deg")
         return 0
     if not args.phase:
         parser.error("--phase is required unless --list-phases is given")
@@ -71,8 +78,26 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _run(args) -> int:
-        phase = get_phase(args.phase)
         instrument = _instrument(args)
+        if args.phase == "amorphous":
+            result = amorphous_scan(args.range[0], args.range[1], args.step, instrument)
+            d_eff = scherrer_size(8.8, 21.8, instrument.wavelength) / 10.0
+            print("phase      : Amorphous silica (SiO2), non-crystalline")
+            print(f"wavelength : {instrument.wavelength:.6f} A")
+            print(f"range      : {args.range[0]} - {args.range[1]} deg, step {args.step}")
+            print(f"halo       : center 21.800 deg  FWHM 8.8000 deg  D_eff {d_eff:.2f} nm")
+            if args.out:
+                from .plot import save_scan
+                args.out.parent.mkdir(parents=True, exist_ok=True)
+                save_scan(result, args.out, title="Amorphous SiO2, diffuse halo")
+                print(f"wrote {args.out}")
+            return 0
+
+        phase = get_phase(args.phase)
+        if args.a is not None:
+            if args.a <= 0:
+                raise ValueError("lattice constant --a must be positive")
+            phase = dataclasses.replace(phase, a=args.a)
         size_a = args.size_nm * 10.0 if args.size_nm is not None else args.size
         result = scan(phase, args.range[0], args.range[1], args.step, instrument,
                       size_a=size_a)
@@ -90,7 +115,8 @@ def _run(args) -> int:
             return 0
 
         peaks = find_peaks(result.two_theta, result.counts)
-        print(f"phase      : {phase.name} ({phase.formula}), {phase.space_group}")
+        print(f"phase      : {phase.name} ({phase.formula}), {phase.space_group}, "
+              f"a = {phase.a:.4f} A")
         print(f"wavelength : {instrument.wavelength:.6f} A"
               + (" + K-alpha2" if instrument.ka2 else ""))
         print(f"range      : {args.range[0]} - {args.range[1]} deg, step {args.step}")
