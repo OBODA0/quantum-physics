@@ -197,7 +197,7 @@ Cell: a = 4.5937, c = 2.9587 A. Source: room-temperature conventional values a =
 
 ## Anatase (TiO2), I41/amd (141)
 
-Cell: a = 3.7845, c = 9.5143 A. Source: room-temperature cell a = 3.7845, c = 9.5143 A; z(O) = 0.2079 with the basis expanded by gemmi from COD 9008214 (300 C record)
+Cell: a = 3.7845, c = 9.5143 A. Source: room-temperature cell a = 3.7845, c = 9.5143 A; z(O) = 0.2079 with the basis expanded by space-group symmetry from COD 9008214 (300 C record)
 
 | hkl | d (A) | 2theta (deg) | m | I/I0 (%) |
 | --- | --- | --- | --- | --- |

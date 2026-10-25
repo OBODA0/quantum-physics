@@ -39,6 +39,13 @@ def test_index_and_scherrer_flags(capsys):
     assert "30.0" in out or "30.1" in out
 
 
+def test_size_nm_flag(capsys):
+    assert main(["--phase", "si", "--range", "20", "60", "--step", "0.01",
+                 "--size-nm", "20", "--no-ka2", "--scherrer"]) == 0
+    out = capsys.readouterr().out
+    assert "20.0" in out or "20.1" in out
+
+
 def test_identify_ranks_the_simulated_phase_first(capsys):
     assert main(["--phase", "zno", "--range", "20", "90", "--step", "0.01",
                  "--no-ka2", "--identify"]) == 0

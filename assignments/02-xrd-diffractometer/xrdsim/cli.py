@@ -39,6 +39,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="sample surface displaced from the goniometer axis")
     parser.add_argument("--size", type=float, default=None,
                         help="crystallite size in angstrom (adds size broadening)")
+    parser.add_argument("--size-nm", type=float, default=None,
+                        help="crystallite size in nm (adds size broadening)")
     parser.add_argument("--no-ka2", action="store_true", help="drop the K-alpha2 line")
     parser.add_argument("--monochromator", type=float, default=None,
                         help="monochromator 2theta in degrees")
@@ -71,8 +73,9 @@ def main(argv: list[str] | None = None) -> int:
 def _run(args) -> int:
         phase = get_phase(args.phase)
         instrument = _instrument(args)
+        size_a = args.size_nm * 10.0 if args.size_nm is not None else args.size
         result = scan(phase, args.range[0], args.range[1], args.step, instrument,
-                      size_a=args.size)
+                      size_a=size_a)
 
         if args.table:
             strongest = max(row.intensity for row in result.reflections)
@@ -97,7 +100,7 @@ def _run(args) -> int:
                 f"  {peak.two_theta:8.3f} deg  height {peak.height:9.0f}  "
                 f"FWHM {peak.fwhm:.4f}"
             )
-            if args.size and not args.scherrer:
+            if size_a and not args.scherrer:
                 try:
                     inst_w = caglioti_fwhm(peak.two_theta, *instrument.caglioti)
                     size = scherrer_from_peak(peak, inst_w, instrument.wavelength)

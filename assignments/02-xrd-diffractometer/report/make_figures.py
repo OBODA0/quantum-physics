@@ -340,7 +340,7 @@ def class_spec_figure() -> None:
     ax_lattices.plot(
         sc_scan.two_theta, sc_scan.counts / sc_scan.counts.max() + 2.1,
         lw=1.1, color="#1a3d6d",
-        label="SC (a = 3.359 A): all hkl (100, 110, 111, 200...)",
+        label="Generic SC (a = 3.359 A): all hkl (100, 110, 111, 200...)",
     )
     ax_lattices.plot(
         bcc_scan.two_theta, bcc_scan.counts / bcc_scan.counts.max() + 1.05,
@@ -420,26 +420,26 @@ def class_spec_figure() -> None:
     ax_cli.set_facecolor("#151921")
     ax_cli.set_xticks([])
     ax_cli.set_yticks([])
+    cli_args = [
+        "--phase", "si", "--range", "20", "90", "--step", "0.01",
+        "--size-nm", "20", "--no-ka2", "--index", "--scherrer",
+    ]
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
-        cli_main([
-            "--phase", "si", "--range", "20", "90", "--step", "0.01",
-            "--size", "200", "--no-ka2", "--index", "--scherrer",
-        ])
-    cli_lines = [line for line in buf.getvalue().splitlines() if line.strip()][:23]
-    terminal_text = (
-        "$ python -m xrdsim --phase si --size 200 --no-ka2 --index --scherrer\n"
-        "  [Controls: Cu K-alpha=1.5406 A | Phase=SC/BCC/FCC/Amorphous/Si | D=20 nm]\n"
-        + "-" * 72 + "\n"
-        + "\n".join(cli_lines)
+        cli_main(cli_args)
+    cli_lines = [line for line in buf.getvalue().splitlines() if line.strip()]
+    cmd_line = (
+        "$ python -m xrdsim --phase si --range 20 90 --step 0.01 \\\n"
+        "    --size-nm 20 --no-ka2 --index --scherrer"
     )
+    terminal_text = cmd_line + "\n" + "-" * 66 + "\n" + "\n".join(cli_lines)
     ax_cli.text(
-        0.03, 0.96, terminal_text, transform=ax_cli.transAxes,
-        fontfamily="monospace", fontsize=6.4, color="#e6edf3",
-        va="top", ha="left", linespacing=1.15,
+        0.03, 0.965, terminal_text, transform=ax_cli.transAxes,
+        fontfamily="monospace", fontsize=5.8, color="#e6edf3",
+        va="top", ha="left", linespacing=1.10,
     )
     ax_cli.set_title(
-        "(d) Live Simulator CLI Interface Screenshot (python -m xrdsim)",
+        "(d) Captured CLI Session Output (python -m xrdsim)",
         fontsize=9.5, fontweight="bold",
     )
 

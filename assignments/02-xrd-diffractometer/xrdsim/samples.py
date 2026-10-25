@@ -136,7 +136,7 @@ PHASES: dict[str, Phase] = {
             Site("O", .5, 0, .5421), Site("O", .5, .5, .2921)),
         source=(
             "room-temperature cell a = 3.7845, c = 9.5143 A; z(O) = 0.2079 "
-            "with the basis expanded by gemmi from COD 9008214 (300 C record)"
+            "with the basis expanded by space-group symmetry from COD 9008214 (300 C record)"
         )),
 }
 
@@ -152,10 +152,10 @@ def get_phase(key: str) -> Phase:
 
 
 def simple_cubic(a: float = 3.359, element: str = "Cu") -> Phase:
-    """Canonical simple-cubic (Pm-3m) single-atom basis at cell edge `a` (default 3.359 A)."""
+    """Generic simple-cubic (Pm-3m) 1-atom model at cell edge `a` (default 3.359 A)."""
     return Phase(
         key="sc", name="Simple cubic", formula=f"{element} (SC)",
         space_group="Pm-3m (221)", a=a, sites=(Site(element, 0, 0, 0),),
-        source=f"canonical simple-cubic 1-atom basis (Pm-3m), a = {a:.4f} A",
+        source=f"generic simple-cubic 1-atom model (Pm-3m), a = {a:.4f} A",
     )
 

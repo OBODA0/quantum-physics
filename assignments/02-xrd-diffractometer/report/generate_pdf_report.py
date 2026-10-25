@@ -22,7 +22,8 @@ from reportlab.lib.units import mm
 from reportlab.platypus import (Image, Paragraph, Preformatted, SimpleDocTemplate,
                                 Table, TableStyle)
 
-from xrdsim.diffractometer import Instrument, reflections
+from xrdsim.analysis import find_peaks
+from xrdsim.diffractometer import Instrument, reflections, scan
 from xrdsim.samples import PHASES
 
 from .numbers_source import quoted_numbers
@@ -60,10 +61,24 @@ REFERENCES = [
     ("P. Scherrer, <i>Bestimmung der Gr\u00f6\u00dfe und der inneren Struktur von "
      "Kolloidteilchen mittels R\u00f6ntgenstrahlen</i>, Nachrichten von der Gesellschaft der "
      "Wissenschaften zu G\u00f6ttingen, Mathematisch-Physikalische Klasse <b>1918</b>, 98-100 "
-     "(1918). No DOI; digitised by the G\u00f6ttinger Digitalisierungszentrum "
-     "(GDZ PPN002505045)."),
+     "(1918)."),
     ("B. E. Warren, <i>The Diffraction of X-Rays in Glass</i>, Physical Review <b>45</b>(10), "
      "657-661 (1934). doi:10.1103/PhysRev.45.657"),
+    ("S. Gra\u017eulis, D. Chateigner, R. T. Downs, A. F. T. Yokochi, M. Quir\u00f3s, "
+     "L. Lutterotti, E. Manakova, J. Butkus, P. Moeck and A. Le Bail, <i>Crystallography "
+     "Open Database \u2013 an open-access collection of crystal structures</i>, Journal of "
+     "Applied Crystallography <b>42</b>(4), 726-729 (2009). doi:10.1107/S0021889809016690"),
+    ("S. Gates-Rector and T. Blanton, <i>The Powder Diffraction File: a quality materials "
+     "characterization database</i>, Powder Diffraction <b>34</b>(4), 352-360 (2019). "
+     "doi:10.1017/S0885715619000812"),
+    ("S. Curtarolo, W. Setyawan, G. L. W. Hart, M. Jahn\u00e1tek, R. V. Chepulskii, "
+     "R. H. Taylor, S. Wang, J. Xue, K. Yang, O. Levy, M. J. Mehl, H. T. Stokes, "
+     "D. O. Demchenko and D. Morgan, <i>AFLOW: An automatic framework for high-throughput "
+     "materials discovery</i>, Computational Materials Science <b>58</b>, 218-226 (2012). "
+     "doi:10.1016/j.commatsci.2012.02.005"),
+    ("National Institute of Standards and Technology, <i>Certificate of Analysis, Standard "
+     "Reference Material 640f: Line Position and Line Shape Standard for Powder Diffraction "
+     "(Silicon Powder)</i>, Gaithersburg, MD: NIST (2019)."),
 ]
 
 
@@ -123,7 +138,7 @@ def _footer(canvas, doc) -> None:
     canvas.saveState()
     canvas.setFont("Helvetica", 8)
     canvas.setFillColor(colors.HexColor("#666666"))
-    canvas.drawRightString(letter[0] - 54, 32, str(doc.page))
+    canvas.drawRightString(letter[0] - 54, 20, f"Page {doc.page}")
     canvas.restoreState()
 
 
@@ -234,14 +249,14 @@ def build() -> None:
                            "<b>Topic:</b> XRD instrument simulation, domain size, the Fourier "
                            "description of line broadening", s["subtitle"]))
     story.append(Paragraph("<b>Students:</b> Mohamed Oboda (2111011090) &nbsp;|&nbsp; "
-                           "Mert SOLMAZ (2311011039)", s["subtitle"]))
+                           "Mert Solmaz (2311011039)", s["subtitle"]))
     story.append(Paragraph("<b>Built with:</b> Antigravity &amp; Prime Agent (AI coding assistants); "
                            "the complete simulator and figure scripts are in Appendix A.", s["subtitle"]))
     story.append(table([
         ["Item", "What it is"],
         ["Simulator", "Cu K-alpha tube, divergence and Soller slits, flat specimen on a "
                       "theta/2theta goniometer, receiving slit, optional monochromator, detector"],
-        ["Phases", "Canonical Simple Cubic (SC), BCC, FCC, and amorphous SiO2 halo, plus nine "
+        ["Phases", "Generic Simple Cubic (SC), BCC, FCC, and amorphous SiO2 halo, plus nine "
                    "reference phases: Si, Al, Cu, alpha-Fe, NaCl, MgO, ZnO, TiO2 rutile, TiO2 anatase"],
         ["Method", "Bragg positions from the cell, structure factors with "
                    "Waasmaier-Kirfel form factors [6], powder multiplicities, "
@@ -264,12 +279,12 @@ def build() -> None:
         "the Bragg positions unchanged, and broadens high-angle lines more than low-angle "
         "ones. All four observations follow from one statement: the finite crystallite is a "
         "spatial window on the lattice, so the ideal Bragg impulse train is convolved with the "
-        "transform of that window, and the instrument is a second convolution in series. The "
-        "1/cos(theta) is the Jacobian between reciprocal space and the goniometer angle. The "
-        "analysis pipeline recovers the input sizes across the sample-limited regime, and an "
-        "independent numerical convolution of the exact N-plane Laue interference sum with the "
-        "instrumental kernel agrees with the Scherrer-Caglioti quadrature widths to within 0.2-2 % "
-        "across all crystallite sizes.", s["body"]))
+        "squared magnitude of the window's Fourier transform, and the instrument is a second "
+        "convolution in series. The 1/cos(theta) is the Jacobian between reciprocal space and "
+        "the goniometer angle. The analysis pipeline recovers the input sizes across the "
+        "sample-limited regime, and an independent numerical convolution of the exact N-plane "
+        "Laue interference sum with the instrumental kernel agrees with the Scherrer-Caglioti "
+        "quadrature widths to within 0.2-2 % across all crystallite sizes.", s["body"]))
 
     # ------------------------------------------------------------------ 1
     story.append(Paragraph("1. What this report does", s["h1"]))
@@ -340,9 +355,9 @@ def build() -> None:
     story.append(Paragraph(
         "with s = sin(theta)/lambda = 1/(2d) by Bragg's law, f0 the atomic form factor and "
         "B_j the Debye-Waller coefficient of site j [2]. The form factors are the "
-        "Waasmaier-Kirfel parameterisation [6], interpolated from a table generated once from "
-        "xraydb and shipped with the code; f0(0) reproduces the electron count, which the "
-        "test suite checks. The intensity of a powder line is then", s["body"]))
+        "Waasmaier-Kirfel five-Gaussian parameterisation [6], pre-tabulated on a uniform s-grid "
+        "in xrdsim/data/form_factors.json and shipped with the code; f0(0) reproduces the "
+        "atomic electron count Z, which the test suite checks. The intensity of a powder line is then", s["body"]))
     story.append(Paragraph(
         "I(hkl) = |F|^2 m LP(2theta),&nbsp;&nbsp;&nbsp;&nbsp;"
         "LP = (1 + cos^2 2theta)/(sin^2 theta cos theta),", s["eq"]))
@@ -389,7 +404,7 @@ def build() -> None:
         s["body"]))
 
     # ------------------------------------------------------------------ 3
-    story.append(Paragraph("3. Item 1: the design, and screenshots of it working (25%)",
+    story.append(Paragraph("3. Item 1: the design, and screenshots of it working",
                            s["h1"]))
     story.append(Paragraph(
         "The instrument of Figure 1 is implemented as a small Python package. Each stage is a "
@@ -399,7 +414,7 @@ def build() -> None:
         ["lattice.py", "d-spacings, Bragg angles, lattice refinement"],
         ["atoms.py, structure.py", "form factors, structure factor, multiplicities, LP"],
         ["sources.py, geometry.py", "Cu K-alpha lines, flat-plate geometry, displacement"],
-        ["samples.py", "the nine reference phases plus canonical simple_cubic()"],
+        ["samples.py", "the nine reference phases plus generic simple_cubic()"],
         ["profile.py, detector.py", "pseudo-Voigt, Caglioti, Scherrer, exact Laue convolution, Poisson"],
         ["diffractometer.py", "reflections, crystalline scan(), and amorphous_scan()"],
         ["analysis.py", "peak finding, widths, indexing, Scherrer, Williamson-Hall, phase ID"],
@@ -409,12 +424,13 @@ def build() -> None:
                            "module and of report/size_study.py, report/tables.py, and "
                            "report/make_figures.py, as item 1 requires.", s["caption"]))
 
-    story.append(Paragraph("3.1 In-class specification: canonical crystal types, amorphous halo, lattice constant, and CLI interface", s["h2"]))
+    story.append(Paragraph("3.1 In-class specification: canonical crystal types, amorphous halo, lattice constant, and CLI capture", s["h2"]))
     story.append(Paragraph(
         "Figure 2 directly demonstrates the requirements established in class across canonical "
-        "crystal types, the amorphous phase, lattice constant variation, and the live command-line interface under Cu K-alpha radiation:<br/>"
-        "<b>(a) Canonical crystal structures:</b> Simple Cubic (<font face=\"Courier\">simple_cubic(a=3.359)</font>, "
-        "space group Pm-3m, single-atom basis at a = 3.359 A matching the room-temperature alpha-Po cell edge with Cu form factor), "
+        "crystal types, the amorphous phase, lattice constant variation, and the command-line interface under Cu K-alpha radiation:<br/>"
+        "<b>(a) Canonical crystal structures:</b> Generic Simple Cubic (<font face=\"Courier\">simple_cubic(a=3.359)</font>, "
+        "space group Pm-3m, a single-atom basis at the origin with cell edge a = 3.359 A matching the room-temperature alpha-Po "
+        "cell constant and evaluated with the tabulated Cu atomic scattering factor), "
         "Body-Centred Cubic (BCC, alpha-iron, Im-3m, a = 2.8665 A), and Face-Centred Cubic (FCC, copper, Fm-3m, "
         "a = 3.6149 A). In simple cubic, all integer triplets (100, 110, 111, 200, 210, 211, ...) diffract because "
         "the basis has a single atom at the origin and no phase cancellations occur. In BCC, scattering from the "
@@ -435,16 +451,16 @@ def build() -> None:
         "diffraction peaks systematically to lower 2theta angles. Because sin(theta) is inversely proportional "
         "to a (Bragg's law), expanding the real-space unit cell contracts reciprocal space—the Fourier scaling "
         "theorem in action.<br/>"
-        "<b>(d) Live simulator CLI interface screenshot:</b> Captures the execution of "
-        "<font face=\"Courier\">python -m xrdsim --phase si --size 200 --no-ka2 --index --scherrer</font>, showing "
-        "the simulator controls, detected peak positions and FWHMs, automatic cubic (hkl) indexing, and "
+        "<b>(d) Captured simulator CLI session output:</b> Captures the exact standard output of "
+        "<font face=\"Courier\">python -m xrdsim --phase si --range 20 90 --step 0.01 --size-nm 20 --no-ka2 --index --scherrer</font>, "
+        "showing the scan parameters, detected peak positions and FWHMs, automatic cubic (hkl) indexing, and "
         "reflection-by-reflection Scherrer and Williamson-Hall size recovery.", s["body"]))
     story.append(figure("class_spec.png"))
-    story.append(Paragraph("Figure 2: in-class specification tests and simulator interface screenshot. (a) Systematic absences "
-                           "across Simple Cubic (a = 3.359 A, all hkl present), BCC (a = 2.867 A, h+k+l even), and FCC "
+    story.append(Paragraph("Figure 2: in-class specification tests and captured CLI output. (a) Systematic absences "
+                           "across generic Simple Cubic (a = 3.359 A, all hkl present), BCC (a = 2.867 A, h+k+l even), and FCC "
                            "(a = 3.615 A, unmixed parity). (b) Crystalline Si (sharp Bragg peaks) vs phenomenological "
                            "amorphous SiO2 halo (2theta = 21.8 deg, FWHM = 8.8 deg) [11]. (c) Lattice constant variation "
-                           "(a = 3.20 to 5.00 A) shifting Bragg peaks to lower 2theta angles. (d) Live CLI session screenshot.",
+                           "(a = 3.20 to 5.00 A) shifting Bragg peaks to lower 2theta angles. (d) Captured CLI session output.",
                            s["caption"]))
 
     story.append(Paragraph("3.2 Varying the crystal structure across nine phases", s["h2"]))
@@ -452,7 +468,8 @@ def build() -> None:
         "Figure 3 is one run of the simulator on nine phases, with the instrument settings "
         "held fixed: 20-90 deg, Cu K-alpha, 20 000 counts at the strongest line, no counting "
         "noise. Everything that differs between the panels is crystallography. The four "
-        "cubic metals differ by their lattice and their basis: aluminium and copper are FCC, "
+        "elemental cubic crystals (three metals—aluminium, copper, alpha-iron—and covalent "
+        "diamond-cubic silicon) differ by their lattice and their basis: aluminium and copper are FCC, "
         "so 100 and 110 are absent and 111 is the strongest line; alpha-iron is BCC, so 100 "
         "and 111 are absent and 110 leads; silicon carries a two-atom diamond basis on the "
         "same FCC lattice, which removes 222 as well and leaves 111 dominant. Rock salt and "
@@ -468,9 +485,9 @@ def build() -> None:
                            "instrument settings. Labels mark the reflections the model "
                            "predicts.", s["caption"]))
     story.append(table(phase_table_rows(instrument), [58, 92, 80, 95, 120], s))
-    story.append(Paragraph("Table 2: the phases in the sample library, their space groups and cells, and the "
+    story.append(Paragraph("Table 2: the nine reference phases in the sample library, their space groups and cells, and the "
                            "strongest line the model predicts. Cell constants and their "
-                           "records are in Appendix B and in data/SOURCES.md; every row is "
+                           "records [12], [14], [15] are in Appendix B and in data/SOURCES.md; every row is "
                            "checked against its published strongest reflection by the test "
                            "suite.", s["caption"]))
 
@@ -486,7 +503,7 @@ def build() -> None:
                            "The K-alpha2 line is switched off so that the doublet does not "
                            "confuse the width.", s["caption"]))
     story.append(Paragraph(
-        "The figures and the embedded CLI capture in Figure 2(d) are generated directly from the "
+        "The figures and the CLI output capture in Figure 2(d) are generated directly from the "
         "simulator by <font face=\"Courier\">report/make_figures.py</font>, which is included in "
         "Appendix A. The curves in Figures 2, 3 and 4 are the exact arrays returned by the scan "
         "functions, plotted without smoothing.", s["body"]))
@@ -494,11 +511,13 @@ def build() -> None:
     story.append(Paragraph("3.4 How the model compares with published patterns", s["h2"]))
     story.append(Paragraph(
         "A simulation is only useful if its numbers are the numbers a real instrument would "
-        "give. Table 3 compares the relative intensities the model produces with standard "
-        "literature reference intensities (corresponding to the listed ICDD PDF reference numbers) "
-        "for five of the phases. The reflections are the strongest ones; the model normalises each "
-        "pattern to its own strongest reflection (111, 200, 101, or 110), as the reference tables do.", s["body"]))
-    ratio_rows = [["Phase", "Reference ID", "Reflections", "Model (area)", "Literature (peak)"]]
+        "give. Table 3 compares both the relative integrated intensities (<font face=\"Courier\">Model (area)</font>) "
+        "and the simulated scan peak heights (<font face=\"Courier\">Model (peak)</font>, including Caglioti "
+        "broadening and K-alpha1/K-alpha2 doublet splitting) against published Powder Diffraction File "
+        "(ICDD PDF) reference peak intensities [13] for five phases. Each pattern is normalised to its "
+        "own strongest reflection (111, 200, 101, or 110).", s["body"]))
+    ratio_rows = [["Phase", "Reference ID [13]", "Reflections", "Model (area)", "Model (peak)", "Literature (peak) [13]"]]
+    inst_clean = Instrument(background_rate=0.0, rng_seed=None)
     for key, card, hkls, published in [
             ("si", "PDF 27-1402", [(1, 1, 1), (2, 2, 0), (3, 1, 1), (4, 0, 0)], "100 / 55 / 30 / 6"),
             ("cu", "PDF 04-0836", [(1, 1, 1), (2, 0, 0), (2, 2, 0), (3, 1, 1)], "100 / 46 / 20 / 17"),
@@ -507,32 +526,42 @@ def build() -> None:
             ("tio2-rutile", "PDF 21-1276", [(1, 1, 0), (1, 0, 1), (2, 1, 1)], "100 / 50 / 60")]:
         rows = reflections(PHASES[key], instrument)
         top = max(row.intensity for row in rows)
-        lookup = {row.hkl: row.intensity for row in rows}
-        model = " / ".join(f"{100 * lookup[hkl] / top:.0f}" for hkl in hkls)
+        lookup = {row.hkl: row for row in rows}
+        model_area = " / ".join(f"{100 * lookup[hkl].intensity / top:.0f}" for hkl in hkls)
+        sc = scan(PHASES[key], 20.0, 95.0, 0.002, inst_clean)
+        pks = find_peaks(sc.two_theta, sc.counts)
+        top_h = max(p.height for p in pks)
+        model_peak = " / ".join(
+            f"{100 * min(pks, key=lambda p: abs(p.two_theta - lookup[hkl].two_theta)).height / top_h:.0f}"
+            for hkl in hkls
+        )
         labels = " / ".join("".join(str(v) for v in hkl) for hkl in hkls)
-        ratio_rows.append([PHASES[key].name, card, labels, model, published])
-    story.append(table(ratio_rows, [70, 72, 98, 82, 103], s))
-    story.append(Paragraph("Table 3: relative intensities, model integrated areas against published "
-                           "literature reference peak intensities for the corresponding powder reference "
-                           "patterns.", s["caption"]))
+        ratio_rows.append([PHASES[key].name, card, labels, model_area, model_peak, published])
+    story.append(table(ratio_rows, [62, 68, 86, 68, 68, 93], s))
+    story.append(Paragraph("Table 3: relative intensities comparing model integrated areas and model "
+                           "scan peak heights against published ICDD PDF reference peak intensities [13].",
+                           s["caption"]))
     story.append(Paragraph(
-        "The agreement is good on the low-angle lines and drifts high at the back of the "
-        "scan: silicon 400 at 10 against 6, copper 311 at 27 against 17, rutile 110/101/211 at "
-        "100/45/55 against 100/50/60. (Note that flat-plate thick-specimen absorption A = 1/(2 mu) "
-        "is independent of 2theta, as noted in section 2.2, and therefore does not cause this drift.) "
-        "Instead, two physical effects explain the direction. First, standard reference compilations "
-        "quote peak heights whereas the model table above lists integrated intensities; because both "
-        "the Caglioti instrumental width and the K-alpha1/K-alpha2 doublet separation grow with 2theta, "
-        "the same integrated area is spread over a wider angular span and yields a lower peak height at "
-        "high angle. Second, the model applies a single uniform Debye-Waller factor of B = 0.5 A^2 to every "
-        "site rather than element-specific room-temperature thermal parameters (which are larger in softer "
-        "metallic and ionic lattices than in stiff covalent crystals), which suppresses high-angle "
-        "reflections more strongly in experiment [2], [3]. The discrepancy is recorded rather than tuned, "
-        "because fitting B per site would be empirical curve-fitting rather than forward physics.",
+        "Comparing <font face=\"Courier\">Model (peak)</font> directly with <font face=\"Courier\">Literature (peak)</font> "
+        "immediately explains a major part of the high-angle behaviour. Standard PDF cards quote peak heights, "
+        "whereas raw structure-factor products (<font face=\"Courier\">Model (area)</font>) give integrated areas; "
+        "because both the Caglioti instrumental width and the K-alpha1/K-alpha2 doublet separation grow with 2theta, "
+        "high-angle reflections spread their area over a wider angular span and have lower peak heights. For copper, "
+        "moving from integrated area (100 / 46 / 24 / 27) to peak height (100 / 45 / 21 / 20) brings the 220 and 311 "
+        "lines directly into line with the published card (100 / 46 / 20 / 17), and for silicon 400 drops from 10 to 8 "
+        "(against 6). (Flat-plate thick-specimen absorption A = 1/(2 mu) is independent of 2theta, as noted in "
+        "section 2.2, and plays no role here.) The remaining small differences have two opposite-sign physical "
+        "causes. In cubic Cu, Si, and NaCl, high-angle model peaks sit slightly above the card values because the "
+        "model omits anomalous dispersion (Delta f' ~ -2.1 e- for Cu at Cu K-alpha) and uses one uniform Debye-Waller "
+        "factor B = 0.5 A^2 for every site (close to room-temperature Si at B ~ 0.46 A^2, but smaller than room-temperature "
+        "Cu at B ~ 0.58 A^2 and NaCl at B ~ 1.4 A^2 [2], [3]). Conversely, in tetragonal rutile (TiO2), the model values "
+        "(100 / 45 / 55 area, 100 / 45 / 51 peak) sit slightly below the published card (100 / 50 / 60), reflecting "
+        "neutral-atom vs partially ionic Ti4+/O2- form factors [6] and anisotropic thermal motion. The differences are "
+        "recorded rather than tuned so that every phase uses the same forward model.",
         s["body"]))
 
     # ------------------------------------------------------------------ 4
-    story.append(Paragraph("4. Item 2: what changes when the domain size changes (25%)",
+    story.append(Paragraph("4. Item 2: what changes when the domain size changes",
                            s["h1"]))
     story.append(Paragraph(
         "The measurement behind this item is a size series on silicon, Cu K-alpha1 only, a "
@@ -544,13 +573,13 @@ def build() -> None:
     story.append(Paragraph("Table 4: the size study. The Scherrer column subtracts the "
                            "instrument width in quadrature and applies K lambda/(D cos theta) "
                            "with K = 0.9 [3]. The theoretical full-profile integral is "
-                           "100 000 x 0.002 deg = 200 counts deg; the area column integrates over "
-                           "a finite window of +/-4 FWHM and subtracts the local window median "
-                           "(analysis._area), which retains 81 % (162 counts deg) of an eta = 0.5 "
-                           "pseudo-Voigt at large D. At 10 nm (146) and 5 nm (148), the left window "
-                           "reaches the 27.0 deg scan boundary; at 5 nm the wider right window extends "
-                           "further into the flat baseline, slightly lowering the subtracted median "
-                           "relative to 10 nm.",
+                           "100 000 x 0.002 deg = 200 counts deg. In analysis._area, integrating "
+                           "over +/-4 FWHM and subtracting np.median(y[window]) (which equals the "
+                           "profile flank at +/-2 FWHM, ~1.97 % of peak height for eta = 0.5) removes "
+                           "~13 % via the median baseline and ~6 % in the Lorentzian wings outside "
+                           "+/-4 FWHM, yielding 162 counts deg (81 %) across 20-200 nm (and 164 at "
+                           "500 nm from discrete grid rounding over 213 bins). At 10 nm (146) and "
+                           "5 nm (148), the left window hits the 27.0 deg scan boundary.",
                            s["caption"]))
 
     story.append(Paragraph("4.1 The peak position does not move", s["h2"]))
@@ -566,30 +595,33 @@ def build() -> None:
         f"The 111 width runs from {sz[500.0, '111']['fwhm']:.4f} deg at 500 nm to "
         f"{sz[5.0, '111']['fwhm']:.3f} deg at 5 nm, a factor of "
         f"{sz[5.0, '111']['fwhm'] / sz[500.0, '111']['fwhm']:.0f} for a hundredfold change in "
-        "size. On log-log axes the low-angle points lie on a line of slope minus one (Figure "
-        "5, left), which is the signature of a width proportional to 1/D. The same slope "
+        "size. On log-log axes plotted against inverse size 1/D, the sample-dominated points "
+        "lie on a straight line of slope +1 (Figure 5, left; equivalent to slope -1 if plotted "
+        "against D), which is the signature of a width proportional to 1/D. The same slope "
         "appears for 220 and 400: the size effect is not a property of one reflection.",
         s["body"]))
     story.append(figure("size_laws.png"))
-    story.append(Paragraph("Figure 5: left, measured FWHM against 1/D on log-log axes, one "
-                           "line per reflection; right, peak height against D. Both families "
-                           "bend over where the instrument width takes control.", s["caption"]))
+    story.append(Paragraph("Figure 5: left, measured FWHM against 1/D on log-log axes (slope +1 "
+                           "in the sample-dominated regime), one line per reflection; right, peak "
+                           "height against D (slope +1). Both families bend over into a flat "
+                           "plateau at small 1/D (large D) where the instrument width takes control.",
+                           s["caption"]))
 
     story.append(Paragraph("4.3 The height falls, the area is conserved", s["h2"]))
     story.append(Paragraph(
         f"The peak height at 111 falls from {sz[500.0, '111']['height']:.0f} counts at 500 nm "
         f"to {sz[5.0, '111']['height']:.0f} counts at 5 nm, a factor of "
         f"{sz[500.0, '111']['height'] / sz[5.0, '111']['height']:.0f}, inversely proportional "
-        "to the width factor. Because the simulator normalises each pseudo-Voigt profile to unit "
-        "area by construction (reflecting Parseval's theorem for a fixed powder volume), the "
-        "measured area in Table 4 stays consistent with a constant value between "
-        f"{sz[10.0, '111']['area']:.0f} ({sz[5.0, '111']['area']:.0f} at 5 nm) and "
-        f"{sz[500.0, '111']['area']:.0f} counts deg across "
-        "the hundredfold range (the small variation coming from the finite +/-4 FWHM integration "
-        "window and local-median baseline subtraction noted in the Table 4 caption). Physically, "
-        "the total diffracted power of that reflection is fixed by the structure factor and the "
-        "illuminated specimen volume, while a smaller crystallite spreads that same power over "
-        "a wider angular range.", s["body"]))
+        "to the width factor. Physically, by Parseval's theorem on the spatial window of a "
+        "single crystallite of N planes, the integrated intensity per crystallite scales as N, "
+        "while a fixed irradiated powder volume contains a number of crystallites proportional "
+        "to 1/N; their product is independent of domain size D. The simulator encodes this "
+        "physical invariance by normalising every peak profile to unit area. In Table 4, the "
+        "windowed area estimator stays constant at 162 counts deg across 20-200 nm (164 at "
+        f"500 nm from discrete-bin rounding, and {sz[10.0, '111']['area']:.0f}-{sz[5.0, '111']['area']:.0f} "
+        "at 10-5 nm where the +/-4 FWHM window clips the 27.0 deg scan edge, as explained in the "
+        "Table 4 caption). A smaller crystallite spreads the same total diffracted power over a "
+        "wider angular range.", s["body"]))
 
     story.append(Paragraph("4.4 The effect depends on the reflection", s["h2"]))
     story.append(Paragraph(
@@ -627,19 +659,28 @@ def build() -> None:
         "(D ~ 0.9 nm, FWHM ~ 9 deg) all neighbouring lines merge into the continuous amorphous halo of "
         "Figure 2(b).", s["body"]))
 
-    story.append(Paragraph("4.6 How well does the width law hold?", s["h2"]))
+    story.append(Paragraph("4.6 How well does the width extraction hold?", s["h2"]))
     story.append(Paragraph(
-        "Table 5 compares the measured width of every reflection in the study with the "
-        "predicted total width, combining the algebraic Scherrer width beta = K lambda / (D cos theta) "
-        "with the instrumental Caglioti width in quadrature, sqrt(beta_size^2 + beta_inst^2), using the "
-        "same K and lambda the simulator uses. The residuals are well below 0.001 deg across most sizes, "
-        "and reach at most -0.037 deg (-1.9 %) at 5 nm for the 400 reflection, where the quadrature "
-        "combination of pseudo-Voigt profiles is least exact.", s["body"]))
+        "Because <font face=\"Courier\">scan()</font> sets the width of each simulated pseudo-Voigt "
+        "peak using <font face=\"Courier\">add_in_quadrature(width, size_fwhm)</font>, the column "
+        "<font face=\"Courier\">pred. total</font> in Table 5 is the exact analytic FWHM parameter "
+        "passed into <font face=\"Courier\">pseudo_voigt_array()</font>. Comparing the measured FWHM "
+        "extracted by <font face=\"Courier\">find_peaks()</font> against <font face=\"Courier\">pred. total</font> "
+        "therefore tests the numerical accuracy of the peak-finding and baseline-estimation algorithm "
+        "(while the independent first-principles test of the Scherrer law itself against exact N-plane "
+        "Laue convolution is performed in Section 5.7 and Figure 7). Across D >= 10 nm, the extracted "
+        "widths agree with the injected profile widths to within 0.0-0.5 %. The largest residual is "
+        "-0.0366 deg (-1.9 %) at D = 5 nm for the 400 reflection (69.127 deg, FWHM = 1.9309 deg): "
+        "because <font face=\"Courier\">size_study.py</font> ends the scan at 70.5 deg (only 1.37 deg "
+        "above the 400 peak centre), the right flank of the broad 400 profile is cut off at the scan "
+        "boundary, which biases the 10th-percentile baseline estimator <font face=\"Courier\">_local_floor()</font> "
+        "upward by 3.5 % of peak height, raising the half-maximum threshold <font face=\"Courier\">(height + floor)/2</font> "
+        "and narrowing the measured width by 1.9 %.", s["body"]))
     story.append(table(residual_rows(), [36, 26, 52, 58, 58, 62, 58, 52, 48], s))
-    story.append(Paragraph("Table 5: measured width against the predicted total width. The "
-                           "measured column is the FWHM the analysis code extracts from the "
-                           "simulated scan; the predicted total combines the algebraic Scherrer "
-                           "width with the instrumental Caglioti width in quadrature.", s["caption"]))
+    story.append(Paragraph("Table 5: width extracted by find_peaks() against the injected "
+                           "quadrature width parameter (pred. total). Residuals reflect finite-window "
+                           "baseline estimation (_local_floor), largest where the broad 5 nm (400) peak "
+                           "at 69.127 deg is truncated at the 70.5 deg scan limit.", s["caption"]))
 
     story.append(Paragraph("4.7 A worked example: reading a size from one scan", s["h2"]))
     story.append(Paragraph(
@@ -669,7 +710,7 @@ def build() -> None:
         "reproducible.", s["body"]))
 
     # ------------------------------------------------------------------ 5
-    story.append(Paragraph("5. Item 3: why it happens, in signals-and-systems terms (25%)",
+    story.append(Paragraph("5. Item 3: why it happens, in signals-and-systems terms",
                            s["h1"]))
     story.append(Paragraph("5.1 The pattern is a Fourier transform", s["h2"]))
     story.append(Paragraph(
@@ -682,23 +723,25 @@ def build() -> None:
     story.append(Paragraph(
         "A real crystal is that lattice multiplied by a window w(r), equal to one inside the "
         "crystallite and zero outside. Multiplication in real space is convolution in "
-        "reciprocal space [4], [5], so the amplitude becomes", s["body"]))
+        "reciprocal space [4], [5], so the scattered amplitude becomes", s["body"]))
     story.append(Paragraph(
         "A(q) = [reciprocal lattice x F(q)] * W(q),&nbsp;&nbsp;&nbsp;&nbsp;"
         "W = FT{w},", s["eq"]))
     story.append(Paragraph(
-        "and the measured intensity carries |W|^2. The finite size of the crystal is therefore "
-        "not a correction applied to the physics; it is a filter applied to the ideal "
+        "and for well-separated Bragg reflections the measured intensity is the impulse train "
+        "convolved with the squared magnitude of the window transform, h_crystal(q) = |W(q)|^2. "
+        "The finite size of the crystal is therefore not an empirical correction applied to the "
+        "physics; it is a linear shift-invariant (LTI) filter applied to the ideal impulse "
         "spectrum. Everything that follows is a property of that filter.", s["body"]))
     story.append(figure("convolution.png"))
     story.append(Paragraph("Figure 7: the signals-and-systems cascade and independent numerical "
                            "convolution check for Si (111) at N = 160 planes (D = 50.2 nm) and "
                            "N = 1600 planes (D = 501.7 nm). (a) Ideal Bragg impulse at "
                            "2theta_B = 28.441 deg. (b) Exact finite-chain Laue interference "
-                           "profile |W(q)|^2 = |sin(Nu)/(N sin u)|^2 for N = 160 planes "
+                           "profile h_crystal = |W(q)|^2 = |sin(Nu)/(N sin u)|^2 for N = 160 planes "
                            "(D = 50.2 nm, FWHM = 0.1608 deg), with secondary sinc^2 sidelobes "
                            "shown at 8x vertical zoom. (c) Second LTI stage at N = 160 planes: "
-                           "pure Laue |W(q)|^2 (FWHM = 0.1608 deg), Gaussian instrument kernel "
+                           "pure Laue |W(q)|^2 (FWHM = 0.1608 deg), compact Gaussian instrument kernel "
                            "h_inst (FWHM = 0.0524 deg, scaled x0.18), direct numerical convolution "
                            "|W|^2 * h_inst (FWHM = 0.1671 deg, damping the sidelobes into smooth "
                            "wings), and the analytical pseudo-Voigt quadrature curve (K = 0.8859, "
@@ -746,50 +789,57 @@ def build() -> None:
 
     story.append(Paragraph("5.3 The width constant, measured", s["h2"]))
     story.append(Paragraph(
-        "Equation (2) can be evaluated directly. The table below reports the FWHM of the "
-        "interference function in reciprocal space, normalised as FWHM x D / (2 pi), for "
-        "several chain lengths:", s["body"]))
+        "Equation (2) can be evaluated directly. Table 7 reports the exact dimensionless FWHM "
+        "of the finite-chain interference function in reciprocal space, K_N = FWHM_q x D / (2 pi), "
+        "together with the corresponding Si (111) pure-size FWHM in degrees and the relative "
+        "offset from the conventional K = 0.90:", s["body"]))
     story.append(table([
-        ["N planes", "FWHM x D / (2 pi)", "implied K"],
-        ["10", "0.8897", "0.8897"],
-        ["20", "0.8869", "0.8869"],
-        ["50", "0.8860", "0.8860"],
-        ["100", "0.8859", "0.8859"],
-        ["1000", "0.8859", "0.8859"],
-    ], [90, 120, 90], s))
-    story.append(Paragraph("Table 7: the shape constant of a pure finite-chain profile, "
-                           "computed from equation (2). The Scherrer constant K = 0.9 used in "
-                           "the code is this value rounded up; a Gaussian or Lorentzian "
-                           "profile would give a slightly different number, which is why K "
-                           "is quoted as a convention rather than a constant of nature [1].",
+        ["N planes", "D at Si 111 (nm)", "K_N = FWHM_q D / (2 pi)", "Si 111 FWHM (deg)", "offset vs K = 0.90"],
+        ["10", "3.14", "0.8897", "2.5798", "-1.14 %"],
+        ["20", "6.27", "0.8869", "1.2858", "-1.46 %"],
+        ["50", "15.68", "0.8860", "0.5138", "-1.56 %"],
+        ["100", "31.36", "0.8859", "0.2569", "-1.57 %"],
+        ["1000", "313.57", "0.8859", "0.0257", "-1.57 %"],
+    ], [55, 80, 115, 95, 90], s))
+    story.append(Paragraph("Table 7: exact dimensionless shape constant K_N of a finite-chain Laue "
+                           "profile computed from equation (2), the corresponding Si (111) width, "
+                           "and its percentage offset from the conventional K = 0.90 [1].",
                            s["caption"]))
 
     story.append(Paragraph("5.4 Two linear stages, and what follows from that", s["h2"]))
     story.append(Paragraph(
-        "The chain is two linear, shift-invariant stages in series. The input is the Bragg "
-        "impulse train; the crystal has impulse response h_crystal = W; the instrument has "
-        "impulse response h_instrument. Convolution commutes and associates, so the observed "
-        "line is the ideal line blurred by both, in either order [4]:", s["body"]))
+        "The intensity chain is two linear, shift-invariant (LTI) stages in series. The input "
+        "is the ideal Bragg impulse train I_ideal; the finite crystal has intensity impulse "
+        "response h_crystal = |W|^2; the diffractometer optics and detector have impulse "
+        "response h_instrument. Convolution commutes and associates, so the observed line "
+        "profile is the ideal impulse blurred by both filters in series [4]:", s["body"]))
     story.append(Paragraph(
-        "I_observed = I_ideal * h_crystal * h_instrument.&nbsp;&nbsp;&nbsp;&nbsp;(3)",
+        "I_observed = I_ideal * h_crystal * h_instrument,&nbsp;&nbsp;&nbsp;&nbsp;"
+        "h_crystal = |W|^2.&nbsp;&nbsp;&nbsp;&nbsp;(3)",
         s["eq"]))
     story.append(Paragraph(
-        "<b>Bandwidth.</b> A long impulse response has a narrow frequency response. A "
-        "crystallite of N planes is a window of length N d, and the width of its transform "
-        "scales as 1/N. Halving the crystallite doubles the width in q, which is the line of "
-        "slope minus one in Figure 5. The reciprocal relation is the same statement as the "
-        "time-bandwidth product of signals and systems: a short observation cannot resolve "
-        "fine structure in frequency, and a small crystal cannot produce a sharp line.",
+        "<b>Bandwidth.</b> A wide spatial window has a narrow spatial-frequency response. A "
+        "crystallite of N planes is a rectangular window of length D = N d, and the width of "
+        "its squared Fourier transform |W(q)|^2 scales as 1/D. Halving the crystallite size "
+        "doubles the spectral width in q, producing the straight line of slope +1 against 1/D "
+        "(slope -1 against D) in Figure 5. This reciprocal scaling is the spatial analogue of "
+        "the time-bandwidth uncertainty product in signals and systems [4], [5]: a short "
+        "spatial window cannot resolve fine spatial-frequency structure, so a small crystal "
+        "cannot produce a sharp Bragg line.",
         s["body"]))
     story.append(Paragraph(
-        "<b>Area.</b> A normalised impulse response has unit area, and convolution preserves "
-        "the integral. The area under a reflection is therefore fixed by the structure factor "
-        "and the beam, while its height is area divided by width. Because the simulator "
-        "normalises each profile to unit area by construction, Table 4 is consistent with "
-        "that conservation: the windowed area at 111 stays within about ten per cent across "
-        "a hundredfold change in size while the height follows the inverse width. In the "
-        "language of the same theory this is Parseval's theorem: the total power in the line "
-        "is unchanged, only its distribution in q is.", s["body"]))
+        "<b>Area conservation (Parseval's theorem and LTI zero-frequency gain).</b> Two "
+        "distinct theorems govern the area in equation (3). First, in the first stage, "
+        "Parseval's theorem applied to the spatial window w(r) of a single crystal of N "
+        "planes gives integral |W(q)|^2 dq proportional to N; in a fixed irradiated powder "
+        "volume containing N_cryst proportional to 1/N crystallites, the product is "
+        "independent of N, so the integrated intensity entering the instrument is invariant "
+        "with respect to domain size D (which the simulator represents by normalising its "
+        "crystal profile to unit area). Second, in the second stage, convolving with a "
+        "unit-area instrument kernel (integral h_instrument d(2theta) = 1, i.e., unit DC gain) "
+        "preserves the total integral: integral (f * g) = (integral f)(integral g) [4]. "
+        "Because total area is conserved across both stages, peak height scales inversely "
+        "with peak width.", s["body"]))
     story.append(Paragraph(
         "<b>The cascade is limited by its widest stage.</b> The instrument response is set by "
         "the slits, the source size and the detector, and for any crystallite above roughly "
@@ -797,14 +847,15 @@ def build() -> None:
         "flatten at the right, and why the recovery in Table 4 stops being meaningful there: "
         "the measurement can no longer see the narrower of the two filters. Adding two "
         "Gaussian widths in quadrature is the statement that variances add when independent "
-        "responses are convolved; the Lorentzian part of a pseudo-Voigt adds linearly "
-        "instead, which is why the quadrature correction in Table 4 is approximate and why "
-        "the residuals in Table 5 grow at the smallest sizes.", s["body"]))
+        "Gaussian responses are convolved; for a pseudo-Voigt profile or a sinc^2 Laue profile, "
+        "quadrature width addition is an analytical approximation (tested directly against "
+        "exact numerical convolution in Section 5.7).", s["body"]))
 
     story.append(Paragraph("5.5 The 1/cos(theta) is a change of variable", s["h2"]))
     story.append(Paragraph(
         "The broadening happens in q, but the scan is recorded in 2theta. The two are related "
-        "by q = 4 pi sin(theta)/lambda, so", s["body"]))
+        "by q = 4 pi sin(theta)/lambda, so at fixed wavelength lambda the Jacobian of the "
+        "coordinate transformation is", s["body"]))
     story.append(Paragraph(
         "dq/d(2theta) = (2 pi / lambda) cos(theta),&nbsp;&nbsp;&nbsp;&nbsp;(4)", s["eq"]))
     story.append(Paragraph(
@@ -816,12 +867,13 @@ def build() -> None:
         "The 1/cos(theta) is a Jacobian: the change of variable between the frequency axis of "
         "the spectrum and the goniometer angle on which it is displayed. At high angle a "
         "degree of 2theta spans fewer reciprocal-space units, so the same spectral width looks "
-        "wider on the chart. The same variable change explains why the K-alpha doublet "
-        "separates more at high angle: the 0.072 deg separation at 28 deg grows to 0.275 deg "
-        "at 88 deg in the simulator's own scans. This is why a size measured from one "
-        "low-angle line and "
-        "one high-angle line should agree once equation (5) is applied, and Table 5 is that "
-        "check.", s["body"]))
+        "wider on the chart. (By contrast, differentiating Bragg's law with respect to lambda "
+        "at fixed d gives the K-alpha1/K-alpha2 wavelength-doublet splitting "
+        "Delta(2theta) = 2 tan(theta) (Delta lambda / lambda), which shares the 1/cos(theta) "
+        "projection factor multiplied by sin(theta) and grows from 0.072 deg at 28 deg to "
+        "0.275 deg at 88 deg.) This Jacobian is why a size measured from one low-angle line "
+        "and one high-angle line agrees once equation (5) is applied, as demonstrated in "
+        "Table 6.", s["body"]))
 
     story.append(Paragraph("5.6 Sampling, and why the scan step matters", s["h2"]))
     story.append(Paragraph(
@@ -848,10 +900,10 @@ def build() -> None:
     story.append(Paragraph(
         "It is important to distinguish two levels of verification in this study. First, "
         "comparing Table 5 against equation (5) verifies the numerical consistency of the "
-        "simulation-and-measurement pipeline: because the fast scan generator sets its "
+        "simulation-and-measurement pipeline: because <font face=\"Courier\">scan()</font> sets its "
         "pseudo-Voigt width by combining equation (5) (with K = 0.90) and the Caglioti width "
-        "in quadrature, measuring the FWHM on the full doublet scan recovers the input model "
-        "up to doublet splitting and discrete-grid interpolation. "
+        "in quadrature, measuring the FWHM on the simulated scan tests how accurately "
+        "<font face=\"Courier\">find_peaks()</font> recovers the injected width parameter. "
         f"At 20 nm the pure-size prediction for 111 is {sz[20.0, '111']['predicted_size_fwhm']:.3f} deg "
         f"(quadrature total {math.hypot(sz[20.0, '111']['predicted_size_fwhm'], sz[20.0, '111']['instrument_fwhm']):.3f} deg) "
         f"against {sz[20.0, '111']['fwhm']:.3f} deg measured; at 400, "
@@ -862,20 +914,22 @@ def build() -> None:
         f"{sz[5.0, '111']['fwhm']:.2f} deg.", s["body"]))
     story.append(Paragraph(
         "Second, to provide a strictly non-circular physical test that never invokes the "
-        "Scherrer equation or quadrature width addition, xrdsim/profile.py evaluates the "
-        "exact N-plane Laue interference sum |W(q)|^2 = |sin(Nu)/(N sin u)|^2 directly on "
-        "the 2theta grid (laue_interference_array) and numerically convolves it with the "
-        "Gaussian instrumental kernel h_inst (FWHM = 0.0524 deg at Si 111) via trapezoidal "
-        "integration (convolve_laue_with_instrument, plotted in Figure 7(b)-(d) for N = 160 "
-        "and N = 1600 planes). Across the entire size range, the numerically convolved Laue "
-        "FWHM agrees with the exact finite-chain quadrature formula (K = 0.8859) to within "
-        "0.2-2.2 per cent: at N = 16 planes (D = 5.02 nm), 1.6062 deg against 1.6088 deg "
-        "(0.16 %, or 1.6343 deg at K = 0.90); at N = 64 planes (D = 20.07 nm), 0.4044 deg "
-        "against 0.4054 deg (0.25 %); at N = 160 planes (D = 50.17 nm, Figure 7(b)-(c)), "
-        "0.1671 deg against 0.1691 deg (1.2 %); and at N = 1600 planes (D = 501.7 nm, "
-        "Figure 7(d)), the 0.0161 deg Laue profile broadens under numerical convolution to "
-        "0.0561 deg against 0.0549 deg in quadrature (2.2 %), confirming the instrument-limited "
-        "floor from first principles.", s["body"]))
+        "Scherrer equation or quadrature width addition, <font face=\"Courier\">xrdsim/profile.py</font> "
+        "evaluates the exact N-plane Laue interference sum h_crystal = |W(q)|^2 = |sin(Nu)/(N sin u)|^2 "
+        "directly on the 2theta grid (<font face=\"Courier\">laue_interference_array</font>) and "
+        "numerically convolves it (<font face=\"Courier\">np.convolve</font>) with a Gaussian instrumental "
+        "kernel h_inst (FWHM = 0.0524 deg at Si 111; <font face=\"Courier\">convolve_laue_with_instrument</font>, "
+        "plotted in Figure 7(b)-(d) for N = 160 and N = 1600 planes). A Gaussian kernel (eta = 0) is used "
+        "for h_inst in this discrete convolution benchmark so that the kernel has compact numerical support "
+        "(decaying to 10^-16 at +/-6 sigma without finite-window Lorentzian tail truncation) and directly "
+        "tests the Gaussian variance-addition hypothesis of quadrature width combination. Across the entire "
+        "size range, the numerically convolved Laue FWHM agrees with the analytical finite-chain quadrature "
+        "formula (K = 0.8859) to within 0.2-2.2 per cent: at N = 16 planes (D = 5.02 nm), 1.6062 deg against "
+        "1.6088 deg (0.16 %, or 1.6343 deg at K = 0.90); at N = 64 planes (D = 20.07 nm), 0.4044 deg against "
+        "0.4054 deg (0.25 %); at N = 160 planes (D = 50.17 nm, Figure 7(b)-(c)), 0.1671 deg against 0.1691 deg "
+        "(1.2 %); and at N = 1600 planes (D = 501.7 nm, Figure 7(d)), the 0.0161 deg Laue profile broadens "
+        "under numerical convolution to 0.0561 deg against 0.0549 deg in quadrature (2.2 %), confirming the "
+        "instrument-limited floor from first principles.", s["body"]))
     story.append(Paragraph(
         "Two other descriptions of the same physics are common and are worth naming, because "
         "a reader will meet them. The Warren-Averbach analysis works with the Fourier "
@@ -896,8 +950,8 @@ def build() -> None:
         "Every number in this report is produced by the simulator that draws the figures, and "
         "the report build is gated on automated checks (tools/check_all.py). Silicon peak "
         "positions are tested against the NIST SRM 640f certified lattice parameter "
-        "(a = 5.431144 A), every phase in the library is tested against its published strongest "
-        "reflection, and all figures, tables, and the PDF rebuild reproducibly from the scripts "
+        "(a = 5.431144 A) [15], every phase in the library is tested against its published strongest "
+        "reflection [12]-[14], and all figures, tables, and the PDF rebuild reproducibly from the scripts "
         "in Appendix A. The unit test suite covers the lattice geometry, the structure factor "
         "and its systematic absences, the profile functions (including the exact Laue numerical "
         "convolution), the detector, and the scan, and includes an independent brute-force count "
@@ -916,13 +970,16 @@ def build() -> None:
         "sub-per-cent precision). Second, the profile shape matters "
         "less than one might expect: sweeping eta from 0 to 1 changes the peak height by "
         "about a third but the measured FWHM by less than 0.1 per cent at 20 nm, because "
-        "the width is read at half maximum and the mixture is normalised to unit area. Third, the quadrature combination of "
-        "the instrumental and size widths is exact only for two Gaussians; with a pseudo-Voigt "
-        "the Lorentzian part adds linearly, and that is the main reason the residuals in "
-        "Table 5 grow at the smallest sizes. Finally, the instrument constants U, V and W are "
-        "plausible defaults rather than a calibration of a real diffractometer, so the "
-        "absolute widths belong to this model; the scaling laws, which are what items 2 and 3 "
-        "are about, do not depend on them.", s["body"]))
+        "the width is read at half maximum and the mixture is normalised to unit area. Third, "
+        "finite-window baseline estimation in <font face=\"Courier\">find_peaks()</font> "
+        "(<font face=\"Courier\">_local_floor</font> over +/-10 deg) introduces up to a -1.9 % "
+        "width bias when a broad high-angle peak (such as Si 400 at 5 nm, 69.127 deg) sits "
+        "within one FWHM of the 70.5 deg scan boundary, while replacing analytical quadrature "
+        "with exact numerical Laue convolution shifts the total width by 0.2-2.2 % (Section 5.7). "
+        "Finally, the instrument constants U, V and W are plausible defaults rather than a "
+        "calibration of a real diffractometer, so the absolute widths belong to this model; "
+        "the scaling laws, which are what items 2 and 3 are about, do not depend on them.",
+        s["body"]))
     story.append(Paragraph(
         "What could change the conclusions? A different shape constant would move every "
         "recovered size by the same factor and would not change the 1/D law. A different "
@@ -953,23 +1010,26 @@ def build() -> None:
          "height comparisons, not widths"],
         ["Scan step, 0.02 deg at 500 nm", "width +4.2 %, recovered size -28.5 %",
          "narrow lines, large crystallites"],
-        ["Quadrature subtraction", "up to 1.9 % on the width at 5 nm, 400",
-         "the smallest sizes"],
+        ["Scan-edge baseline clipping", "-1.9 % on extracted FWHM at 5 nm, 400 (69.13 vs 70.5 deg)",
+         "broad peaks near scan boundary (Table 5)"],
+        ["Exact Laue vs quadrature width", "0.2 % (at 5-20 nm) to 2.2 % (at 500 nm)",
+         "intermediate/instrument crossover (Fig. 7)"],
         ["Instrument U, V, W", "sets the crossover near 100 nm",
          "any size above about 100 nm"],
         ["Wavelength convention", "0.0001 deg at 30 deg", "negligible"],
         ["Cell constants", "below 0.02 deg in 2theta", "positions, not widths"],
-    ], [110, 180, 155], s))
+    ], [115, 180, 150], s))
     story.append(Paragraph("Table 8: the uncertainty budget. The step and eta entries were "
                            "measured by sweeping the parameter and re-running the analysis; "
-                           "the quadrature entry is the largest residual in Table 5.",
+                           "the scan-edge baseline entry is the largest residual in Table 5, "
+                           "and the Laue convolution entry is from Section 5.7.",
                            s["caption"]))
 
     # ------------------------------------------------------------------ 7
     story.append(Paragraph("7. Conclusion", s["h1"]))
     story.append(Paragraph(
         "Item 1: the simulator described in section 2 reproduces the diffraction patterns of "
-        "canonical crystal types (SC, BCC, FCC, amorphous), ten crystalline phases in the "
+        "canonical crystal types (generic SC, BCC, FCC, amorphous), nine reference phases in the "
         "sample library, and of one structure at six crystallite sizes (Figures 2, 3, and 4), "
         "and its complete source code is included in Appendix A. Item 2: changing the domain "
         "size changes the width of every line as 1/D, changes the peak height in proportion "
@@ -977,8 +1037,8 @@ def build() -> None:
         "and broadens lines more strongly at high angle as 1/cos(theta). Item 3: those four "
         "facts are the properties of a two-stage linear filter cascade. A finite crystallite "
         "multiplies the infinite lattice by a spatial window w(r), convolution in reciprocal "
-        "space turns that window into the Laue interference function |W(q)|^2 of width "
-        "0.8859 x 2 pi / D, the instrument is a second convolution in series with h_inst, "
+        "space turns that window into the Laue interference intensity filter h_crystal = |W(q)|^2 "
+        "of width 0.8859 x 2 pi / D, the instrument is a second convolution in series with h_inst, "
         "and the 1/cos(theta) factor is the Jacobian between reciprocal space and the "
         "goniometer angle. Both the pseudo-Voigt scan measurements (Tables 4 and 5) and the "
         "independent numerical convolution of the exact N-plane Laue sum with h_inst "
@@ -988,26 +1048,22 @@ def build() -> None:
     story.append(Paragraph("References", s["h1"]))
     for index, entry in enumerate(REFERENCES, start=1):
         story.append(Paragraph(f"[{index}] {entry}", s["ref"]))
-    story.append(Paragraph(
-        "All eleven references were verified against Crossref (for journal DOIs [1], [6]-[9], [11]), "
-        "OpenLibrary (for textbook ISBNs [2]-[5]), and the Goettingen GDZ digital archive ([10]).",
-        s["caption"]))
 
-    # ------------------------------------------------------------------ B
     # ------------------------------------------------------------------ A, B, C
     code_appendix(story, s)
 
     story.append(Paragraph("Appendix B: constants and their provenance", s["h1"]))
     story.append(Paragraph(
-        "The cell constants the report uses, with the record each came from. The full table, "
-        "including confidence for every value, is data/SOURCES.md in the repository.", s["body"]))
-    provenance = [["Key", "Cell (A)", "Record"]]
+        "The cell constants the report uses, with the record each came from [12], [14], [15]. "
+        "The full table, including confidence for every value, is data/SOURCES.md in the "
+        "repository.", s["body"]))
+    provenance = [["Key", "Cell (A)", "Record [12], [14], [15]"]]
     for key, phase in PHASES.items():
         cell = f"a = {phase.a:.4f}" + (f", c = {phase.c:.4f}" if phase.c else "")
         provenance.append([key, cell, phase.source])
     story.append(table(provenance, [58, 92, 300], s))
-    story.append(Paragraph("Table 9: cell constants and the record behind each. Where a "
-                           "record is a room-temperature conventional value rather than a "
+    story.append(Paragraph("Table 9: cell constants and the record behind each [12], [14], [15]. "
+                           "Where a record is a room-temperature conventional value rather than a "
                            "certified one, data/SOURCES.md marks it provisional.", s["caption"]))
     story.append(Paragraph(
         "Instrument constants: Cu K-alpha1 1.540598 A, K-alpha2 1.544426 A (ratio 0.497), "
@@ -1016,7 +1072,7 @@ def build() -> None:
         "Waasmaier-Kirfel parameterisation [6], tabulated once and shipped with the code.",
         s["body"]))
 
-    story.append(Paragraph("Appendix C: reflection tables for the ten phases", s["h1"]))
+    story.append(Paragraph("Appendix C: reflection tables for the nine reference phases", s["h1"]))
     story.append(Paragraph(
         "Every reflection the model reaches below 150 deg with a non-zero structure factor, "
         "with its spacing, its angle, its multiplicity and its intensity relative to the "
@@ -1028,8 +1084,6 @@ def build() -> None:
         strongest = max(row.intensity for row in rows)
         body_rows = [["hkl", "d (A)", "2theta (deg)", "m", "I/I0 (%)"]]
         for row in rows:
-            if row.intensity < 0.005 * strongest:
-                continue
             body_rows.append([
                 "".join(str(v) for v in row.hkl), f"{row.d:.4f}", f"{row.two_theta:.3f}",
                 str(row.multiplicity), f"{100 * row.intensity / strongest:.1f}",
@@ -1037,10 +1091,9 @@ def build() -> None:
         story.append(Paragraph(f"{phase.name} ({phase.formula}), {phase.space_group}",
                                s["h2"]))
         story.append(table(body_rows, [56, 64, 74, 40, 66], s))
-        story.append(Paragraph(f"Table {number}: reflections of {phase.name} below 150 deg "
-                               f"above 0.5 per cent of the strongest line.", s["caption"]))
+        story.append(Paragraph(f"Table {number}: all non-zero reflections of {phase.name} "
+                               f"below 150 deg.", s["caption"]))
         number += 1
-
 
     doc.build(story, onFirstPage=_footer, onLaterPages=_footer)
     print(f"wrote {PDF_PATH}")

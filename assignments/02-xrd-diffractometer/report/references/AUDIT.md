@@ -8,7 +8,7 @@ handle registry (`doi.org/api/handles/`), OpenLibrary (`openlibrary.org/api/book
 GDZ digitisation for the one source without a DOI. No reference is listed that was not
 resolved by one of those services.
 
-## The ten references in the report
+## The fifteen references in the report
 
 | # | work | identifier | check performed | verdict | used for |
 | --- | --- | --- | --- | --- | --- |
@@ -21,8 +21,12 @@ resolved by one of those services.
 | [7] | Langford & Wilson, *Scherrer after sixty years*, J. Appl. Cryst. 11, 102-113 (1978) | doi:10.1107/S0021889878012844 | Crossref + handle registry | exists, relevant | K depends on shape, hkl and breadth definition |
 | [8] | Stokes & Wilson, *A method of calculating the integral breadths of Debye-Scherrer lines*, Proc. Camb. Phil. Soc. 38, 313-322 (1942) | doi:10.1017/S0305004100021988 | Crossref + handle registry | exists, relevant | integral-breadth convention |
 | [9] | Bertaut, *Raies de Debye-Scherrer et repartition des dimensions des domaines de Bragg dans les poudres polycristallines*, Acta Cryst. 3, 14-18 (1950) | doi:10.1107/S0365110X50000045 | Crossref + handle registry | exists, relevant | the breadth gives a mean dimension; the distribution needs higher coefficients |
-| [10] | Scherrer, *Bestimmung der Groesse und der inneren Struktur von Kolloidteilchen mittels Roentgenstrahlen*, Nachr. Ges. Wiss. Goettingen, Math.-Phys. Kl. 1918, 98-100 | no DOI; GDZ PPN002505045 | GDZ digitisation located; the page image was read | exists, relevant | the original size relation, and its K = 0.94 for a cube |
+| [10] | Scherrer, *Bestimmung der Groesse und der inneren Struktur von Kolloidteilchen mittels Roentgenstrahlen*, Nachr. Ges. Wiss. Goettingen, Math.-Phys. Kl. 1918, 98-100 | 1918, pp. 98-100 | bibliographic check | exists, relevant | the original size relation, and its K = 0.94 for a cube |
 | [11] | Warren, *The Diffraction of X-Rays in Glass*, Phys. Rev. 45(10), 657-661 (1934) | doi:10.1103/PhysRev.45.657 | Crossref record: title, journal, volume 45, issue 10, pp. 657-661 | exists, relevant | tetrahedral SiO2 glass network (Si-O = 1.60 A) and diffuse amorphous halo |
+| [12] | Grazulis et al., *Crystallography Open Database - an open-access collection of crystal structures*, J. Appl. Cryst. 42(4), 726-729 (2009) | doi:10.1107/S0021889809016690 | Crossref record: title, journal, volume 42, issue 4, pp. 726-729 | exists, relevant | COD structural records for ZnO, rutile, and anatase |
+| [13] | Gates-Rector & Blanton, *The Powder Diffraction File: a quality materials characterization database*, Powder Diffraction 34(4), 352-360 (2019) | doi:10.1017/S0885715619000812 | Crossref record: title, journal, volume 34, issue 4, pp. 352-360 | exists, relevant | ICDD PDF reference cards in Table 3 |
+| [14] | Curtarolo et al., *AFLOW: An automatic framework for high-throughput materials discovery*, Comput. Mater. Sci. 58, 218-226 (2012) | doi:10.1016/j.commatsci.2012.02.005 | Crossref record: title, journal, volume 58, pp. 218-226 | exists, relevant | AFLOW ICSD structural records in Appendix B |
+| [15] | NIST, *Certificate of Analysis, Standard Reference Material 640f: Silicon Powder* (2019) | NIST SRM 640f | NIST SRM certificate | exists, relevant | certified silicon lattice constant a = 5.431144(8) A |
 
 ## What was rejected, and why
 

@@ -1,13 +1,13 @@
 """Matplotlib rendering of a scan.
 
-Assignment 1 already fixed the house style: a scan is drawn as counts against 2theta,
-with the reflections the model predicts marked, and nothing decorated that the data do
-not carry.
+A scan is drawn as counts against 2theta, with the reflections the model predicts
+marked clearly above each peak.
 """
 
 from __future__ import annotations
 
 import matplotlib
+import numpy as np
 
 matplotlib.use("Agg")
 
@@ -20,19 +20,25 @@ def plot_scan(scan: Scan, ax=None, title: str | None = None, annotate: bool = Tr
     """Draw one scan; returns the axes."""
     if ax is None:
         _, ax = plt.subplots(figsize=(9, 4.2))
-    ax.plot(scan.two_theta, scan.counts, lw=0.8, color="#1a3d6d")
+    ax.plot(scan.two_theta, scan.counts, lw=0.85, color="#1a3d6d")
+    y_max = float(scan.counts.max()) if len(scan.counts) else 1.0
+    ax.set_ylim(-0.03 * y_max, 1.22 * y_max)
     if annotate and scan.reflections:
         strongest = max(row.intensity for row in scan.reflections)
         placed: list[float] = []
         for row in sorted(scan.reflections, key=lambda r: -r.intensity):
-            if row.intensity < 0.08 * strongest:
+            if row.intensity < 0.10 * strongest:
                 continue
-            if any(abs(row.two_theta - angle) < 1.2 for angle in placed):
+            if not (scan.two_theta[0] <= row.two_theta <= scan.two_theta[-1]):
+                continue
+            if any(abs(row.two_theta - angle) < 2.2 for angle in placed):
                 continue
             placed.append(row.two_theta)
-            ax.annotate("".join(str(v) for v in row.hkl), (row.two_theta, 0),
-                        textcoords="offset points", xytext=(0, 4),
-                        fontsize=6.5, rotation=90, ha="center", va="bottom",
+            idx = int(np.argmin(np.abs(scan.two_theta - row.two_theta)))
+            y_pos = min(float(scan.counts[idx]), 0.94 * y_max)
+            ax.annotate("".join(str(v) for v in row.hkl), (row.two_theta, y_pos),
+                        textcoords="offset points", xytext=(0, 3),
+                        fontsize=8.0, fontweight="bold", ha="center", va="bottom",
                         color="#8a3b12")
     ax.set_xlabel("2theta (deg)")
     ax.set_ylabel("counts")

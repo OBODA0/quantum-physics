@@ -1,8 +1,8 @@
 """The diffractometer: reflections, peak profiles and the scan itself.
 
-A scan is built in counts per step. Reflection intensities are relative (I/I0), as in
-Assignment 1: the model reproduces patterns and intensity ratios, not absolute
-radiometry.
+A scan is built in counts per step. Reflection intensities are relative (I/I0): the
+model reproduces diffraction patterns and relative intensity ratios, not absolute
+radiometric photon flux.
 """
 
 from __future__ import annotations
