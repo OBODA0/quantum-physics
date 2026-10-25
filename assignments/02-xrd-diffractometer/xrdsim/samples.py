@@ -119,7 +119,19 @@ PHASES: dict[str, Phase] = {
 
 
 def get_phase(key: str) -> Phase:
+    if key == "sc":
+        return simple_cubic()
     try:
         return PHASES[key]
     except KeyError:
         raise KeyError(f"unknown phase {key!r}; choose from {', '.join(sorted(PHASES))}") from None
+
+
+def simple_cubic(a: float = 3.359, element: str = "Cu") -> Phase:
+    """Canonical simple-cubic (Pm-3m) single-atom basis at lattice edge `a` (default 3.359 A, alpha-Po edge)."""
+    return Phase(
+        key="sc", name="Simple cubic", formula=f"{element} (SC)",
+        space_group="Pm-3m (221)", a=a, sites=(Site(element, 0, 0, 0),),
+        source=f"canonical simple-cubic 1-atom basis (Pm-3m), a = {a:.4f} A",
+    )
+

@@ -68,7 +68,8 @@ def _width_at(x: np.ndarray, y: np.ndarray, i: int, half: float) -> float:
 
 def _area(x: np.ndarray, y: np.ndarray, i: int, half_window: float) -> float:
     window = np.abs(x - x[i]) <= half_window
-    return float(np.trapezoid(y[window] - np.median(y[window]), x[window]))
+    trapz = getattr(np, "trapezoid", getattr(np, "trapz", None))
+    return float(trapz(y[window] - np.median(y[window]), x[window]))
 
 
 def pure_width(observed: float, instrumental: float) -> float:

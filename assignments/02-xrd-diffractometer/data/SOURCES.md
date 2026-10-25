@@ -50,6 +50,7 @@ xraydb, the simulator itself needs only numpy.
 | zno | ZnO | P63mc | a = 3.2494, c = 5.2038 | firm | COD 9004180; u(O) = 0.3830 (the CIF value) |
 | tio2-rutile | TiO2 | P42/mnm | a = 4.5937, c = 2.9587 | provisional | room-temperature conventional values; u(O) = 0.3047. COD 9004143 is a 600 C record (a = 4.616, c = 2.977 A), which is why its 110 sits at 27.30 deg instead of the published 27.45; the room-temperature cell is used and u(O) is the textbook value, not the CIF's 0.3045. |
 | tio2-anatase | TiO2 | I41/amd | a = 3.7845, c = 9.5143 | provisional | room-temperature conventional cell; the basis (z(O) = 0.2079) is expanded by gemmi from COD 9008214, which was measured at 300 C and gives a = 3.7892, c = 9.537 A. The high-temperature cell is deliberately not shipped: it moves 101 to 25.27 instead of 25.30 deg. |
+| sc | Simple Cubic (Cu) | Pm-3m | a = 3.3590 | choice | canonical 1-atom primitive cubic lattice using the room-temperature alpha-Po cell edge (a = 3.359 A) and Cu scattering factor (Z = 29, shipped in Waasmaier-Kirfel table) for the class-specification comparison in Figure 2(a). |
 
 The COD CIFs were fetched with `curl` on 2026-10-22; Python's urllib hit a TLS reset on the
 same host. The expansion of each CIF into a full conventional-cell basis is done by gemmi

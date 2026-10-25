@@ -169,3 +169,29 @@ def displacement_shift(two_theta_deg: float, displacement_mm: float,
         raise ValueError('the goniometer radius must be positive')
     theta = math.radians(two_theta_deg / 2.0)
     return math.degrees(-2.0 * displacement_mm * math.cos(theta) / radius_mm)
+
+
+def amorphous_scan(two_theta_min: float, two_theta_max: float, step: float,
+                   instrument: Instrument | None = None,
+                   center_deg: float = 21.8, fwhm_deg: float = 8.8) -> Scan:
+    """Simulate an amorphous silica-like diffuse scattering pattern.
+
+    Models intermediate-range tetrahedral network order (~4.0 A inter-tetrahedral cage
+    correlations) producing a First Sharp Diffraction Peak (FSDP) near 21.8 deg with
+    FWHM ~ 8.8 deg (corresponding to an effective Scherrer coherence length D_eff ~ 0.9 nm),
+    plus a weak secondary oscillation near 43 deg, modulated by form-factor decay and polarisation.
+    """
+    if instrument is None:
+        instrument = Instrument()
+    if step <= 0 or two_theta_max <= two_theta_min:
+        raise ValueError("the scan range and step must be positive")
+    grid = np.arange(two_theta_min, two_theta_max + step / 2.0, step)
+    s = np.sin(np.radians(grid / 2.0)) / instrument.wavelength
+    halo1 = np.exp(-4.0 * math.log(2.0) * ((grid - center_deg) / fwhm_deg) ** 2)
+    halo2 = 0.30 * np.exp(-4.0 * math.log(2.0) * ((grid - 43.0) / 16.0) ** 2)
+    ff_decay = np.exp(-3.5 * s ** 2)
+    pol = 0.5 * (1.0 + np.cos(np.radians(grid)) ** 2)
+    envelope = (halo1 + halo2) * ff_decay * pol
+    counts = instrument.reference_counts * (envelope / envelope.max())
+    return Scan(grid, counts, [], None, instrument)
+

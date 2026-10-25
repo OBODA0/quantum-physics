@@ -105,3 +105,37 @@ def test_displacement_moves_the_measured_peak():
     peak_normal = find_peaks(normal.two_theta, normal.counts)[0]
     peak_shifted = find_peaks(shifted.two_theta, shifted.counts)[0]
     assert peak_shifted.two_theta < peak_normal.two_theta - 0.05
+
+
+def test_simple_cubic_allows_all_integer_hkl_reflections():
+    from xrdsim.samples import simple_cubic
+    sc = simple_cubic(a=3.359)
+    rows = {row.hkl: row for row in reflections(sc, _quiet())}
+    for hkl in [(1, 0, 0), (1, 1, 0), (1, 1, 1), (2, 0, 0), (2, 1, 0), (2, 1, 1)]:
+        assert rows[hkl].intensity > 0.0
+
+
+def test_amorphous_scan_produces_broad_diffuse_halo():
+    from xrdsim.diffractometer import amorphous_scan
+    res = amorphous_scan(10.0, 90.0, 0.05, _quiet())
+    peak_angle = float(res.two_theta[np.argmax(res.counts)])
+    assert 20.0 <= peak_angle <= 23.0
+    half = res.counts.max() / 2.0
+    above = res.two_theta[res.counts >= half]
+    assert 7.0 <= float(above[-1] - above[0]) <= 11.0
+
+
+def test_exact_laue_convolution_agrees_with_scherrer_quadrature():
+    from xrdsim.analysis import find_peaks
+    from xrdsim.profile import (add_in_quadrature, caglioti_fwhm,
+                                convolve_laue_with_instrument, size_fwhm)
+    d_111 = 5.431144 / math.sqrt(3.0)
+    lam = 1.540598
+    tth_b = 28.441
+    x = np.linspace(26.0, 31.0, 10001)
+    inst_w = caglioti_fwhm(tth_b, 0.004, -0.002, 0.003)
+    y_conv = convolve_laue_with_instrument(x, tth_b, d_111, 64, lam, inst_w)
+    peak = max(find_peaks(x, y_conv), key=lambda p: p.height)
+    predicted = add_in_quadrature(size_fwhm(64 * d_111, tth_b, lam, k=0.8859), inst_w)
+    assert peak.fwhm == pytest.approx(predicted, rel=0.01)
+
