@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import math
 import pathlib
+import re
 
 import matplotlib
 import reportlab.rl_config
@@ -22,9 +23,12 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import KeepTogether
+from reportlab.pdfgen import canvas
+from reportlab.platypus import KeepTogether, Spacer
 from reportlab.platypus import (Image, Paragraph, Preformatted, SimpleDocTemplate,
                                 Table, TableStyle)
+
+from . import mathrender
 
 from xrdsim.analysis import find_peaks
 from xrdsim.diffractometer import Instrument, reflections, scan
@@ -38,6 +42,12 @@ REPO_ROOT = HERE.parent
 REPO_URL = "https://github.com/OBODA0/quantum-physics"
 PDF_PATH = HERE / "Assignment_2_XRD_Diffractometer_Report.pdf"
 FIG = HERE / "figures"
+COVER_PDF = HERE / "cover.pdf"
+COVER_PAGES = 1
+REPORT_TITLE = "Assignment 2: X-ray Powder Diffraction Simulation"
+FOOTER_TITLE = "Nanotechnology / Quantum Physics - XRD Diffractometer Simulation"
+TITLE_ON_PAGE = "Assignment 2: X-ray Powder Diffraction Simulation"
+LINK_COLOR = "#1155cc"
 
 REFERENCES = [
     ("A. L. Patterson, <i>The Scherrer formula for X-ray particle size determination</i>, "
@@ -59,7 +69,7 @@ REFERENCES = [
     ("A. R. Stokes and A. J. C. Wilson, <i>A method of calculating the integral breadths of "
      "Debye-Scherrer lines</i>, Proceedings of the Cambridge Philosophical Society <b>38</b>, "
      "313-322 (1942). doi:10.1017/S0305004100021988"),
-    ("F. Bertaut, <i>Raies de Debye-Scherrer et repartition des dimensions des domaines de "
+    ("E. F. Bertaut, <i>Raies de Debye-Scherrer et repartition des dimensions des domaines de "
      "Bragg dans les poudres polycristallines</i>, Acta Crystallographica <b>3</b>, 14-18 "
      "(1950). doi:10.1107/S0365110X50000045"),
     ("P. Scherrer, <i>Bestimmung der Gr\u00f6\u00dfe und der inneren Struktur von "
@@ -87,6 +97,25 @@ REFERENCES = [
      "doi:10.1021/ja00246a021"),
 ]
 
+REFERENCE_URLS = [
+    "https://doi.org/10.1103/PhysRev.56.978",
+    "https://openlibrary.org/isbn/0486663175",
+    "https://openlibrary.org/isbn/0201610914",
+    "https://openlibrary.org/isbn/0138147574",
+    "https://openlibrary.org/isbn/0073039381",
+    "https://doi.org/10.1107/S0108767394013292",
+    "https://doi.org/10.1107/S0021889878012844",
+    "https://doi.org/10.1017/S0305004100021988",
+    "https://doi.org/10.1107/S0365110X50000045",
+    "https://archive.org/details/akademie-der-wissenschaften-zu-goettingen-nachrichten-2_1918",
+    "https://doi.org/10.1103/PhysRev.45.657",
+    "https://doi.org/10.1107/S0021889809016690",
+    "https://doi.org/10.1017/S0885715619000812",
+    "https://tsapps.nist.gov/srmext/certificates/archives/640f.pdf",
+    "https://www.crystallography.net/cod/9004180.html",
+    "https://doi.org/10.1021/ja00246a021",
+]
+
 
 def _register_fonts() -> None:
     ttf = pathlib.Path(matplotlib.get_data_path()) / "fonts" / "ttf"
@@ -111,27 +140,32 @@ def styles() -> dict:
     base = getSampleStyleSheet()
     return {
         "title": ParagraphStyle("DocTitle", parent=base["Normal"], fontName="DejaVuSans-Bold",
-                                fontSize=16.5, leading=21, spaceAfter=10),
+                                fontSize=20, leading=24, textColor=colors.HexColor("#1a2a40"),
+                                spaceAfter=6),
         "subtitle": ParagraphStyle("DocSubtitle", parent=base["Normal"], fontName="DejaVuSans",
-                                   fontSize=8.8, leading=13, textColor=colors.HexColor("#333333"),
-                                   spaceAfter=6),
-        "h1": ParagraphStyle("H1", parent=base["Normal"], fontName="DejaVuSans-Bold", fontSize=12.5,
-                             leading=16, spaceBefore=14, spaceAfter=6),
-        "h2": ParagraphStyle("H2", parent=base["Normal"], fontName="DejaVuSans-Bold", fontSize=10.2,
-                             leading=13, spaceBefore=9, spaceAfter=4),
+                                   fontSize=9.2, leading=14, textColor=colors.HexColor("#4a5568"),
+                                   spaceAfter=5),
+        "h1": ParagraphStyle("H1", parent=base["Normal"], fontName="DejaVuSans-Bold", fontSize=13.5,
+                             leading=17, textColor=colors.HexColor("#1b365d"),
+                             spaceBefore=14, spaceAfter=7, keepWithNext=True),
+        "h2": ParagraphStyle("H2", parent=base["Normal"], fontName="DejaVuSans-Bold", fontSize=10.8,
+                             leading=14, textColor=colors.HexColor("#2c5282"),
+                             spaceBefore=10, spaceAfter=5, keepWithNext=True),
         "h3": ParagraphStyle("H3", parent=base["Normal"], fontName="DejaVuSans-BoldOblique",
-                             fontSize=9.2, leading=12, spaceBefore=7, spaceAfter=3),
-        "body": ParagraphStyle("Body", parent=base["Normal"], fontName="DejaVuSans", fontSize=8.8,
-                               leading=12.4, spaceAfter=6),
+                             fontSize=9.6, leading=12.5, textColor=colors.HexColor("#2c5282"),
+                             spaceBefore=8, spaceAfter=3, keepWithNext=True),
+        "body": ParagraphStyle("Body", parent=base["Normal"], fontName="DejaVuSans", fontSize=8.9,
+                               leading=13.0, textColor=colors.HexColor("#2d3748"), spaceAfter=6),
         "small": ParagraphStyle("Small", parent=base["Normal"], fontName="DejaVuSans", fontSize=8.0,
-                                leading=10.8, spaceAfter=4),
+                                leading=10.6, textColor=colors.HexColor("#2d3748"), spaceAfter=4),
         "caption": ParagraphStyle("Caption", parent=base["Normal"], fontName="DejaVuSans-Oblique",
-                                  fontSize=8.0, leading=10.8, textColor=colors.HexColor("#333333"),
-                                  spaceAfter=10),
-        "eq": ParagraphStyle("Eq", parent=base["Normal"], fontName="DejaVuSansMono", fontSize=8.5,
-                             leading=12, leftIndent=18, spaceAfter=6),
-        "ref": ParagraphStyle("Ref", parent=base["Normal"], fontName="DejaVuSans", fontSize=8.0,
-                              leading=10.8, leftIndent=14, firstLineIndent=-14, spaceAfter=4),
+                                  fontSize=8.3, leading=11.2, textColor=colors.HexColor("#4a5568"),
+                                  alignment=1, spaceAfter=10),
+        "eqnum": ParagraphStyle("EqNum", parent=base["Normal"], fontName="DejaVuSans", fontSize=8.5,
+                                leading=12, textColor=colors.HexColor("#4a5568")),
+        "ref": ParagraphStyle("Ref", parent=base["Normal"], fontName="DejaVuSans", fontSize=8.3,
+                              leading=12.2, textColor=colors.HexColor("#2d3748"),
+                              leftIndent=20, firstLineIndent=-20, spaceAfter=5),
         "code": ParagraphStyle("Code", parent=base["Normal"], fontName="Courier", fontSize=6.5,
                                leading=8),
     }
@@ -159,12 +193,125 @@ def table(rows, widths, s):
     return grid
 
 
-def _footer(canvas, doc) -> None:
-    canvas.saveState()
-    canvas.setFont("DejaVuSans", 8)
-    canvas.setFillColor(colors.HexColor("#666666"))
-    canvas.drawRightString(letter[0] - 54, 20, f"Page {doc.page}")
-    canvas.restoreState()
+class NumberedCanvas(canvas.Canvas):
+    """Canvas that stamps the running footer once the total page count is known."""
+
+    def __init__(self, *args, **kwargs):
+        canvas.Canvas.__init__(self, *args, **kwargs)
+        self._saved_states = []
+
+    def showPage(self):
+        self._saved_states.append(dict(self.__dict__))
+        self._startPage()
+
+    def save(self):
+        total = len(self._saved_states) + COVER_PAGES
+        for state in self._saved_states:
+            self.__dict__.update(state)
+            self._draw_footer(total)
+            canvas.Canvas.showPage(self)
+        canvas.Canvas.save(self)
+
+    def _draw_footer(self, total: int) -> None:
+        self.saveState()
+        self.setFont("DejaVuSans", 8)
+        self.setFillColor(colors.HexColor("#555555"))
+        if self._pageNumber > 1:
+            self.drawString(54, 11 * 72 - 36, REPORT_TITLE)
+        self.drawString(54, 34, FOOTER_TITLE)
+        self.drawRightString(8.5 * 72 - 54, 34,
+                             f"Page {self._pageNumber + COVER_PAGES} of {total}")
+        self.setStrokeColor(colors.HexColor("#dddddd"))
+        self.setLineWidth(0.6)
+        if self._pageNumber > 1:
+            self.line(54, 11 * 72 - 42, 8.5 * 72 - 54, 11 * 72 - 42)
+        self.line(54, 46, 8.5 * 72 - 54, 46)
+        self.restoreState()
+
+
+def _prepend_cover(report_path: pathlib.Path, cover_path: pathlib.Path, total: int) -> None:
+    """Put the approved cover page in front of the report, carrying the report's footer.
+
+    The cover is the one submitted for assignment 1, with its date changed (report/make_cover.py);
+    only the footer is added here, so page numbering runs unbroken from 1.
+    """
+    import io
+
+    from pypdf import PdfReader, PdfWriter
+
+    buffer = io.BytesIO()
+    overlay = canvas.Canvas(buffer, pagesize=letter)
+    overlay.setFont("DejaVuSans", 8)
+    overlay.setFillColor(colors.HexColor("#555555"))
+    overlay.drawString(54, 34, FOOTER_TITLE)
+    overlay.drawRightString(8.5 * 72 - 54, 34, f"Page 1 of {total}")
+    overlay.setStrokeColor(colors.HexColor("#dddddd"))
+    overlay.setLineWidth(0.6)
+    overlay.line(54, 46, 8.5 * 72 - 54, 46)
+    overlay.showPage()
+    overlay.save()
+    buffer.seek(0)
+
+    front = PdfReader(str(cover_path)).pages[0]
+    front.merge_page(PdfReader(buffer).pages[0])
+
+    writer = PdfWriter()
+    writer.add_page(front)
+    for page in PdfReader(str(report_path)).pages:
+        writer.add_page(page)
+    temporary = report_path.with_suffix(".with-cover.pdf")
+    with open(temporary, "wb") as handle:
+        writer.write(handle)
+    temporary.replace(report_path)
+
+
+def IM(latex: str, fontsize: float = 8.9) -> str:
+    """Inline LaTeX math, as a ReportLab image tag."""
+    return mathrender.inline(latex, fontsize)
+
+
+def equation(latex: str, number: str, s: dict, fontsize: float = 10.5) -> Table:
+    """A display equation typeset from LaTeX, centred, with its number at the right margin."""
+    path, width, height = mathrender.math_image(latex, fontsize)
+    # the label column must fit the label itself: "(tetragonal)" is wider than 41 pt
+    label_width = pdfmetrics.stringWidth(number, "DejaVuSans", 8.5) + 4 if number else 0
+    number_width = max(41.0, min(150.0, label_width))
+    grid = Table([[Image(str(path), width=width, height=height), Paragraph(number, s["eqnum"])]],
+                 colWidths=[497 - number_width, number_width])
+    grid.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("ALIGN", (0, 0), (0, 0), "CENTER"),
+        ("ALIGN", (1, 0), (1, 0), "RIGHT"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 0),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+        ("TOPPADDING", (0, 0), (-1, -1), 3),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+    ]))
+    return grid
+
+
+def linked_reference(text: str, url: str) -> str:
+    """Make the DOI, the ISBN, or (failing both) the title of a reference clickable."""
+    if not url:
+        return text
+    link = '<link href="{url}" color="{colour}">{{token}}</link>'.format(url=url, colour=LINK_COLOR)
+    match = re.search(r"doi:10\.\d{4,9}/\S+", text)
+    if match:
+        token = match.group(0).rstrip(".,;")
+        return text.replace(token, link.format(token=token), 1)
+    match = re.search(r"ISBN [0-9][0-9-]*[0-9X]", text)
+    if match:
+        token = match.group(0)
+        return text.replace(token, link.format(token=token), 1)
+    match = re.search(r"<i>(.+?)</i>", text)
+    if match:
+        return text.replace(match.group(0), link.format(token=match.group(0)), 1)
+    return text
+
+
+def _count_pages(path: pathlib.Path) -> int:
+    from pypdf import PdfReader
+    return len(PdfReader(str(path)).pages)
 
 
 def _wrap_code(text: str, width: int = 100) -> str:
@@ -269,7 +416,7 @@ def build() -> None:
     instrument = Instrument()
     doc = SimpleDocTemplate(str(PDF_PATH), pagesize=letter, leftMargin=54, rightMargin=54,
                             topMargin=54, bottomMargin=54,
-                            title="Assignment 2: X-ray Powder Diffraction Simulation",
+                            title=REPORT_TITLE,
                             author="Nanotechnology & Quantum Physics - Assignment 2")
     story = []
 
@@ -280,21 +427,43 @@ def build() -> None:
                            "<b>Topic:</b> XRD instrument simulation, domain size, the Fourier "
                            "description of line broadening", s["subtitle"]))
     story.append(Paragraph("<b>Students:</b> Mohamed Oboda (2111011090) &nbsp;|&nbsp; "
-                           "Mert Solmaz (2311011039)", s["subtitle"]))
-    story.append(Paragraph("<b>Built with:</b> Antigravity &amp; Prime Agent (AI coding assistants); "
-                           "the complete simulator and figure scripts are in Appendix A.", s["subtitle"]))
-    story.append(table([
-        ["Item", "What it is"],
-        ["Simulator", "Cu K-alpha tube, divergence and Soller slits, flat specimen on a "
-                      "theta/2theta goniometer, receiving slit, optional monochromator, detector"],
-        ["Phases", "Generic Simple Cubic (SC), BCC, FCC, and amorphous SiO2 halo, plus nine "
-                   "reference phases: Si, Al, Cu, alpha-Fe, NaCl, MgO, ZnO, TiO2 rutile, TiO2 anatase"],
-        ["Method", "Bragg positions from the cell, structure factors with "
-                   "Waasmaier-Kirfel form factors [6], powder multiplicities, "
-                   "Lorentz-polarisation, Debye-Waller, the K-alpha doublet, Caglioti "
-                   "resolution, Scherrer broadening, exact N-plane Laue convolution, Poisson statistics"],
-        ["Repository", REPO_URL],
-    ], [80, 365], s))
+                           "Mert SOLMAZ (2311011039)", s["subtitle"]))
+
+    meta = [
+        [Paragraph("<b>Simulator</b>", s["body"]),
+         Paragraph("Cu K-alpha tube, divergence and Soller slits, flat specimen on a "
+                   "theta/2theta goniometer, receiving slit, optional monochromator, detector",
+                   s["body"])],
+        [Paragraph("<b>Phases</b>", s["body"]),
+         Paragraph("generic simple cubic, BCC and FCC, an amorphous SiO2 halo, and nine reference "
+                   "phases: Si, Al, Cu, alpha-Fe, NaCl, MgO, ZnO, TiO2 rutile, TiO2 anatase",
+                   s["body"])],
+        [Paragraph("<b>Method</b>", s["body"]),
+         Paragraph("Bragg positions from the cell, structure factors with Waasmaier-Kirfel form "
+                   "factors [6], powder multiplicities, Lorentz-polarisation, Debye-Waller, the "
+                   "K-alpha doublet, Caglioti resolution, Scherrer broadening, the exact N-plane "
+                   "Laue convolution, Poisson statistics", s["body"])],
+        [Paragraph("<b>Built with</b>", s["body"]),
+         Paragraph("Antigravity and Prime Agent (AI coding assistants); the complete simulator and "
+                   "figure scripts are in Appendix A", s["body"])],
+        [Paragraph("<b>Repository</b>", s["body"]),
+         Paragraph('<link href="{url}" color="{c}">{url}</link> - the code, the figures and the '
+                   "checks behind every number in this report".format(url=REPO_URL, c=LINK_COLOR),
+                   s["body"])],
+    ]
+    meta_table = Table(meta, colWidths=[110, 394])
+    meta_table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f7fafc")),
+        ("BOX", (0, 0), (-1, -1), 1, colors.HexColor("#cbd5e0")),
+        ("INNERGRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#e2e8f0")),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("TOPPADDING", (0, 0), (-1, -1), 4),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ("LEFTPADDING", (0, 0), (-1, -1), 8),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+    ]))
+    story.append(meta_table)
+    story.append(Spacer(1, 12))
 
     story.append(Paragraph("Abstract", s["h1"]))
     story.append(Paragraph(
@@ -308,11 +477,11 @@ def build() -> None:
         "sizes from 5 nm to 500 nm (via --size-nm). Measuring that size series shows that in the "
         "sample-dominated regime (D below about 160 nm) the domain size changes the width of every line as 1/D "
         "and the peak height in proportion (before approaching the instrumental resolution floor "
-        "sqrt(beta_size^2 + beta_inst^2) at larger D), leaves the integrated area and the Bragg positions "
+        "" + IM(r"$\sqrt{\beta_\mathrm{size}^{2}+\beta_\mathrm{inst}^{2}}$") + " at larger D), leaves the integrated area and the Bragg positions "
         "unchanged, and broadens high-angle lines more than low-angle ones. All four observations follow "
         "from one statement: the finite crystallite is a spatial window on the lattice, so the ideal Bragg "
         "impulse train is convolved with the squared magnitude of the window's Fourier transform, and the "
-        "instrument is a second convolution in series. The 1/cos(theta) is the Jacobian between reciprocal "
+        "instrument is a second convolution in series. The " + IM(r"$1/\cos\theta$") + " is the Jacobian between reciprocal "
         "space and the goniometer angle. The analysis pipeline recovers the input sizes across the "
         "sample-limited regime, and an independent numerical convolution of the exact N-plane Laue "
         "interference sum with the instrumental kernel agrees with the Scherrer-Caglioti quadrature widths "
@@ -348,7 +517,7 @@ def build() -> None:
         "beam; the flat specimen sits on a \u03b8/2\u03b8 goniometer; a receiving slit and an "
         "optional monochromator sit in front of the detector. The measured variable is "
         "2\u03b8, and the specimen sits at \u03b8, so a reflection appears where", s["body"]))
-    story.append(Paragraph("2 d sin(\u03b8) = n \u03bb&nbsp;&nbsp;&nbsp;&nbsp;(1)", s["eq"]))
+    story.append(equation('$2d\\sin\\theta = n\\lambda$', "(1)", s))
     story.append(Paragraph(
         "A pedagogical note connects equation (1) with lecture derivations: when scattering "
         "is framed with an angle \u03b1 measured from the surface normal, the optical path difference "
@@ -364,13 +533,9 @@ def build() -> None:
     story.append(Paragraph(
         "The interplanar spacing follows from the cell. For the cubic, tetragonal and "
         "hexagonal settings the simulator implements", s["body"]))
-    story.append(Paragraph(
-        "1/d\u00b2 = (h\u00b2 + k\u00b2 + l\u00b2)/a\u00b2&nbsp;&nbsp;&nbsp;&nbsp;(cubic)", s["eq"]))
-    story.append(Paragraph(
-        "1/d\u00b2 = (h\u00b2 + k\u00b2)/a\u00b2 + l\u00b2/c\u00b2&nbsp;&nbsp;&nbsp;&nbsp;(tetragonal)", s["eq"]))
-    story.append(Paragraph(
-        "1/d\u00b2 = (4/3)(h\u00b2 + hk + k\u00b2)/a\u00b2 + l\u00b2/c\u00b2&nbsp;&nbsp;&nbsp;&nbsp;(hexagonal)",
-        s["eq"]))
+    story.append(equation('$\\frac{1}{d^{2}}=\\frac{h^{2}+k^{2}+l^{2}}{a^{2}}$', "(cubic)", s))
+    story.append(equation('$\\frac{1}{d^{2}}=\\frac{h^{2}+k^{2}}{a^{2}}+\\frac{l^{2}}{c^{2}}$', "(tetragonal)", s))
+    story.append(equation('$\\frac{1}{d^{2}}=\\frac{4}{3}\\,\\frac{h^{2}+hk+k^{2}}{a^{2}}+\\frac{l^{2}}{c^{2}}$', "(hexagonal)", s))
     story.append(Paragraph(
         "A reflection whose spacing is shorter than \u03bb/2 cannot be reached by the "
         "radiation and is dropped rather than clamped. The same code is also used to refine a "
@@ -380,23 +545,19 @@ def build() -> None:
     story.append(Paragraph("2.2 Intensities", s["h2"]))
     story.append(Paragraph(
         "The amplitude scattered by one cell is the structure factor", s["body"]))
-    story.append(Paragraph(
-        "F(hkl) = \u03a3_j occ_j f0_j(s) exp(\u2212B_j s\u00b2) exp(2\u03c0i (h x_j + k y_j + l z_j)),",
-        s["eq"]))
+    story.append(equation('$F_{hkl}=\\sum_{j}\\mathrm{occ}_{j}\\,f_{0,j}(s)\\;e^{-B_{j}s^{2}}\\,e^{\\,2\\pi i(hx_{j}+ky_{j}+lz_{j})}$', "", s))
     story.append(Paragraph(
         "with s = sin(\u03b8)/\u03bb = 1/(2d) by Bragg's law, f0 the atomic form factor and "
         "B_j the Debye-Waller coefficient of site j [2]. The form factors are the "
         "Waasmaier-Kirfel five-Gaussian parameterisation [6], pre-tabulated on a uniform s-grid "
         "in data/scattering_factors.json (loaded by xrdsim/atoms.py); f0(0) reproduces the "
         "atomic electron count Z, which the test suite checks. The intensity of a powder line is then", s["body"]))
-    story.append(Paragraph(
-        "I(hkl) = |F|\u00b2 m LP(2\u03b8),&nbsp;&nbsp;&nbsp;&nbsp;"
-        "LP = (1 + cos\u00b2 2\u03b8) / (sin\u00b2 \u03b8 cos \u03b8),", s["eq"]))
+    story.append(equation('$I_{hkl}=|F|^{2}m\\,\\mathrm{LP}(2\\theta),\\qquad \\mathrm{LP}=\\frac{1+\\cos^{2}2\\theta}{\\sin^{2}\\theta\\,\\cos\\theta}$', "", s))
     story.append(Paragraph(
         "where m is the multiplicity of the plane family, computed by counting the orbit of "
         "(hkl) under the Laue class rather than read from a table, and LP is the "
         "Lorentz-polarisation factor for an unpolarised tube [3]. Where a monochromator is "
-        "switched on, the polarisation term becomes 1 + cos\u00b2 2\u03b8 cos\u00b2 2\u03b8_m. The "
+        "switched on, the polarisation term becomes " + IM(r"$1+\cos^{2}2\theta\,\cos^{2}2\theta_m$") + ". The "
         "absolute prefactor of a Bragg-Brentano scan - electron radius, beam area, "
         "specimen-to-detector distance, cell volume - is the same for every reflection and "
         "cancels in the normalised pattern, which is why the simulation reports relative "
@@ -414,12 +575,8 @@ def build() -> None:
         "Each line is drawn as a pseudo-Voigt profile, a mixture of a unit-area Gaussian and "
         "a unit-area Lorentzian weighted by \u03b7. The instrumental width follows the Caglioti "
         "form, and a crystallite of size D adds a Scherrer width:", s["body"]))
-    story.append(Paragraph(
-        "FWHM\u00b2 = U tan\u00b2 \u03b8 + V tan \u03b8 + W&nbsp;&nbsp;&nbsp;&nbsp;(instrument)",
-        s["eq"]))
-    story.append(Paragraph(
-        "\u03b2 = K \u03bb / (D cos \u03b8)&nbsp;&nbsp;&nbsp;&nbsp;(crystallite size, K = 0.9)",
-        s["eq"]))
+    story.append(equation('$\\mathrm{FWHM}^{2}=U\\tan^{2}\\theta+V\\tan\\theta+W$', "(instrument)", s))
+    story.append(equation('$\\beta=\\frac{K\\lambda}{D\\cos\\theta}$', "(crystallite size, K = 0.9)", s))
     story.append(Paragraph(
         "The two widths are combined in quadrature, each reflection is drawn twice at its "
         "own K\u03b11 and K\u03b12 positions with weights 1 and 0.497, and the expected "
@@ -763,7 +920,7 @@ def build() -> None:
     story.append(Paragraph(
         "The amplitude scattered by a specimen is the Fourier transform of its electron "
         "density, A(q) proportional to the integral of \u03c1(r) exp(\u2212i q\u00b7r) dr, with "
-        "q = 4\u03c0 sin(\u03b8)/\u03bb [2]. An infinite crystal is a lattice convolved "
+        "" + IM(r"$q=4\pi\sin\theta/\lambda$") + " [2]. An infinite crystal is a lattice convolved "
         "with a unit-cell motif, so its transform is a reciprocal lattice multiplied by the "
         "structure factor: delta functions at the Bragg points. That is the top panel of "
         "Figure 7, an impulse train with no width.", s["body"]))
@@ -771,9 +928,7 @@ def build() -> None:
         "A real crystal is that lattice multiplied by a window w(r), equal to one inside the "
         "crystallite and zero outside. Multiplication in real space is convolution in "
         "reciprocal space [4], [5], so the scattered amplitude becomes", s["body"]))
-    story.append(Paragraph(
-        "A(q) = [reciprocal lattice \u00d7 F(q)] * W(q),&nbsp;&nbsp;&nbsp;&nbsp;"
-        "W = FT{w},", s["eq"]))
+    story.append(equation('$A(q)=\\left[\\mathrm{reciprocal\\ lattice}\\times F(q)\\right]*W(q),\\qquad W=\\mathcal{F}\\{w\\}$', "", s))
     story.append(Paragraph(
         "and for well-separated Bragg reflections the measured intensity is the impulse train "
         "convolved with the squared magnitude of the window transform, h_crystal(q) = |W(q)|\u00b2. "
@@ -802,9 +957,7 @@ def build() -> None:
         "Take a crystal of N planes with spacing d, so D = N d, and write the window as a "
         "rectangle of that length. The intensity near a Bragg point is the squared magnitude "
         "of the finite geometric sum, the interference function", s["body"]))
-    story.append(Paragraph(
-        "I(q) \u221d |sin(N q d / 2) / sin(q d / 2)|\u00b2,&nbsp;&nbsp;&nbsp;&nbsp;(2)",
-        s["eq"]))
+    story.append(equation('$I(q)\\propto\\left|\\frac{\\sin(Nqd/2)}{\\sin(qd/2)}\\right|^{2}$', "(2)", s))
     story.append(Paragraph(
         "where u = q d / 2 and q is measured from the Bragg point. The function reduces to a "
         "sinc-squared envelope, width proportional to 1/N, as soon as u is "
@@ -859,10 +1012,7 @@ def build() -> None:
         "response h_crystal = |W|\u00b2; the diffractometer optics and detector have impulse "
         "response h_instrument. Convolution commutes and associates, so the observed line "
         "profile is the ideal impulse blurred by both filters in series [4]:", s["body"]))
-    story.append(Paragraph(
-        "I_observed = I_ideal * h_crystal * h_instrument,&nbsp;&nbsp;&nbsp;&nbsp;"
-        "h_crystal = |W|\u00b2.&nbsp;&nbsp;&nbsp;&nbsp;(3)",
-        s["eq"]))
+    story.append(equation('$I_{\\mathrm{observed}}=I_{\\mathrm{ideal}}*h_{\\mathrm{crystal}}*h_{\\mathrm{instrument}},\\qquad h_{\\mathrm{crystal}}=|W|^{2}$', "(3)", s))
     story.append(Paragraph(
         "<b>Bandwidth.</b> A wide spatial window has a narrow spatial-frequency response. A "
         "crystallite of N planes is a rectangular window of length D = N d, and the width of "
@@ -877,13 +1027,13 @@ def build() -> None:
         "<b>Area conservation (Parseval's theorem and LTI zero-frequency gain).</b> Two "
         "distinct theorems govern the area in equation (3). First, in the first stage, "
         "Parseval's theorem applied to the spatial window w(r) of a single crystal of N "
-        "planes gives \u222b |W(q)|\u00b2 dq \u221d N; in a fixed irradiated powder "
-        "volume containing N_cryst \u221d 1/N crystallites, the product is "
+        "planes gives " + IM(r"$\int|W(q)|^{2}\,\mathrm{d}q\propto N$") + "; in a fixed irradiated powder "
+        "volume containing " + IM(r"$N_\mathrm{cryst}\propto 1/N$") + " crystallites, the product is "
         "independent of N, so the integrated intensity entering the instrument is invariant "
         "with respect to domain size D (which the simulator represents by normalising its "
         "crystal profile to unit area). Second, in the second stage, convolving with a "
-        "unit-area instrument kernel (\u222b h_instrument d(2\u03b8) = 1, i.e., unit DC gain) "
-        "preserves the total integral: \u222b (f * g) = (\u222b f)(\u222b g) [4]. "
+        "unit-area instrument kernel (" + IM(r"$\int h_\mathrm{instrument}\,\mathrm{d}(2\theta)=1$") + ", i.e., unit DC gain) "
+        "preserves the total integral: " + IM(r"$\int (f*g)=(\int f)(\int g)$") + " [4]. "
         "Because total area is conserved across both stages, peak height scales inversely "
         "with peak width.", s["body"]))
     story.append(Paragraph(
@@ -900,22 +1050,19 @@ def build() -> None:
     story.append(Paragraph("5.5 The 1/cos(\u03b8) is a change of variable", s["h2"]))
     story.append(Paragraph(
         "The broadening happens in q, but the scan is recorded in 2\u03b8. The two are related "
-        "by q = 4\u03c0 sin(\u03b8)/\u03bb, so at fixed wavelength \u03bb the Jacobian of the "
+        "by " + IM(r"$q=4\pi\sin\theta/\lambda$") + ", so at fixed wavelength \u03bb the Jacobian of the "
         "coordinate transformation is", s["body"]))
-    story.append(Paragraph(
-        "dq / d(2\u03b8) = (2\u03c0 / \u03bb) cos(\u03b8),&nbsp;&nbsp;&nbsp;&nbsp;(4)", s["eq"]))
+    story.append(equation('$\\frac{\\mathrm{d}q}{\\mathrm{d}(2\\theta)}=\\frac{2\\pi}{\\lambda}\\cos\\theta$', "(4)", s))
     story.append(Paragraph(
         "and a fixed width in q appears in the scan as", s["body"]))
+    story.append(equation('$\\Delta(2\\theta)=\\frac{\\Delta q}{\\left|\\mathrm{d}q/\\mathrm{d}(2\\theta)\\right|}=\\frac{K\\lambda}{D\\cos\\theta}$', "(5)", s))
     story.append(Paragraph(
-        "\u0394(2\u03b8) = \u0394(q) / |dq/d(2\u03b8)| = K \u03bb / (D cos \u03b8)."
-        "&nbsp;&nbsp;&nbsp;&nbsp;(5)", s["eq"]))
-    story.append(Paragraph(
-        "The 1/cos(theta) is a Jacobian: the change of variable between the frequency axis of "
+        "The " + IM(r"$1/\cos\theta$") + " is a Jacobian: the change of variable between the frequency axis of "
         "the spectrum and the goniometer angle on which it is displayed. At high angle a "
         "degree of 2theta spans fewer reciprocal-space units, so the same spectral width looks "
         "wider on the chart. (By contrast, differentiating Bragg's law with respect to lambda "
         "at fixed d gives the K-alpha1/K-alpha2 wavelength-doublet splitting "
-        "Delta(2theta) = 2 tan(theta) (Delta lambda / lambda), which shares the 1/cos(theta) "
+        "" + IM(r"$\Delta(2\theta)=2\tan\theta\,(\Delta\lambda/\lambda)$") + ", which shares the " + IM(r"$1/\cos\theta$") + " "
         "projection factor multiplied by sin(theta) and grows from 0.072 deg at 28 deg to "
         "0.275 deg at 88 deg.) This Jacobian is why a size measured from one low-angle line "
         "and one high-angle line agrees once equation (5) is applied, as demonstrated in "
@@ -961,7 +1108,7 @@ def build() -> None:
     story.append(Paragraph(
         "Second, to provide a strictly non-circular physical test that never invokes the "
         "Scherrer equation or quadrature width addition, <font face=\"Courier\">xrdsim/profile.py</font> "
-        "evaluates the exact N-plane Laue interference sum h_crystal = |W(q)|^2 = |sin(Nu)/(N sin u)|^2 "
+        "evaluates the exact N-plane Laue interference sum " + IM(r"$h_\mathrm{crystal}=|W(q)|^{2}=|\sin(Nu)/(N\sin u)|^{2}$") + " "
         "directly on the 2theta grid (<font face=\"Courier\">laue_interference_array</font>) and "
         "numerically convolves it with a Gaussian instrumental kernel h_inst (FWHM = 0.0524 deg at Si 111; "
         "<font face=\"Courier\">convolve_laue_with_instrument</font>, plotted in Figure 7(b)-(d) for N = 160 "
@@ -1085,21 +1232,22 @@ def build() -> None:
         "included in Appendix A. Item 2: in the sample-dominated regime (D below about 160 nm), changing "
         "the domain size changes the width of every line as 1/D and the peak height in proportion "
         "in a fixed powder volume (before approaching the instrumental resolution floor "
-        "sqrt(beta_size^2 + beta_inst^2) at larger D), leaves the integrated area and the Bragg "
-        "positions unchanged, and broadens lines more strongly at high angle as 1/cos(theta). "
+        "" + IM(r"$\sqrt{\beta_\mathrm{size}^{2}+\beta_\mathrm{inst}^{2}}$") + " at larger D), leaves the integrated area and the Bragg "
+        "positions unchanged, and broadens lines more strongly at high angle as " + IM(r"$1/\cos\theta$") + ". "
         "Item 3: those four facts are the properties of a two-stage linear filter cascade. A finite "
         "crystallite multiplies the infinite lattice by a spatial window w(r), convolution in "
         "reciprocal space turns that window into the Laue interference intensity filter "
-        "h_crystal = |W(q)|^2 of width 0.8859 x 2 pi / D, the instrument is a second convolution "
-        "in series with h_inst, and the 1/cos(theta) factor is the Jacobian between reciprocal "
+        "" + IM(r"$h_\mathrm{crystal}=|W(q)|^{2}$ of width $0.8859\times 2\pi/D$") + ", the instrument is a second convolution "
+        "in series with h_inst, and the " + IM(r"$1/\cos\theta$") + " factor is the Jacobian between reciprocal "
         "space and the goniometer angle. Both the pseudo-Voigt scan measurements (Tables 4 and 5) "
         "and the independent numerical convolution of the exact N-plane Laue sum with h_inst "
         "(Figure 7 and Section 5.7) quantitatively confirm this description.", s["body"]))
 
     # ------------------------------------------------------------------ refs
     story.append(Paragraph("References", s["h1"]))
-    for index, entry in enumerate(REFERENCES, start=1):
-        story.append(Paragraph(f"[{index}] {entry}", s["ref"]))
+    for index, entry in enumerate(REFERENCES):
+        story.append(Paragraph(f"[{index + 1}] {linked_reference(entry, REFERENCE_URLS[index])}",
+                               s["ref"]))
 
     # ------------------------------------------------------------------ A, B, C
     code_appendix(story, s)
@@ -1145,7 +1293,13 @@ def build() -> None:
                                f"below 150\u00b0.", s["caption"]))
         number += 1
 
-    doc.build(story, onFirstPage=_footer, onLaterPages=_footer)
+    doc.build(story, canvasmaker=NumberedCanvas)
+    report_pages = _count_pages(PDF_PATH)
+    if COVER_PDF.exists():
+        _prepend_cover(PDF_PATH, COVER_PDF, report_pages + COVER_PAGES)
+        print(f"prepended the approved cover page: {report_pages + COVER_PAGES} pages total")
+    else:
+        raise FileNotFoundError(f"cover page missing: {COVER_PDF} (run report/make_cover.py)")
     print(f"wrote {PDF_PATH}")
 
 

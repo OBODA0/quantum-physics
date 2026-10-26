@@ -30,31 +30,77 @@ LAMBDA = 1.540598
 
 
 def instrument_diagram() -> None:
-    """Block diagram of the Bragg-Brentano chain."""
-    fig, ax = plt.subplots(figsize=(11, 2.6))
+    """Block diagram of the Bragg-Brentano chain, drawn in the style of report 1.
+
+    Every arrow runs from just outside the right edge of one box to just outside the
+    left edge of the next, so no arrow touches a box, and the annotation arrows stop
+    short of the box border too.
+    """
+    from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+
+    figure, axis = plt.subplots(figsize=(13.0, 4.6), constrained_layout=True)
+    axis.set_xlim(0, 104)
+    axis.set_ylim(-4, 30)
+    axis.axis("off")
+
     boxes = [
-        ("X-ray tube\nCu K-alpha", 0.5), ("divergence\nslit", 2.1),
-        ("Soller slit", 3.4), ("sample on\ntheta/2theta", 4.9),
-        ("receiving\nslit", 6.4), ("monochromator\n(optional)", 7.9),
-        ("detector", 9.4),
+        ("X-ray tube\nCu Kα, 1.5406 Å\nKα1 + Kα2", 7.4),
+        ("Divergence slit\nbeam footprint\non the flat specimen", 23.6),
+        ("Soller slit\nlimits axial\ndivergence", 39.8),
+        ("Flat specimen on\nthe θ / 2θ\ngoniometer", 56.0),
+        ("Receiving slit\nand optional\nmonochromator", 72.2),
+        ("Detector\ncounts, Poisson\nstatistics", 88.4),
     ]
-    for label, x in boxes:
-        rect = Rectangle((x, 0.40), 1.1, 0.42, fill=False, lw=1.2, color="#1a3d6d")
-        ax.add_patch(rect)
-        ax.text(x + 0.55, 0.61, label, ha="center", va="center", fontsize=8)
-    for (_, x1), (_, x2) in zip(boxes, boxes[1:]):
-        ax.add_patch(FancyArrowPatch((x1 + 0.55, 0.61), (x2 + 0.05, 0.61),
-                                     arrowstyle="-|>", mutation_scale=10, lw=1.0,
-                                     color="#8a3b12"))
-    ax.annotate("2theta scan", xy=(4.9 + 0.55, 0.40), xytext=(4.9 + 0.55, 0.16),
-                ha="center", fontsize=8, color="#8a3b12",
-                arrowprops=dict(arrowstyle="-|>", lw=1.0, color="#8a3b12"))
-    ax.set_xlim(0, 11)
-    ax.set_ylim(0, 1.0)
-    ax.axis("off")
-    fig.tight_layout()
-    fig.savefig(OUT / "instrument.png", dpi=160)
-    plt.close(fig)
+    width, height, top = 12.6, 9.6, 22.0
+    # arrows end at width / 2 + 0.65 = boxstyle pad (0.35) + air gap (0.30) from a border
+
+    for label, centre in boxes:
+        axis.add_patch(FancyBboxPatch(
+            (centre - width / 2, top - height), width, height,
+            boxstyle="round,pad=0.35,rounding_size=0.8",
+            linewidth=1.2, edgecolor="#2c5282", facecolor="#eef3f9"))
+        axis.text(centre, top - height / 2, label, ha="center", va="center",
+                  fontsize=8.2, color="#1a2a40", linespacing=1.25)
+
+    # stage-to-stage arrows: right edge -> left edge, with air on both sides
+    for index in range(len(boxes) - 1):
+        start_x = boxes[index][1] + width / 2 + 0.65
+        end_x = boxes[index + 1][1] - width / 2 - 0.65
+        axis.add_patch(FancyArrowPatch((start_x, top - height / 2), (end_x, top - height / 2),
+                                       arrowstyle="-|>", mutation_scale=13, linewidth=1.3,
+                                       color="#2c5282", shrinkA=0, shrinkB=0))
+
+    # what the two user settings act on
+    axis.annotate("tube and slit settings:\nradiation, divergence",
+                  xy=(7.4, top - height - 0.55), xytext=(7.4, 4.0), ha="center", fontsize=8.0,
+                  color="#c1440e",
+                  arrowprops=dict(arrowstyle="->", color="#c1440e", lw=1.1, shrinkA=0, shrinkB=0))
+    axis.annotate("scan settings: 2θ range,\nstep size, dwell time",
+                  xy=(61.5, top - height - 0.55), xytext=(71.0, 4.0), ha="center", fontsize=8.0,
+                  color="#c1440e",
+                  arrowprops=dict(arrowstyle="->", color="#c1440e", lw=1.1, shrinkA=0, shrinkB=0))
+
+    # what the specimen does to the beam
+    axis.annotate("specimen: phase, cell, structure factor,\ncrystallite size D → Scherrer broadening",
+                  xy=(56.0, top - height - 0.55), xytext=(56.0, -2.0), ha="center", fontsize=8.0,
+                  color="#1b9e77",
+                  arrowprops=dict(arrowstyle="->", color="#1b9e77", lw=1.1, shrinkA=0, shrinkB=0))
+
+    axis.add_patch(FancyArrowPatch((88.4 + width / 2 + 0.65, top - height / 2), (101.2, top - height / 2),
+                                   arrowstyle="-|>", mutation_scale=13, linewidth=1.3,
+                                   color="#2c5282", shrinkA=0, shrinkB=0))
+    axis.text(101.2, top - height / 2 - 2.9, "pattern\nI(2θ)", ha="center", fontsize=8.0,
+              color="#4a5568")
+
+    axis.text(23.6, top + 1.6, "source and beam conditioning", ha="center", fontsize=9.0,
+              color="#2c5282", style="italic")
+    axis.text(72.2, top + 1.6, "goniometer, optics and detector", ha="center", fontsize=9.0,
+              color="#2c5282", style="italic")
+
+    axis.set_title("The diffractometer the simulator models: every box is a module in the appendix code",
+                   fontsize=12.5, fontweight="bold")
+    figure.savefig(OUT / "instrument.png", dpi=200)
+    plt.close(figure)
 
 
 def phase_panel() -> None:
