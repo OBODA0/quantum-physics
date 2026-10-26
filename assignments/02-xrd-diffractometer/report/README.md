@@ -4,22 +4,22 @@ The figures, the generated tables and the PDF report for assignment 2.
 
 ## Document
 
-`Assignment_2_XRD_Diffractometer_Report.pdf`, 47 pages: 17 pages of prose (about 8,100
+`Assignment_2_XRD_Diffractometer_Report.pdf`, 46 pages: 17 pages of prose (about 8,000
 words), 8 figures, 18 tables, 16 references, then three appendices.
 
 | part | pages | content |
 | --- | --- | --- |
 | Abstract, §1 | 1-2 | what was asked, what was built, the answer in one paragraph |
 | §2 | 2-3 | the instrument and the model: Bragg, structure factor, intensity, profile, scan |
-| §3 | 3-8 | item 1: the module map (Table 1), the in-class specification and the terminal screenshot (Figure 2), nine structures (Figure 3, Table 2), seven sizes (Figure 4), comparison with published intensities (Table 3) |
+| §3 | 3-7 | item 1: the module map (Table 1), the in-class specification and the terminal screenshot (Figure 2), nine structures (Figure 3, Table 2), seven sizes (Figure 4), comparison with published intensities (Table 3) |
 | §4 | 8-11 | item 2: the size study (Table 4), width and height laws (Figure 5), angle dependence (Figure 6), residuals (Table 5), worked example (Table 6) |
-| §5 | 12-16 | item 3: the Fourier transform, the finite-chain interference function (Figures 7 and 8, Table 7), the two-stage LTI argument, the 1/cos Jacobian, sampling, and the independent numerical convolution check |
-| §6 | 16-17 | verification, the uncertainty budget (Table 8), what is not modelled |
+| §5 | 11-15 | item 3: the Fourier transform, the finite-chain interference function (Figures 7 and 8, Table 7), the two-stage LTI argument, the 1/cos Jacobian, sampling, and the independent numerical convolution check |
+| §6 | 15-16 | verification, the uncertainty budget (Table 8), what is not modelled |
 | §7 | 17 | conclusion |
-| References | 17-18 | 16 sources, each resolved against Crossref, the DOI registry, COD or OpenLibrary |
-| Appendix A | 18-41 | the code: all 14 `xrdsim/` modules plus `report/size_study.py`, `report/tables.py` and `report/make_figures.py` |
-| Appendix B | 42 | cell constants and their records (Table 9), instrument constants |
-| Appendix C | 42-47 | reflection tables for the nine phases (Tables 10-18) |
+| References | 17 | 16 sources, each resolved against Crossref, the DOI registry, COD or OpenLibrary |
+| Appendix A | 17-40 | the code: all 14 `xrdsim/` modules plus `report/size_study.py`, `report/tables.py` and `report/make_figures.py` |
+| Appendix B | 41 | cell constants and their records (Table 9), instrument constants |
+| Appendix C | 41-46 | reflection tables for the nine phases (Tables 10-18) |
 
 ## The report
 

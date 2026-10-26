@@ -780,7 +780,7 @@ def build() -> None:
         "The finite size of the crystal is therefore not an empirical correction applied to the "
         "physics; it is a linear shift-invariant (LTI) filter applied to the ideal impulse "
         "spectrum. Everything that follows is a property of that filter.", s["body"]))
-    story.append(KeepTogether([figure("convolution.png"), Paragraph("Figure 7: the signals-and-systems cascade and independent numerical "
+    story.append(KeepTogether([figure("convolution.png", width_mm=150), Paragraph("Figure 7: the signals-and-systems cascade and independent numerical "
                            "convolution check for Si (111) at N = 160 planes (D = 50.2 nm) and "
                            "N = 1600 planes (D = 501.7 nm). (a) Ideal Bragg impulse at "
                            "2\u03b8_B = 28.441\u00b0. (b) Exact finite-chain Laue interference "
