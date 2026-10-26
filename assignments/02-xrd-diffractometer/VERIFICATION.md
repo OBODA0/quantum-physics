@@ -1,24 +1,26 @@
 # VERIFICATION.md - Assignment 2 (XRD diffractometer simulator)
 
-Checked on 2026-10-22 on Alfred, at the head of `main` that day. Every item states what was run and
-what it proves. Nothing here is reported from intent.
+Checked on 2026-10-26 on Alfred, at `main` = 28d67cf (45-page PDF, 8 figures, 18 tables, 16
+references, 121 tests). Every item states what was run and what it proves. Nothing here is
+reported from intent.
 
 ## 0. The three graded items
 
 | item | artifact | checked how |
 | --- | --- | --- |
-| 1. design and screenshots (25%) | `report/figures/instrument.png`, `phase_panel.png` (nine phases), `size_series.png` (six sizes), Appendix A of the PDF | each figure regenerates from `report/make_figures.py`; the appendix carries every `xrdsim/` module |
-| 2. what changes with domain size (25%) | `report/size_table.md`, `report/figures/size_laws.png`, `fwhm_vs_angle.png` | the table is produced by `report/size_study.py`; the numbers quoted in the PDF are gated by `report/check_numbers.py` |
-| 3. the signals explanation (25%) | report section 5, Figures 6 and 7 (`convolution.png`, `laue.png`), Table 5, ten references | every reference checked against Crossref or OpenLibrary on 2026-10-22 (`report/references/AUDIT.md`) |
+| 1. design and screenshots (25%) | Figure 1 (the chain), Figure 2 (in-class specification cases and the Windows Terminal screenshot), Figure 3 (`phase_panel.png`, nine phases), Figure 4 (`size_series.png`, seven sizes), Appendix A of the PDF | every plot regenerates from `report/make_figures.py` (`class_spec_figure()` draws Figure 2(a)-(c)); `terminal_screenshot.png` is a real capture and is checked in; Appendix A carries all 14 `xrdsim/` modules and the three report scripts |
+| 2. what changes with domain size (25%) | Table 4 and `report/size_table.md` (21 rows), Figure 5 (`size_laws.png`), Figure 6 (`fwhm_vs_angle.png`) | the table is produced by `report/size_study.py`; the nine headline numbers quoted in the PDF are gated by `report/check_numbers.py` |
+| 3. the signals explanation (25%) | report section 5, Figures 7 and 8 (`convolution.png`, `laue.png`), Table 7 (the exact K_N), 16 references | every reference resolved against Crossref, the DOI handle registry, COD or OpenLibrary on 2026-10-22 and 2026-10-26 (`report/references/AUDIT.md`) |
 
 Measured behaviour in the size study (silicon, Cu K-alpha1, step 0.002 deg): the 111 width
-goes from 0.0550 deg at 500 nm to 1.633 deg at 5 nm; the height from 2869 to 96 counts; the
-integrated area stays between 148 and 162 counts deg; the position stays at 28.441 deg for
-every size. The Scherrer inversion recovers the input size at every point, 5 to 500 nm.
+goes from 0.0550 deg at 500 nm to 1.6388 deg at 5 nm; the height from 2869 to 96 counts; the
+integrated area of 111 stays at 196 counts deg from 10 nm to 500 nm and 195 at 5 nm, where
+the +-4 FWHM window starts to overlap 220; the position stays at 28.441 deg for every size.
+The Scherrer inversion recovers the input size at every point, 5 to 500 nm.
 
 ## 1. Test suite
 
-`cd assignments/02-xrd-diffractometer && uv run pytest -q` -> **116 passed** (2026-10-22).
+`cd assignments/02-xrd-diffractometer && uv run pytest -q` -> **121 passed** in 1.6 s (2026-10-26).
 
 What the suite covers, by file:
 
@@ -60,20 +62,25 @@ Relative intensities, simulated against published powder patterns. The model use
 uniform Debye-Waller factor (B = 0.5 A^2), no absorption correction and no texture, so
 agreement is expected to be good but not exact.
 
-| phase | reflections | simulated I/I0 | published peak heights |
-| --- | --- | --- | --- |
-| Si | 111 / 220 / 311 / 400 | 100 / 64 / 37 / 10 | 100 / 55 / 30 / 5 |
-| Cu | 111 / 200 / 220 / 311 | 100 / 46 / 24 / 27 | 100 / 46 / 20 / 17 |
-| NaCl | 111 / 200 / 220 | 8 / 100 / 64 | 13 / 100 / 55 |
-| ZnO | 100 / 002 / 101 | 52 / 40 / 100 | 57 / 44 / 100 |
-| rutile TiO2 | 110 / 101 / 211 | 100 / 45 / 55 | 100 / 50 / 60 |
+| phase | reflections | model, integrated area | model, peak height | printed card, I/I0 |
+| --- | --- | --- | --- | --- |
+| Si | 111 / 220 / 311 / 400 | 100 / 64 / 37 / 10 | 100 / 62 / 35 / 8 | 100 / 55 / 30 / 6 |
+| Cu | 111 / 200 / 220 / 311 | 100 / 46 / 24 / 27 | 100 / 45 / 21 / 20 | 100 / 46 / 20 / 17 |
+| NaCl | 111 / 200 / 220 | 8 / 100 / 64 | 8 / 62 / 40 | 13 / 100 / 55 |
+| ZnO | 100 / 002 / 101 | 52 / 40 / 100 | 52 / 40 / 100 | 57 / 44 / 100 |
+| rutile TiO2 | 110 / 101 / 211 | 100 / 45 / 55 | 100 / 45 / 51 | 100 / 50 / 60 |
 
-The low-angle ratios now agree closely; the high-angle ones run high (Si 400 at 10 against
-5, Cu 311 at 27 against 17). Part of that is a definition: the model returns integrated
-intensities, while printed powder cards list peak heights, and the instrument width grows
-with angle, so the same area gives a lower height. The rest is the untuned model: no
-absorption correction, one Debye-Waller factor for every site. This is recorded rather than
-tuned; fitting B per site would be fitting, not physics.
+These are the numbers behind Table 3 of the PDF; the card values are the ICDD PDF entries
+named in that table (04-0829, 05-0628, 36-1451, 21-1276, 27-1402) for the phases the
+database has, and published patterns otherwise.
+
+The low-angle ratios agree closely; the high-angle ones run high even after the peak-height
+column is used (Si 400 at 8 against 6, Cu 311 at 20 against 17, rutile 211 at 51 against 60
+in the other direction). Part of that is a definition: the model returns an integrated area
+while cards list peak heights, and the instrument width grows with angle. The rest is the
+untuned model: no absorption correction, one Debye-Waller factor for every site, a single
+2theta-dependent LP factor. This is recorded rather than tuned; fitting B per site would be
+fitting, not physics.
 
 ## 2.2 Clean-room rebuild
 

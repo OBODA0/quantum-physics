@@ -111,7 +111,7 @@ Cell: a = 4.2112 A. Source: ICDD PDF 04-0829 [13] (26 C: a = 4.2112 A)
 
 ## Zincite (ZnO), P63mc (186)
 
-Cell: a = 3.2494, c = 5.2038 A. Source: Kihara & Donnay (1985) [15], COD 9004180 [12] (293 K: a=3.2494, c=5.2038 A, u=0.3830)
+Cell: a = 3.2494, c = 5.2038 A. Source: Kihara & Donnay (1985) [15], COD 9004180 [12] (293 K: a = 3.2494, c = 5.2038 A; u(O) = 0.3830)
 
 | hkl | d (A) | 2theta (deg) | m | I/I0 (%) |
 | --- | --- | --- | --- | --- |

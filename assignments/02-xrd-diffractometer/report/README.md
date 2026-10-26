@@ -4,29 +4,31 @@ The figures, the generated tables and the PDF report for assignment 2.
 
 ## Document
 
-32 pages: 11 pages of prose, the rest appendices.
+`Assignment_2_XRD_Diffractometer_Report.pdf`, 45 pages: 16 pages of prose (about 9,000
+words), 8 figures, 18 tables, 16 references, then three appendices.
 
-| part | content |
-| --- | --- |
-| Abstract, §1 | what was asked, what was built, the answer in one paragraph |
-| §2 | the instrument and the model: Bragg, structure factor, intensity, profile, scan |
-| §3 | item 1: the module map, nine structures (Figure 2, Table 2), six sizes (Figure 3), comparison with published intensities (Table 3) |
-| §4 | item 2: the size study (Table 4), width and height laws (Figure 4), angle dependence (Figure 5), residuals (Table 5), worked example (Table 7) |
-| §5 | item 3: Fourier transform, the finite-chain interference function (Figures 6 and 7, Table 6), the two-stage LTI argument, the 1/cos Jacobian, sampling, and the check against measurement |
-| §6 | verification, the uncertainty budget (Table 9), and what is not modelled |
-| §7 | conclusion |
-| Appendix A | the code, every `xrdsim/` module |
-| Appendix B | cell constants and their records (Table 8), instrument constants |
-| Appendix C | reflection tables for the nine phases (Tables 10-18) |
+| part | pages | content |
+| --- | --- | --- |
+| Abstract, §1 | 1-2 | what was asked, what was built, the answer in one paragraph |
+| §2 | 2-3 | the instrument and the model: Bragg, structure factor, intensity, profile, scan |
+| §3 | 3-7 | item 1: the module map (Table 1), the in-class specification and the terminal screenshot (Figure 2), nine structures (Figure 3, Table 2), seven sizes (Figure 4), comparison with published intensities (Table 3) |
+| §4 | 7-10 | item 2: the size study (Table 4), width and height laws (Figure 5), angle dependence (Figure 6), residuals (Table 5), worked example (Table 6) |
+| §5 | 11-15 | item 3: the Fourier transform, the finite-chain interference function (Figures 7 and 8, Table 7), the two-stage LTI argument, the 1/cos Jacobian, sampling, and the independent numerical convolution check |
+| §6 | 15-16 | verification, the uncertainty budget (Table 8), what is not modelled |
+| §7 | 16 | conclusion |
+| References | 16 | 16 sources, each resolved against Crossref, the DOI registry, COD or OpenLibrary |
+| Appendix A | 17-39 | the code: all 14 `xrdsim/` modules plus `report/size_study.py`, `report/tables.py` and `report/make_figures.py` |
+| Appendix B | 40 | cell constants and their records (Table 9), instrument constants |
+| Appendix C | 40-45 | reflection tables for the nine phases (Tables 10-18) |
 
 ## The report
 
 `Assignment_2_XRD_Diffractometer_Report.pdf` answers the three graded items:
 
-1. the design, and screenshots of it working on nine crystal structures and six crystallite
-   sizes;
+1. the design, and a screenshot of it running on the canonical crystal types and on a size
+   sweep, with nine crystal structures and seven crystallite sizes simulated in the report;
 2. what changes in the data when the domain size changes, measured in a size study;
-3. why that happens, in signals-and-systems terms, with six verified references.
+3. why that happens, in signals-and-systems terms, with 16 verified references.
 
 It is one PDF, as PS2 requires: figures, tables, references and the code appendix are inside
 it.
@@ -38,25 +40,29 @@ uv run python -m report.check_numbers
 ```
 
 `check_pdf.py` refuses a file that is missing a section marker, carries embedded files, or
-is shorter than three pages. `check_numbers.py` recomputes every number the text quotes and
-refuses a PDF that does not contain it; the builder and the gate both read
-`numbers_source.py`, so text and model cannot drift.
+is shorter than three pages. `check_numbers.py` recomputes the headline numbers the text
+quotes (nine of them) and refuses a PDF that does not contain them; the builder and the gate
+both read `numbers_source.py`, so those numbers cannot drift. The other numbers come from
+`report/size_study.py` and `report/tables.py`, whose output is `size_table.md` and
+`tables.md`.
 
 ## Figures
 
-| file | what it shows | produced by |
-| --- | --- | --- |
-| `figures/instrument.png` | the Bragg-Brentano chain the simulator models | `instrument_diagram()` |
-| `figures/phase_panel.png` | nine phases, one pattern each (item 1) | `phase_panel()` |
-| `figures/size_series.png` | silicon 111 at six crystallite sizes (item 1) | `size_series()` |
-| `figures/size_laws.png` | FWHM against 1/D and height against D (item 2) | `size_laws()` |
-| `figures/fwhm_vs_angle.png` | the same size broadens as 1/cos(theta) (item 2) | `fwhm_vs_angle()` |
-| `figures/convolution.png` | ideal line, size convolution, instrument convolution (item 3) | `convolution_demo()` |
-| `figures/laue.png` | the finite-chain interference function, width ~ 1/N (item 3) | `laue_plot()` |
-| `figures/scherrer.png` | the 111 line at 5, 20 and 200 nm | `scherrer_demo()` |
-| `figures/doublet.png` | the K-alpha doublet with and without K-alpha2 | `doublet_demo()` |
+| file | what it shows | appears as | produced by |
+| --- | --- | --- | --- |
+| `figures/instrument.png` | the Bragg-Brentano chain the simulator models | Figure 1 | `instrument_diagram()` |
+| `figures/class_spec.png` | systematic absences SC/BCC/FCC, crystal vs amorphous, lattice-constant sweep | Figure 2(a)-(c) | `class_spec_figure()` |
+| `figures/terminal_screenshot.png` | the command line running the same three cases | Figure 2(d) | captured by hand, checked in |
+| `figures/phase_panel.png` | nine phases, one pattern each (item 1) | Figure 3 | `phase_panel()` |
+| `figures/size_series.png` | silicon 111 at seven crystallite sizes (item 1) | Figure 4 | `size_series()` |
+| `figures/size_laws.png` | FWHM against 1/D and height against D (item 2) | Figure 5 | `size_laws()` |
+| `figures/fwhm_vs_angle.png` | the same size broadens as 1/cos(theta) (item 2) | Figure 6 | `fwhm_vs_angle()` |
+| `figures/convolution.png` | ideal line, size convolution, instrument convolution, and the numerical check | Figure 7 | `convolution_demo()` |
+| `figures/laue.png` | the finite-chain interference function, width ~ 1/N (item 3) | Figure 8 | `laue_plot()` |
+| `figures/scherrer.png` | the 111 line at 5, 20 and 200 nm | not in the PDF | `scherrer_demo()` |
+| `figures/doublet.png` | the K-alpha doublet with and without K-alpha2 | not in the PDF | `doublet_demo()` |
 
-Nothing in `figures/` is drawn by hand. Regenerate with:
+Nothing in `figures/` is drawn by hand except the terminal capture. Regenerate the plots with:
 
 ```
 uv run python -m report.make_figures
