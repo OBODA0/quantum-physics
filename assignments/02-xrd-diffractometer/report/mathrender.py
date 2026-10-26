@@ -62,6 +62,8 @@ def math_image(latex: str, fontsize: float = 10.5) -> tuple[pathlib.Path, float,
 
 def inline(latex: str, fontsize: float = 9.0) -> str:
     """A ReportLab <img> tag that sits on the text baseline."""
+    # mathtext glyphs read larger than DejaVu Sans at the same nominal size
+    fontsize *= 0.92
     path, width, height = math_image(latex, fontsize)
     descent = 0.24 * fontsize + 72.0 * _PAD_PX / DPI
     return ('<img src="{}" width="{:.2f}" height="{:.2f}" valign="{:.2f}"/>'

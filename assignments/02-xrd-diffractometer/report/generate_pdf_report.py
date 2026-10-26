@@ -614,7 +614,8 @@ def build() -> None:
     story.append(Paragraph("3.1 In-class specification: canonical crystal types, amorphous halo, lattice constant, and CLI session", s["h2"]))
     story.append(Paragraph(
         "Figure 2 directly demonstrates the requirements established in class across canonical "
-        "crystal types, the amorphous phase, lattice constant variation, and the command-line interface under Cu K\u03b1 radiation:<br/>"
+        "crystal types, the amorphous phase, lattice constant variation, and the command-line interface under Cu K\u03b1 radiation:", s["body"]))
+    story.append(Paragraph(
         "<b>(a) Canonical crystal structures:</b> Generic Simple Cubic (<font face=\"Courier\">--phase sc --a 3.359</font>, "
         "space group Pm-3m, a single-atom basis at the origin with cell edge a = 3.359 \u00c5 matching the room-temperature \u03b1-Po "
         "cell constant and evaluated with the tabulated Cu atomic scattering factor), "
@@ -935,7 +936,7 @@ def build() -> None:
         "The finite size of the crystal is therefore not an empirical correction applied to the "
         "physics; it is a linear shift-invariant (LTI) filter applied to the ideal impulse "
         "spectrum. Everything that follows is a property of that filter.", s["body"]))
-    story.append(KeepTogether([figure("convolution.png", width_mm=150), Paragraph("Figure 7: the signals-and-systems cascade and independent numerical "
+    story.append(KeepTogether([figure("convolution.png", width_mm=132), Paragraph("Figure 7: the signals-and-systems cascade and independent numerical "
                            "convolution check for Si (111) at N = 160 planes (D = 50.2 nm) and "
                            "N = 1600 planes (D = 501.7 nm). (a) Ideal Bragg impulse at "
                            "2\u03b8_B = 28.441\u00b0. (b) Exact finite-chain Laue interference "

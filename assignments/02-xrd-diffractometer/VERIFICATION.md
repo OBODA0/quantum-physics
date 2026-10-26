@@ -1,6 +1,6 @@
 # VERIFICATION.md - Assignment 2 (XRD diffractometer simulator)
 
-Checked on 2026-10-26 on Alfred, at `main` = 28d67cf plus the 2026-10-26 audit fixes (46-page PDF, 8 figures, 18 tables, 16
+Checked on 2026-10-26 on Alfred, at `main` = cb391d3 plus the cover, equation and layout fixes of 2026-10-26 (53-page PDF including the cover, 8 figures, 18 tables, 16
 references, 121 tests). Every item states what was run and what it proves. Nothing here is
 reported from intent.
 

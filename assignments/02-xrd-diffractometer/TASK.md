@@ -5,7 +5,7 @@
 > arrived, kept for provenance. Several of its "AWAITING" boxes are answered by the delivered
 > report: the brief, the three graded items and what satisfies each are in
 > `VERIFICATION.md`, and the report itself is `report/Assignment_2_XRD_Diffractometer_Report.pdf`
-> (47 pages). Read this file as the plan, not as the status.
+> (53 pages including the cover page). Read this file as the plan, not as the status.
 
 Status: working spec, brief received 2026-10-22 (pasted by OBODA from the course
 announcement). Sources are quoted verbatim; anything that is our reading rather than the
