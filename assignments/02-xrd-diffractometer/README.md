@@ -17,8 +17,8 @@ and Poisson counting statistics.
 
 **Status:** complete. The brief asks for three things, all answered in
 `report/Assignment_2_XRD_Diffractometer_Report.pdf` (one PDF, as PS2 requires): the design
-with screenshots across nine crystal structures and six crystallite sizes, the measured
-effect of the domain size, and the signals-and-systems explanation of it, with six verified
+with screenshots across nine crystal structures and seven crystallite sizes, the measured
+effect of the domain size, and the signals-and-systems explanation of it, with 16 verified
 references.
 
 ## Running it
@@ -39,7 +39,10 @@ uv run python -m xrdsim --phase si --table
 | step | `--step` | 2theta increment |
 | dwell | `--dwell` | counting time per step |
 | counts | `--counts` | integrated counts at the strongest reflection |
+| background | `--background` | flat background, counts per second |
+| lattice constant | `--a` | override the cell parameter of the chosen phase, angstrom |
 | size | `--size` | crystallite size in angstrom |
+| size | `--size-nm` | crystallite size in nanometres |
 | displacement | `--displacement` | specimen surface off the goniometer axis, mm |
 | doublet | `--no-ka2` | drop the K-alpha2 line |
 | monochromator | `--monochromator 2THETA` | add the polarisation term |

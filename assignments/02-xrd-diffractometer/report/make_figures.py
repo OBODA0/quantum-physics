@@ -125,7 +125,7 @@ def size_series() -> None:
     colours = [
         "#8a3b12", "#b5651d", "#d9822b", "#7a8b3a", "#2f7d32", "#1f6f8b", "#1a3d6d",
     ]
-    inst = Instrument(ka2=False, background_rate=0.0, rng_seed=None)
+    inst = Instrument(ka2=False, background_rate=0.0, rng_seed=None, reference_counts=100_000.0)
     for (size, label), colour in zip(sizes, colours):
         result = scan(get_phase("si"), 27.4, 29.4, 0.002, inst, size_a=size)
         left.plot(result.two_theta, result.counts, lw=1.1, color=colour, label=label)
@@ -179,7 +179,7 @@ def fwhm_vs_angle() -> None:
     """R2: the same size broadens by 1/cos(theta), so width grows with angle."""
     from xrdsim.analysis import find_peaks
     fig, ax = plt.subplots(figsize=(8, 4))
-    inst = Instrument(ka2=False, background_rate=0.0, rng_seed=None)
+    inst = Instrument(ka2=False, background_rate=0.0, rng_seed=None, reference_counts=100_000.0)
     for size, colour in [(200.0, "#1a3d6d"), (500.0, "#8a3b12")]:
         result = scan(get_phase("si"), 20.0, 120.0, 0.005, inst, size_a=size)
         peaks = [peak for peak in find_peaks(result.two_theta, result.counts)

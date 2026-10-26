@@ -1,6 +1,6 @@
 # VERIFICATION.md - Assignment 2 (XRD diffractometer simulator)
 
-Checked on 2026-10-26 on Alfred, at `main` = 28d67cf (45-page PDF, 8 figures, 18 tables, 16
+Checked on 2026-10-26 on Alfred, at `main` = 28d67cf plus the 2026-10-26 audit fixes (47-page PDF, 8 figures, 18 tables, 16
 references, 121 tests). Every item states what was run and what it proves. Nothing here is
 reported from intent.
 
@@ -84,28 +84,29 @@ fitting, not physics.
 
 ## 2.2 Clean-room rebuild
 
-Checked on 2026-10-22: a fresh `git clone` of the repository into `/tmp/clean3`,
-then
+Checked on 2026-10-26 at HEAD 28d67cf: a fresh `git clone` of the repository into
+`/tmp/cr`, then
 
 ```
-uv sync
-uv run pytest
-uv run python -m report.make_figures
-uv run python -m report.tables
-uv run python -m report.generate_pdf_report
-uv run python -m report.check_pdf
-uv run python -m report.check_numbers
+uv sync --frozen
+uv run python -m tools.check_all
 ```
 
-produced **116 passed** and **PASS**, and `git status` in the clone was **empty**: every
-figure, the reflection table and the PDF came out byte-identical to the committed ones.
-The PDF is deterministic because `reportlab.rl_config.invariant` fixes its timestamps and
-document id.
+ran the whole ladder (tests, figures, tables, PDF, gates, numbers): **all steps passed**,
+and `git status` in the clone was **empty** when it finished: every figure, the reflection
+table and the PDF came out byte-identical to the committed ones. The PDF is deterministic
+because `reportlab.rl_config.invariant` fixes its timestamps and document id.
+
+One caveat, found in the 2026-10-26 audit: PNG bytes depend on the matplotlib build. Artifacts
+generated on another machine are pixel-identical (checked by array comparison, all ten
+figures) but not byte-identical, because the zlib/IDAT encoding differs. The committed
+artifacts were therefore regenerated on this host in d97d2fb, and the clean room above is
+true for a clone built here.
 
 ## 2.3 Robustness sweep
 
 `uv run python -m tools.sweep` reproduces the sweep below: 567 scans, 0 failures, about
-12 s. Every phase is covered:
+3 s. Every phase is covered:
 
 | dimension | values |
 | --- | --- |
@@ -128,6 +129,11 @@ and a negative size with `xrdsim: error: ...` and exit status 2, not a traceback
 | hexagonal multiplicity for a general (hk0) reflection | 6 instead of 12; no shipped pattern changed, but any general in-plane family would have been under-weighted | special-position rule (h == 0, k == 0 or h == k gives 6, otherwise 12) | `test_multiplicity_matches_a_brute_force_orbit`, which enumerates the operations independently |
 | hand-expanded anatase basis | spurious (001) at 9.27 deg with 100 % intensity | basis taken from the COD CIF expanded by gemmi | (001) now zero, 101 at 25.27 deg with 100 %; `test_every_phase_reproduces_its_published_strongest_line` |
 | sampled peak heights | heights jittered with the scan step | parabolic refinement | `test_find_peaks_recovers_positions_widths_and_heights` |
+| peak area taken over a +-4 FWHM window | 111 area read 148 counts deg at 5 nm against 195 at every other size, an artefact of the window overlapping 220 | integrate the isolated peak and state the window where it is not isolated | the 5 nm row of Table 4 and its caption |
+| FWHM checked only against the quadrature the generator used | the comparison was self-consistent by construction, not a physical test | independent numerical convolution of the exact N-plane Laue sum with the instrument kernel (section 5.7, Figure 7) | agreement within 0.2-2.2 % over 16 to 1600 planes |
+| table numbers duplicated after inserting a table | two tables numbered 3 | renumbered, then checked by extracting the text and listing every number | Tables 1-18 appear exactly once each |
+| powder-card values quoted without their card number | a reader could not trace a published intensity | ICDD cards named per phase in Table 3; values without a card are marked as published patterns | Table 3 |
+| figures regenerated on another machine were assumed byte-identical | the clean-room `git status` was not empty | artifacts rebuilt on this host; the check is stated as pixel-identical across hosts, byte-identical on one | this file, section 2.2 |
 
 ## 4. What is NOT verified
 

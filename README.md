@@ -41,13 +41,16 @@ uv run python -m xrdsim --list-phases
 uv run python -m xrdsim --phase si --range 20 100 --out out/si.png
 ```
 
-The report in each assignment folder is generated from the same source as the
-PDF, so the markdown and the PDF cannot drift:
+The PDF is generated from the Python sources, so the figures, the tables and the
+numbers in the text cannot drift:
 
 ```
-uv run python report/generate_readme.py
-uv run python report/generate_pdf_report.py
+uv run python -m report.generate_pdf_report
 ```
+
+Assignment 1 additionally regenerates its README report section with
+`uv run python report/generate_readme.py`; assignment 2 keeps its report notes in
+`report/README.md`, updated by hand.
 
 ## Assignment 1 at a glance
 
