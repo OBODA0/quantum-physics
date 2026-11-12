@@ -31,7 +31,7 @@ A physics-based **Dynamic Light Scattering (DLS) / Photon Correlation Spectrosco
    - Number distribution $p_N(d)$ and Intensity distribution $p_I(d) \propto p_N(d)\,d^6\,P(qd/2)$ plotted against $\log_{10}(d/\text{nm})$.
 3. **Polydispersity Index (`PDI`) & Monodispersity Criterion (`If PDI < 0.2`)**:
    - ISO 22412:2025 / Koppel (1972) cumulant expansion (the factor 2 belongs to the ISO definition) $\ln|g_1(\tau)| \approx -\bar{\Gamma}\tau + \frac{1}{2}\mu_2\tau^2$:
-     $$\text{PDI} = \frac{\mu_2}{\bar{\Gamma}^2}, \qquad D_z = \frac{k_B T}{3\pi\,\eta(T)\,(\bar{\Gamma}/q^2)}.$$
+     $$\text{PDI} = \frac{2\,\mu_2}{\bar{\Gamma}^2}, \qquad D_z = \frac{k_B T}{3\pi\,\eta(T)\,(\bar{\Gamma}/q^2)}.$$
    - Evaluates the classroom criterion **`If PDI < 0.2`** (`Monodisperse` vs `Polydisperse / Aggregated`).
 
 ---
