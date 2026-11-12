@@ -1,10 +1,11 @@
 [project]
 name = "dls-simulator"
 version = "0.1.0"
-description = "Dynamic Light Scattering (DLS) nanoparticle sizing simulator: solvent viscosity/RI models, Rayleigh-Gans-Debye optical weighting, aggregation, autocorrelation g2(tau), and ISO 22412 cumulant PDI analysis."
+description = "Dynamic Light Scattering (DLS) nanoparticle sizing simulator: solvent viscosity/RI models, Rayleigh-Gans-Debye optical weighting, aggregation, autocorrelation g2(tau), ISO 22412 cumulant PDI analysis, and regularised inversion of the correlation curve."
 requires-python = ">=3.11"
 dependencies = [
     "numpy>=2.0",
+    "scipy>=1.13",
     "matplotlib>=3.8",
 ]
 

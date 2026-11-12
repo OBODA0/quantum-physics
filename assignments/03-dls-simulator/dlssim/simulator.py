@@ -9,6 +9,7 @@ import numpy as np
 from .autocorrelation import AutocorrelationResult, compute_autocorrelation
 from .cumulants import CumulantResult, compute_cumulants
 from .distribution import SizeDistribution, build_size_distribution
+from .inversion import RecoveredDistribution, invert_correlation
 from .mie import optical_contrast_factor, scattering_wavevector
 from .solvents import SolventModel, get_solvent
 
@@ -65,6 +66,7 @@ class DLSOutputs:
     distribution: SizeDistribution
     autocorrelation: AutocorrelationResult
     cumulants: CumulantResult
+    recovered: RecoveredDistribution
 
 
 def simulate_dls(inputs: DLSInputs) -> DLSOutputs:
@@ -126,6 +128,19 @@ def simulate_dls(inputs: DLSInputs) -> DLSOutputs:
         size_std_rel=inputs.size_std_rel,
     )
 
+    recovered = invert_correlation(
+        tau_s=autocorr.tau_s,
+        g2_minus_1=autocorr.g2_minus_1,
+        beta=inputs.intercept_beta,
+        q_m_inv=q_m_inv,
+        viscosity_pa_s=eta_pa_s,
+        temperature_k=temp_k,
+        particle_ri=inputs.particle_ri,
+        solvent_ri=n_s,
+        wavelength_nm=inputs.wavelength_nm,
+        angle_deg=inputs.angle_deg,
+    )
+
     return DLSOutputs(
         inputs=inputs,
         solvent_model=solvent_model,
@@ -140,4 +155,5 @@ def simulate_dls(inputs: DLSInputs) -> DLSOutputs:
         distribution=dist,
         autocorrelation=autocorr,
         cumulants=cumulants,
+        recovered=recovered,
     )

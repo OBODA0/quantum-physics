@@ -120,6 +120,23 @@ def plot_dls_dashboard(
         label=f"Intensity dist. (mean = {dist.intensity_mean_nm:.1f} nm)",
     )
     ax_dist.fill_between(d_nm, 0.0, p_int_pct, color="#9333ea", alpha=0.18)
+    rec = outputs.recovered
+    ax_dist.semilogx(
+        rec.diameter_nm,
+        rec.intensity_dist * 100.0,
+        color="#9333ea",
+        ls="--",
+        lw=1.5,
+        label=f"Recovered intensity (peak {rec.peak_intensity_nm:.0f} nm)",
+    )
+    ax_dist.semilogx(
+        rec.diameter_nm,
+        rec.number_dist * 100.0,
+        color="#16a34a",
+        ls="--",
+        lw=1.5,
+        label=f"Recovered number (peak {rec.peak_number_nm:.0f} nm)",
+    )
     ax_dist.axvline(
         cum.z_average_nm,
         color="#0f172a",
@@ -164,7 +181,9 @@ def plot_dls_dashboard(
         f"Intensity Mean Size   : {dist.intensity_mean_nm:.2f} nm",
         f"Z-Average Size D_z    : {cum.z_average_nm:.2f} nm",
         f"Polydispersity (PDI)  : {cum.pdi:.4f} "
-        f"(monomer (sigma/d)^2 = {cum.pdi_monomer_intrinsic:.4f})",
+        f"(exact {cum.pdi_exact:.4f}, input var {cum.pdi_monomer_intrinsic:.4f})",
+        f"Recovered I / N peak  : {rec.peak_intensity_nm:.1f} / {rec.peak_number_nm:.1f} nm",
+        f"Inversion residual    : {rec.residual:.3f}",
         f"Whiteboard Criterion  : {cum.quality_verdict}",
     ]
     ax_card.text(

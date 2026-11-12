@@ -340,7 +340,7 @@ wheels = [
 ]
 
 [[package]]
-name = "dls-dynamic-light-scattering-simulator"
+name = "dls-simulator"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

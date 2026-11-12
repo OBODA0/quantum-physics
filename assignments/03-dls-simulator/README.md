@@ -30,13 +30,25 @@ A physics-based **Dynamic Light Scattering (DLS) / Photon Correlation Spectrosco
 2. **Size distribution `[Number, Intensity]` on a logarithmic size axis (`diameter_nm`)**:
    - Number distribution $p_N(d)$ and Intensity distribution $p_I(d) \propto p_N(d)\,d^6\,P(qd/2)$ plotted against $\log_{10}(d/\text{nm})$.
 3. **Polydispersity Index (`PDI`) & Monodispersity Criterion (`If PDI < 0.2`)**:
-   - ISO 22412 / Koppel (1972) cumulant expansion $\ln|g_1(\tau)| \approx -\bar{\Gamma}\tau + \frac{1}{2}\mu_2\tau^2$:
+   - ISO 22412:2025 / Koppel (1972) cumulant expansion (the factor 2 belongs to the ISO definition) $\ln|g_1(\tau)| \approx -\bar{\Gamma}\tau + \frac{1}{2}\mu_2\tau^2$:
      $$\text{PDI} = \frac{\mu_2}{\bar{\Gamma}^2}, \qquad D_z = \frac{k_B T}{3\pi\,\eta(T)\,(\bar{\Gamma}/q^2)}.$$
    - Evaluates the classroom criterion **`If PDI < 0.2`** (`Monodisperse` vs `Polydisperse / Aggregated`).
 
 ---
 
 ## Quick Start
+
+### 0. What the simulator computes
+
+The forward model takes the six inputs and produces the correlation curve and the
+true number/intensity distributions. A second step performs what an instrument does:
+it inverts the correlation curve with a regularised NNLS fit and reports the recovered
+intensity and number distributions, alongside the cumulant z-average and PDI. The
+dashboard overlays both.
+
+Documentation: `docs/model.md` (equations, assumptions, limits), `data/SOURCES.md`
+(provenance of every constant), `docs/brief_intake.md` (the class brief as transcribed),
+`docs/research/reference_audit.md` (every citation resolved and what it can carry).
 
 ### 1. Run the Command-Line Simulator
 ```bash
@@ -53,3 +65,15 @@ python -m dlssim --gui
 ```bash
 pytest -q
 ```
+
+## Layout
+
+| path | contents |
+| --- | --- |
+| `dlssim/` | package: solvents, mie, distribution, autocorrelation, cumulants, inversion, simulator, cli, gui, plot |
+| `tests/` | 18 physics and end-to-end checks |
+| `data/SOURCES.md` | provenance for every constant |
+| `docs/model.md` | equations, assumptions and declared limits |
+| `docs/brief_intake.md` | the brief as transcribed from the class page |
+| `docs/research/reference_audit.md` | citation audit |
+| `report/` | figures, tables, numbers and PDF (pending the digital brief) |
