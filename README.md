@@ -4,13 +4,13 @@ Simulators written for the quantum physics section of the nano capsule class
 (EE4005, Nanotechnology & Quantum Physics).
 
 Each assignment is self-contained: its own Python package, tests, data pack and report
-generator. Assignment 1's PDF is the submitted document; assignment 2's is a draft until its
-brief arrives.
+generator.
 
 | # | assignment | simulator | report |
 | --- | --- | --- | --- |
 | 1 | PL spectrometer | `plsim` - xenon lamp, two monochromators, dye database, photodiode | [markdown](assignments/01-pl-spectrometer/README.md) - [PDF](assignments/01-pl-spectrometer/report/Assignment_1_PL_Spectroscopy_Simulation_Report.pdf) |
-| 2 | XRD diffractometer | `xrdsim` - Bragg-Brentano scan, structure factors, K-alpha doublet, Scherrer | [markdown](assignments/02-xrd-diffractometer/README.md) - [draft PDF](assignments/02-xrd-diffractometer/report/Assignment_2_XRD_Diffractometer_Report.pdf) |
+| 2 | XRD diffractometer | `xrdsim` - Bragg-Brentano scan, structure factors, K-alpha doublet, Scherrer | [markdown](assignments/02-xrd-diffractometer/README.md) - [PDF](assignments/02-xrd-diffractometer/report/Assignment_2_XRD_Diffractometer_Report.pdf) |
+| 3 | DLS nanoparticle sizer | `dlssim` - Brownian diffusion, Siegert autocorrelation, Mie/Rayleigh $d^6$ distributions, cumulant PDI | [markdown](assignments/03-dls-simulator/README.md) |
 
 ## Layout
 
@@ -18,6 +18,7 @@ brief arrives.
 assignments/
   01-pl-spectrometer/        assignment 1: package, tests, data pack, report
   02-xrd-diffractometer/     assignment 2: XRD diffractometer simulator
+  03-dls-simulator/          assignment 3: Dynamic Light Scattering (DLS) simulator
 ```
 
 ## Running an assignment
@@ -29,7 +30,7 @@ uv sync
 uv run pytest
 ```
 
-Both assignments have a command line interface:
+Each assignment has a command line interface:
 
 ```
 uv run python -m plsim --help
@@ -41,16 +42,17 @@ uv run python -m xrdsim --list-phases
 uv run python -m xrdsim --phase si --range 20 100 --out out/si.png
 ```
 
+```
+uv run python -m dlssim --list-solvents
+uv run python -m dlssim --solvent water --ri 1.59 --size-nm 50 --sigma 0.12 --aggregation 0.12 --temp-c 25 --out out/dls_dashboard.png --compare-out out/dls_whiteboard_comparison.png
+```
+
 The PDF is generated from the Python sources, so the figures, the tables and the
 numbers in the text cannot drift:
 
 ```
 uv run python -m report.generate_pdf_report
 ```
-
-Assignment 1 additionally regenerates its README report section with
-`uv run python report/generate_readme.py`; assignment 2 keeps its report notes in
-`report/README.md`, updated by hand.
 
 ## Assignment 1 at a glance
 
