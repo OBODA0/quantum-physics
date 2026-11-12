@@ -4,13 +4,13 @@ Simulators written for the quantum physics section of the nano capsule class
 (EE4005, Nanotechnology & Quantum Physics).
 
 Each assignment is self-contained: its own Python package, tests, data pack and report
-generator. Assignment 1's PDF is the submitted document; assignment 2's is a draft until its
-brief arrives.
+generator. Assignments 1 and 2 are submitted; assignment 3 (DLS) is in progress.
 
 | # | assignment | simulator | report |
 | --- | --- | --- | --- |
 | 1 | PL spectrometer | `plsim` - xenon lamp, two monochromators, dye database, photodiode | [markdown](assignments/01-pl-spectrometer/README.md) - [PDF](assignments/01-pl-spectrometer/report/Assignment_1_PL_Spectroscopy_Simulation_Report.pdf) |
 | 2 | XRD diffractometer | `xrdsim` - Bragg-Brentano scan, structure factors, K-alpha doublet, Scherrer | [markdown](assignments/02-xrd-diffractometer/README.md) - [draft PDF](assignments/02-xrd-diffractometer/report/Assignment_2_XRD_Diffractometer_Report.pdf) |
+| 3 | DLS | `dlssim` - Brownian motion, autocorrelation, cumulant PDI, NNLS size distribution | [markdown](assignments/03-dls-dynamic-light-scattering/README.md) - report pending the digital brief |
 
 ## Layout
 
@@ -18,6 +18,7 @@ brief arrives.
 assignments/
   01-pl-spectrometer/        assignment 1: package, tests, data pack, report
   02-xrd-diffractometer/     assignment 2: XRD diffractometer simulator
+  03-dls-dynamic-light-scattering/  assignment 3: DLS simulator
 ```
 
 ## Running an assignment
@@ -29,7 +30,7 @@ uv sync
 uv run pytest
 ```
 
-Both assignments have a command line interface:
+Each assignment has a command line interface:
 
 ```
 uv run python -m plsim --help
@@ -60,3 +61,8 @@ It reproduces the measured spectra of Cy3, Cy5 and methylene blue, and checks
 Kasha's rule by sweeping the excitation wavelength from 400 nm to 700 nm.
 
 Full report: [assignments/01-pl-spectrometer](assignments/01-pl-spectrometer/README.md).
+
+```
+uv run python -m dlssim --help
+uv run python -m dlssim --diameter 100 --sigma 1.1 --solvent water --temperature 25
+```

@@ -1,0 +1,24 @@
+[project]
+name = "dls-dynamic-light-scattering-simulator"
+version = "0.1.0"
+description = "Dynamic light scattering simulator: Brownian motion, autocorrelation, cumulant analysis, size distributions and PDI."
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.0",
+    "scipy>=1.13",
+    "matplotlib>=3.8",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+# the package sits at the assignment root, so pytest must look there
+pythonpath = ["."]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "reportlab>=4",
+    "pypdf>=5",
+]
