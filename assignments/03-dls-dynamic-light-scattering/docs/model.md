@@ -13,7 +13,8 @@ of refractive index n the scattering vector is
 q = (4 pi n / lambda) sin(theta / 2)
 ```
 
-At 633 nm, n = 1.3317, theta = 178 deg: q = 2.6423e7 1/m.
+At 633 nm, n = 1.3317, theta = 178 deg: q = 2.6423e7 1/m. The formula is geometry (Berne &
+Pecora); it is not a result of Pecora 1964.
 
 ## 2. Brownian motion
 
@@ -23,7 +24,8 @@ A sphere of diameter d in a liquid of viscosity eta at temperature T diffuses wi
 D = k_B T / (3 pi eta d)
 ```
 
-This is the Stokes-Einstein relation (Einstein 1905, using Stokes drag). For 100 nm
+This is the Stokes-Einstein relation (Einstein 1905, using Stokes drag; see
+`docs/research/reference_audit.md` for what was verified). For 100 nm
 polystyrene in water at 25 C: D = 4.907e-12 m^2/s. Viscosity is interpolated from
 measured tables; see `data/SOURCES.md`.
 
@@ -43,7 +45,8 @@ g2(tau) = 1 + beta |g1(tau)|^2
 ```
 
 `beta` is the coherence factor of the optics (**assumption**: 0.9 by default, a typical
-value for a well-aligned benchtop instrument). For a single size, g1 decays with time
+value for a well-aligned benchtop instrument). The ideal relation is g2 = 1 + |g1|^2; beta is
+an instrument property, not part of the theory. For a single size, g1 decays with time
 constant 1/Gamma, so a larger particle has a longer correlation time: the class note's
 "larger -> slower, smaller -> faster".
 
@@ -79,7 +82,8 @@ ln g1(tau) = -Gamma_mean tau + (mu2 / 2) tau^2 - ...
 A weighted quadratic fit gives Gamma_mean and mu2, and
 
 ```
-PDI = 2 mu2 / Gamma_mean^2          (ISO 22412 definition)
+PDI = 2 mu2 / Gamma_mean^2          (ISO 22412:2025; the factor 2 is the standard convention,
+                                     not part of Koppel's original paper)
 z-average diameter = k_B T q^2 / (3 pi eta Gamma_mean)
 ```
 
