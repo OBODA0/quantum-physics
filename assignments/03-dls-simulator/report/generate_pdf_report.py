@@ -109,7 +109,7 @@ REFERENCE_URLS = [
     "https://openlibrary.org/isbn/9780471057727",
     "https://doi.org/10.1016/0010-4655(82)90173-4",
     "https://doi.org/10.1063/1.555581",
-    "https://doi.org/10.1063/1.555581",
+    "https://doi.org/10.1364/AO.12.000555",
     "https://openlibrary.org/isbn/9781498754286",
 ]
 
@@ -552,15 +552,22 @@ def build() -> None:
             s["body"],
         )
     )
-    story.append(equation(r"D_z = \frac{k_\mathrm{B} T}{3 \pi \, \eta(T) \, (\bar{\Gamma} / q^2)}, \quad \mathrm{PDI} = \frac{2 \mu_2}{\bar{\Gamma}^2}", "(8)", s))
+    story.append(equation(r"D_z = \frac{k_\mathrm{B} T}{3 \pi \, \eta(T) \, (\bar{\Gamma} / q^2)}, \quad \mathrm{PDI} = \frac{\mu_2}{\bar{\Gamma}^2}", "(8)", s))
     story.append(
         Paragraph(
-            "<b>Clarification on PDI Definitions:</b> In literature and textbook statistical mechanics (e.g. Koppel 1972 [3]), "
-            "the relative variance of the decay rate distribution is defined as " + IM(r"$\mathrm{PDI}_\mathrm{classical} = \mu_2 / \bar{\Gamma}^2$") + ". "
-            "In official particle sizing standardization (ISO 22412:2025 Clause 9.2 [4]), PDI is defined as the second-order coefficient "
-            "normalized to the first cumulant squared in the Taylor expansion of " + IM(r"$\ln |g_1(\tau)|$") + ", yielding "
-            + IM(r"$\mathrm{PDI}_\mathrm{ISO} = 2 \mu_2 / \bar{\Gamma}^2$") + ". The simulator computes and displays both; throughout "
-            "this report, values are evaluated with complete mathematical consistency.",
+            "<b>Exact versus Fitted Cumulant PDI:</b> Following Koppel's cumulant formulation [3] and standard dynamic light "
+            "scattering analysis [2, 4], the Polydispersity Index is defined as the dimensionless relative variance of the "
+            "intensity-weighted decay-rate distribution, " + IM(r"$\mathrm{PDI} = \mu_2 / \bar{\Gamma}^2$") + " (noting that some "
+            "alternative conventions scale this ratio by a factor of 2). In <font face=\"Courier\">dlssim</font>, "
+            + IM(r"$\mathrm{PDI}_\mathrm{exact}$") + " is evaluated directly from the analytical moments of " + IM(r"$p_I(d)$")
+            + ", whereas the reported experimental " + IM(r"$\mathrm{PDI}$") + " (" + IM(r"$\mathrm{PDI}_\mathrm{fitted}$")
+            + ") is obtained from a weighted quadratic fit " + IM(r"$a_0 - a_1 \tau + a_2 \tau^2$") + " to "
+            + IM(r"$\frac{1}{2}\ln[(g_2(\tau)-1)/\beta]$") + " over the valid decay window "
+            + IM(r"$0.12 \leq (g_2(\tau)-1)/\beta \leq 0.98$") + " via " + IM(r"$\bar{\Gamma}_\mathrm{fit} = a_1$")
+            + " and " + IM(r"$\mu_{2,\mathrm{fit}} = 2 a_2$") + ". Because a quadratic fit truncates higher-order cumulants "
+            "present in bimodal aggregated curves, the fitted PDI (" + IM(r"$0.1433$") + " for the benchmark case) is slightly "
+            "higher than the exact analytical moment ratio (" + IM(r"$0.1164$") + "). All summary tables in Section 6 report "
+            "the fitted PDI to reflect realistic correlator data analysis.",
             s["body"],
         )
     )
@@ -571,19 +578,20 @@ def build() -> None:
         Paragraph(
             "The simulator is implemented as a modular Python package (<font face=\"Courier\">dlssim</font>, comprising 12 modules). "
             "It features both a robust scriptable command-line interface and an interactive desktop graphical user "
-            "interface built with Tkinter and Matplotlib. Figure 1 displays authentic operating screenshots of both interfaces.",
+            "interface built with Tkinter and Matplotlib. Figures 1 and 2 display authentic operating screenshots of both interfaces.",
             s["body"],
         )
     )
-    story.append(figure("terminal_screenshot.png", width_mm=160))
+    story.append(figure("terminal_screenshot.png", width_mm=174))
     story.append(
         Paragraph(
             "Figure 1: Authentic Windows PowerShell capture of the final <font face=\"Courier\">dlssim</font> CLI execution, "
-            "displaying all 6 whiteboard inputs, optical wavevector parameters, and all 4 whiteboard outputs matching Table 3 and Figure 3.",
+            "displaying all 6 whiteboard inputs, optical wavevector parameters, and all 4 whiteboard outputs (exact PDI = 0.1164, "
+            "fitted PDI = 0.1433) matching Table 4 (at " + IM(r"$\alpha_{\mathrm{agg}} = 0.14$") + ") and Figure 3.",
             s["caption"],
         )
     )
-    story.append(figure("gui_screenshot.png", width_mm=160))
+    story.append(figure("gui_screenshot.png", width_mm=174))
     story.append(
         Paragraph(
             "Figure 2: Authentic desktop capture of the interactive <font face=\"Courier\">dlssim</font> Tkinter GUI, "
@@ -660,24 +668,78 @@ def build() -> None:
     story.append(
         Paragraph(
             "Table 2 provides direct analytical validation of the simulator against exact theoretical Stokes-Einstein "
-            "diffusion coefficients and decay rates across four benchmark particle sizes in water at 25 °C.",
+            "diffusion coefficients and decay rates across four benchmark particle sizes in water at 25 °C using a "
+            "near-monodisperse baseline width (" + IM(r"$\sigma/d_0 = 0.04$") + ", " + IM(r"$\alpha_{\mathrm{agg}} = 0.00$")
+            + ") to isolate single-particle Stokes-Einstein hydrodynamics.",
             s["body"],
         )
     )
     story.append(table(table_stokes_einstein_validation(), [90, 85, 90, 85, 80, 70], s))
-    story.append(Paragraph("Table 2: Benchmark theoretical Stokes-Einstein validation in water at 25 °C.", s["caption"]))
+    story.append(
+        Paragraph(
+            "Table 2: Benchmark theoretical Stokes-Einstein validation in water at 25 °C ("
+            + IM(r"$n_p = 1.59$") + ", near-monodisperse width " + IM(r"$\sigma/d_0 = 0.04$") + ", "
+            + IM(r"$\alpha_{\mathrm{agg}} = 0.00$") + ").",
+            s["caption"],
+        )
+    )
 
-    story.append(Paragraph("Table 3 tracks the effect of particle size on diffusion coefficient and decay rate in water at 25 °C.", s["body"]))
+    story.append(
+        Paragraph(
+            "Table 3 tracks the effect of particle size on diffusion coefficient and decay rate in water at 25 °C for a "
+            "moderately polydisperse suspension (" + IM(r"$\sigma/d_0 = 0.10$") + ", " + IM(r"$\alpha_{\mathrm{agg}} = 0.00$")
+            + "). Because Rayleigh-Gans-Debye " + IM(r"$d^6$") + " intensity weighting favors the upper tail of a wider "
+            "log-normal distribution (" + IM(r"$\sigma/d_0 = 0.10$") + " in Table 3 versus " + IM(r"$\sigma/d_0 = 0.04$")
+            + " in Table 2), the 50 nm sample exhibits " + IM(r"$D_z = 9.455\text{ }\mu\text{m}^2/\text{s}$")
+            + " (fitted size 51.9 nm) in Table 3 compared to " + IM(r"$9.752\text{ }\mu\text{m}^2/\text{s}$")
+            + " (fitted size 50.30 nm) in Table 2.",
+            s["body"],
+        )
+    )
     story.append(table(table_size_variation(), [60, 78, 88, 70, 78, 55, 71], s))
-    story.append(Paragraph("Table 3: Hydrodynamic diameter sweep in water at 25 °C.", s["caption"]))
+    story.append(
+        Paragraph(
+            "Table 3: Hydrodynamic diameter sweep in water at 25 °C for moderately polydisperse particles ("
+            + IM(r"$n_p = 1.59$") + ", " + IM(r"$\sigma/d_0 = 0.10$") + ", " + IM(r"$\alpha_{\mathrm{agg}} = 0.00$")
+            + "; fitted PDI reported).",
+            s["caption"],
+        )
+    )
 
-    story.append(Paragraph("Table 4 evaluates the aggregation parameter sweep and its impact on the PDI < 0.2 criterion.", s["body"]))
+    story.append(
+        Paragraph(
+            "Table 4 evaluates the aggregation parameter sweep (" + IM(r"$\alpha_{\mathrm{agg}} = 0.00\text{ to }0.35$")
+            + ") for the benchmark 50 nm suspension in water at 25 °C with monomer width " + IM(r"$\sigma/d_0 = 0.12$")
+            + " (matching Figures 1–3) and tests the classroom PDI &lt; 0.2 criterion.",
+            s["body"],
+        )
+    )
     story.append(table(table_aggregation_study(), [65, 80, 80, 90, 75, 110], s))
-    story.append(Paragraph("Table 4: Aggregation study and monodispersity pass/fail evaluation.", s["caption"]))
+    story.append(
+        Paragraph(
+            "Table 4: Aggregation study and monodispersity pass/fail evaluation in water at 25 °C ("
+            + IM(r"$d_0 = 50\text{ nm}$") + ", " + IM(r"$n_p = 1.59$") + ", " + IM(r"$\sigma/d_0 = 0.12$")
+            + "; fitted PDI reported, matching Figures 1–3 at " + IM(r"$\alpha_{\mathrm{agg}} = 0.14$") + ").",
+            s["caption"],
+        )
+    )
 
-    story.append(Paragraph("Table 5 documents temperature dependence from 15 °C to 50 °C for 50 nm particles in water.", s["body"]))
+    story.append(
+        Paragraph(
+            "Table 5 documents temperature dependence from 15 °C to 50 °C for 50 nm particles in water ("
+            + IM(r"$\sigma/d_0 = 0.10$") + ", " + IM(r"$\alpha_{\mathrm{agg}} = 0.00$") + ").",
+            s["body"],
+        )
+    )
     story.append(table(table_temperature_dependence(), [55, 85, 70, 85, 75, 75, 55], s))
-    story.append(Paragraph("Table 5: Temperature sweep illustrating viscosity drop and diffusion acceleration.", s["caption"]))
+    story.append(
+        Paragraph(
+            "Table 5: Temperature sweep illustrating viscosity reduction and diffusion acceleration in water ("
+            + IM(r"$d_0 = 50\text{ nm}$") + ", " + IM(r"$n_p = 1.59$") + ", " + IM(r"$\sigma/d_0 = 0.10$")
+            + ", " + IM(r"$\alpha_{\mathrm{agg}} = 0.00$") + ").",
+            s["caption"],
+        )
+    )
 
     # 7. Conclusion
     story.append(Paragraph("7. Conclusion", s["h1"]))

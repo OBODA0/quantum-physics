@@ -1,24 +1,23 @@
-"""ISO 22412 / Koppel (1972) cumulant analysis and PDI evaluation.
+"""Koppel (1972) / ISO 22412 cumulant analysis and PDI evaluation.
 
 The cumulant expansion of the field correlation is:
 
-    ln |g1(tau)| = -Gamma_bar tau + (mu2 / 2) tau^2 - (mu3 / 6) tau^3 + ...
+    ln |g1(tau)| = -Gamma_bar * tau + (mu2 / 2) * tau^2 - (mu3 / 6) * tau^3 + ...
 
-When fit experimentally as a polynomial in lag time tau:
+The polydispersity index (PDI) is the dimensionless relative variance of the
+intensity-weighted decay-rate distribution:
 
-    ln |g1(tau)| = a0 - a1 tau + a2 tau^2 - ...
+    PDI = mu2 / Gamma_bar^2
 
-the coefficients map to cumulants as:
-    a1 = Gamma_bar
-    a2 = mu2 / 2   (so mu2 = 2 * a2)
-
-Under both textbook formulations (Koppel 1972, where relative variance is mu2 / Gamma_bar^2)
-and international standards (ISO 22412:2025, defining PI = 2 * a2 / a1^2):
-
-    PDI = 2 * a2 / a1^2 = 2 * (mu2 / 2) / Gamma_bar^2 = mu2 / Gamma_bar^2
-
-Both expressions are mathematically identical. When PDI < 0.20, the colloidal
-suspension is classified as monodisperse, matching the classroom whiteboard criterion.
+When fit experimentally as a quadratic in lag time tau,
+    0.5 * ln[g2(tau) - 1] = a0 - a1 * tau + a2 * tau^2,
+the coefficients satisfy a1 = Gamma_bar and a2 = mu2 / 2, so the fitted
+polydispersity index is mu2_fit / Gamma_fit^2 = 2 * a2 / a1^2.
+Both `pdi_exact` (evaluated directly from the analytical decay-rate moments)
+and `pdi_fitted` (obtained from the weighted polynomial fit over the valid
+correlation decay window) are recorded. When PDI < 0.20, the colloidal
+suspension is classified as monodisperse, matching the classroom whiteboard
+criterion.
 """
 
 from __future__ import annotations
@@ -38,9 +37,9 @@ class CumulantResult:
     """Cumulant analysis outputs including Z-average size and PDI."""
 
     z_average_nm: float
-    pdi: float                  # reported value PDI = mu2 / Gamma_bar^2 = 2 a2 / a1^2
-    pdi_exact: float            # from the true decay-rate distribution
-    pdi_fitted: float
+    pdi: float                  # reported value (pdi_fitted)
+    pdi_exact: float            # mu2 / Gamma_bar^2 from analytical distribution
+    pdi_fitted: float           # mu2_fit / Gamma_fit^2 from quadratic fit
     pdi_monomer_intrinsic: float
     gamma_bar_s_inv: float
     mu2_s_inv2: float
@@ -84,12 +83,11 @@ def compute_cumulants(
         y_fit = 0.5 * np.log(np.clip(norm_g2[mask], 1.0e-12, 1.0))
         weights_fit = np.sqrt(norm_g2[mask])
         # Fit y(tau) = a0 - a1 * tau + a2 * tau^2
-        # np.polyfit returns [a2, -a1, a0]
+        # np.polyfit returns [a2, -a1, a0] where a2 = mu2_fit / 2 and a1 = Gamma_fit
         poly_coeffs = np.polyfit(tau_fit, y_fit, deg=2, w=weights_fit)
-        a2_fit = max(float(poly_coeffs[0]), 0.0)
-        a1_fit = max(-float(poly_coeffs[1]), 1.0e-12)
-        # ISO 22412: PI = 2 * a2 / a1^2; since a2 = mu2/2, PI = mu2 / a1^2
-        pdi_fitted = float(2.0 * a2_fit / (a1_fit * a1_fit))
+        mu2_fit = max(2.0 * float(poly_coeffs[0]), 0.0)
+        gamma_fit = max(-float(poly_coeffs[1]), 1.0e-12)
+        pdi_fitted = float(mu2_fit / (gamma_fit * gamma_fit))
 
     pdi_reported = float(pdi_fitted)
     pdi_monomer = float(size_std_rel) ** 2

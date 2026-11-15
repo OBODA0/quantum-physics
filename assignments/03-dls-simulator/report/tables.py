@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 import math
-import numpy as np
 
-from dlssim.autocorrelation import BOLTZMANN_K, stokes_einstein_diffusion
+from dlssim.autocorrelation import BOLTZMANN_K
 from dlssim.simulator import DLSInputs, simulate_dls
 from dlssim.solvents import SOLVENTS, get_solvent
 
@@ -20,7 +19,7 @@ def table_solvents_properties() -> list[list[str]]:
         "Temperature Coeff dn/dT (1/K)",
     ]
     rows = [header]
-    for key, s in SOLVENTS.items():
+    for _, s in SOLVENTS.items():
         rows.append([
             s.name,
             s.formula,
@@ -53,7 +52,7 @@ def table_stokes_einstein_validation() -> list[list[str]]:
                 solvent="water",
                 particle_ri=1.590,
                 size_nm=d,
-                size_std_rel=0.04,  # near monodisperse
+                size_std_rel=0.04,  # near monodisperse baseline
                 aggregation=0.0,
                 temperature_c=25.0,
             )
@@ -83,7 +82,7 @@ def table_size_variation() -> list[list[str]]:
         "Gamma_bar (s^-1)",
         "tau_c (ms)",
         "D_z fitted (nm)",
-        "PDI (ISO)",
+        "PDI",
         "Verdict",
     ]
     rows = [header]
@@ -113,14 +112,14 @@ def table_size_variation() -> list[list[str]]:
 
 
 def table_aggregation_study() -> list[list[str]]:
-    """Study of varying aggregation parameter alpha_agg at fixed d_0 = 50 nm."""
+    """Study of varying aggregation parameter alpha_agg at fixed d_0 = 50 nm, sigma/d0 = 0.12."""
     aggs = [0.00, 0.05, 0.10, 0.14, 0.20, 0.35]
     header = [
         "alpha_agg",
         "N-mean (nm)",
         "I-mean (nm)",
         "Z-avg D_z (nm)",
-        "PDI (ISO)",
+        "PDI",
         "PDI < 0.2 Criterion",
     ]
     rows = [header]
@@ -130,7 +129,7 @@ def table_aggregation_study() -> list[list[str]]:
                 solvent="water",
                 particle_ri=1.590,
                 size_nm=50.0,
-                size_std_rel=0.10,
+                size_std_rel=0.12,
                 aggregation=a,
                 temperature_c=25.0,
             )

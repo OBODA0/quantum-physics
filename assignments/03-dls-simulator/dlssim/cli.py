@@ -64,7 +64,7 @@ def format_terminal_report(outputs: DLSOutputs) -> str:
         f"                                  Z-average D_z  = "
         f"{cum.z_average_nm:.2f} nm",
         f"    4. Polydispersity Index PDI : {cum.pdi:.4f} "
-        f"(cumulant fit = {cum.pdi_fitted:.4f})",
+        f"(exact = {cum.pdi_exact:.4f}, fit = {cum.pdi_fitted:.4f})",
         f"       Criterion (If PDI < 0.2) : {cum.quality_verdict}",
         "======================================================================",
     ]
