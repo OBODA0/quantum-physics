@@ -24,14 +24,17 @@ _PAD_PX = 4
 
 
 def _render(latex: str, fontsize: float) -> pathlib.Path:
-    key = hashlib.sha1(f"{latex}|{fontsize}|{DPI}".encode()).hexdigest()[:16]
+    s = latex.strip()
+    if not (s.startswith("$") and s.endswith("$")):
+        s = f"${s}$"
+    key = hashlib.sha1(f"{s}|{fontsize}|{DPI}".encode()).hexdigest()[:16]
     path = CACHE / f"{key}.png"
     if path.exists():
         return path
     CACHE.mkdir(exist_ok=True)
     figure = plt.figure(figsize=(7.0, 0.7), dpi=DPI)
     text = figure.text(
-        0.02, 0.5, latex, fontsize=fontsize, ha="left", va="baseline"
+        0.02, 0.5, s, fontsize=fontsize, ha="left", va="baseline"
     )
     figure.canvas.draw()
     extent = text.get_window_extent(figure.canvas.get_renderer())

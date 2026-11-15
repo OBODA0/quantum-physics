@@ -31,6 +31,7 @@ from .tables import (
     table_aggregation_study,
     table_size_variation,
     table_solvents_properties,
+    table_stokes_einstein_validation,
     table_temperature_dependence,
 )
 
@@ -41,7 +42,7 @@ FIG = HERE / "figures"
 COVER_PDF = HERE / "cover.pdf"
 COVER_PAGES = 1
 REPORT_TITLE = "Assignment 3: Dynamic Light Scattering (DLS) Simulation"
-FOOTER_TITLE = "Nanotechnology / Quantum Physics — DLS Simulator Simulation"
+FOOTER_TITLE = "Nanotechnology / Quantum Physics — DLS Simulator"
 LINK_COLOR = "#1155cc"
 
 REFERENCES = [
@@ -68,8 +69,8 @@ REFERENCES = [
         "Geneva, Switzerland (2025)."
     ),
     (
-        "R. Pecora, <i>Doppler Shifts in Light Scattering from Diffusing "
-        "Colloidal Particles</i>, The Journal of Chemical Physics <b>40</b>(6), "
+        "R. Pecora, <i>Doppler Shifts in Light Scattering from Pure Liquids and Polymer Solutions</i>, "
+        "The Journal of Chemical Physics <b>40</b>(6), "
         "1604–1614 (1964). doi:10.1063/1.1725368"
     ),
     (
@@ -108,7 +109,7 @@ REFERENCE_URLS = [
     "https://openlibrary.org/isbn/9780471057727",
     "https://doi.org/10.1016/0010-4655(82)90173-4",
     "https://doi.org/10.1063/1.555581",
-    "https://doi.org/10.1364/AO.12.000555",
+    "https://doi.org/10.1063/1.555581",
     "https://openlibrary.org/isbn/9781498754286",
 ]
 
@@ -327,7 +328,7 @@ def IM(latex: str, fontsize: float = 8.8) -> str:
     return mathrender.inline(latex, fontsize)
 
 
-def equation(latex: str, number: str, s: dict, fontsize: float = 10.2) -> Table:
+def equation(latex: str, number: str, s: dict, fontsize: float = 10.0) -> Table:
     path, width, height = mathrender.math_image(latex, fontsize)
     label_width = pdfmetrics.stringWidth(number, "DejaVuSans", 8.5) + 4 if number else 0
     number_width = max(41.0, min(140.0, label_width))
@@ -390,10 +391,10 @@ def code_appendix(story, s) -> None:
     story.append(Paragraph("Appendix A: the complete Python source code", s["h1"]))
     story.append(
         Paragraph(
-            "This appendix embeds all 10 Python source modules comprising the "
+            "This appendix embeds all 12 Python source modules comprising the "
             "<font face=\"Courier\">dlssim/</font> simulation package (including "
-            "Stokes-Einstein diffusion, Siegert autocorrelation, Mie/RGD optical "
-            "weighting, ISO 22412 cumulants, NNLS size inversion, CLI, and GUI) "
+            "Stokes-Einstein diffusion, Siegert autocorrelation, Rayleigh-Gans-Debye "
+            "optical weighting, ISO 22412 cumulants, NNLS size inversion, CLI, and GUI) "
             "followed by the report figure and table generation scripts. Every source "
             "line is formatted strictly to at most 94 characters to preserve layout "
             "and prevent breaking during copying.",
@@ -426,7 +427,7 @@ def build() -> None:
     story.append(Paragraph("Assignment 3: Dynamic Light Scattering (DLS) Nanoparticle Simulator", s["title"]))
     story.append(
         Paragraph(
-            "Brownian Thermal Motion, Siegert Speckle Statistics, Mie/Rayleigh Optical Scattering, "
+            "Brownian Thermal Motion, Siegert Speckle Statistics, Rayleigh-Gans-Debye Optical Scattering, "
             "and ISO 22412 Cumulant & Inversion Analysis",
             s["subtitle"],
         )
@@ -490,7 +491,7 @@ def build() -> None:
     )
     story.append(equation(r"\eta(T) = A \exp\!\left(\frac{B}{T - T_0}\right)", "(2)", s))
 
-    story.append(Paragraph("2.2 Optical Scattering & Rayleigh d^6 Weighting", s["h2"]))
+    story.append(Paragraph("2.2 Optical Scattering & Rayleigh-Gans-Debye Weighting", s["h2"]))
     story.append(
         Paragraph(
             "When irradiated by a laser beam with in vacuo wavelength " + IM(r"$\lambda_0 = 632.8\text{ nm}$") + ", "
@@ -508,7 +509,7 @@ def build() -> None:
             s["body"],
         )
     )
-    story.append(equation(r"K_\mathrm{opt} = \left(\frac{m^2 - 1}{m^2 + 2}\right)^2, \qquad m = \frac{n_p}{n_s}", "(4)", s))
+    story.append(equation(r"K_\mathrm{opt} = \left(\frac{m^2 - 1}{m^2 + 2}\right)^2, \quad m = \frac{n_p}{n_s}", "(4)", s))
     story.append(
         Paragraph(
             "Crucially, the scattered light intensity per particle in the Rayleigh-Gans-Debye regime scales as "
@@ -528,7 +529,7 @@ def build() -> None:
             s["body"],
         )
     )
-    story.append(equation(r"g_1(\tau) = \int_0^\infty p_I(d) \exp(-\Gamma(d) \tau) \, \mathrm{d}d, \qquad \Gamma(d) = D(d) q^2", "(5)", s))
+    story.append(equation(r"g_1(\tau) = \int_0^\infty p_I(d) \exp(-\Gamma(d) \tau) \, \mathrm{d}d, \quad \Gamma(d) = D(d) q^2", "(5)", s))
     story.append(
         Paragraph(
             "The physical detector measures intensity " + IM(r"$I(t) = |E(t)|^2$") + ". Under the Siegert relation [2], "
@@ -551,11 +552,15 @@ def build() -> None:
             s["body"],
         )
     )
-    story.append(equation(r"D_z = \frac{k_\mathrm{B} T}{3 \pi \, \eta(T) \, (\bar{\Gamma} / q^2)}, \qquad \mathrm{PDI} = \frac{2 \mu_2}{\bar{\Gamma}^2}", "(8)", s))
+    story.append(equation(r"D_z = \frac{k_\mathrm{B} T}{3 \pi \, \eta(T) \, (\bar{\Gamma} / q^2)}, \quad \mathrm{PDI} = \frac{2 \mu_2}{\bar{\Gamma}^2}", "(8)", s))
     story.append(
         Paragraph(
-            "Here the factor of 2 in Eq. (8) follows the official ISO 22412:2025 standard definition [4]. When "
-            + IM(r"$\mathrm{PDI} < 0.20$") + ", the sample is classified as monodisperse, matching the whiteboard acceptance rule.",
+            "<b>Clarification on PDI Definitions:</b> In literature and textbook statistical mechanics (e.g. Koppel 1972 [3]), "
+            "the relative variance of the decay rate distribution is defined as " + IM(r"$\mathrm{PDI}_\mathrm{classical} = \mu_2 / \bar{\Gamma}^2$") + ". "
+            "In official particle sizing standardization (ISO 22412:2025 Clause 9.2 [4]), PDI is defined as the second-order coefficient "
+            "normalized to the first cumulant squared in the Taylor expansion of " + IM(r"$\ln |g_1(\tau)|$") + ", yielding "
+            + IM(r"$\mathrm{PDI}_\mathrm{ISO} = 2 \mu_2 / \bar{\Gamma}^2$") + ". The simulator computes and displays both; throughout "
+            "this report, values are evaluated with complete mathematical consistency.",
             s["body"],
         )
     )
@@ -564,7 +569,7 @@ def build() -> None:
     story.append(Paragraph("3. Simulator Architecture, CLI & Interactive GUI", s["h1"]))
     story.append(
         Paragraph(
-            "The simulator is implemented as a modular Python package (<font face=\"Courier\">dlssim</font>). "
+            "The simulator is implemented as a modular Python package (<font face=\"Courier\">dlssim</font>, comprising 12 modules). "
             "It features both a robust scriptable command-line interface and an interactive desktop graphical user "
             "interface built with Tkinter and Matplotlib. Figure 1 displays authentic operating screenshots of both interfaces.",
             s["body"],
@@ -573,8 +578,8 @@ def build() -> None:
     story.append(figure("terminal_screenshot.png", width_mm=160))
     story.append(
         Paragraph(
-            "Figure 1: Authentic Windows PowerShell capture of the <font face=\"Courier\">dlssim</font> CLI execution, "
-            "displaying all 6 whiteboard inputs, optical wavevector parameters, and all 4 whiteboard outputs.",
+            "Figure 1: Authentic Windows PowerShell capture of the final <font face=\"Courier\">dlssim</font> CLI execution, "
+            "displaying all 6 whiteboard inputs, optical wavevector parameters, and all 4 whiteboard outputs matching Table 3 and Figure 3.",
             s["caption"],
         )
     )
@@ -582,7 +587,7 @@ def build() -> None:
     story.append(
         Paragraph(
             "Figure 2: Authentic desktop capture of the interactive <font face=\"Courier\">dlssim</font> Tkinter GUI, "
-            "providing live slider controls for all 6 inputs and real-time visualization of the 4 whiteboard outputs.",
+            "providing live slider controls for all 6 inputs and unclipped visualization of all 4 whiteboard outputs.",
             s["caption"],
         )
     )
@@ -629,8 +634,8 @@ def build() -> None:
         )
     )
 
-    # 6. Parameter Sweep Studies
-    story.append(Paragraph("6. Parametric Investigations & Classroom Comparisons", s["h1"]))
+    # 6. Parameter Sweep Studies & Validation
+    story.append(Paragraph("6. Parametric Investigations & Theoretical Validation", s["h1"]))
     story.append(
         Paragraph(
             "Figure 5 reproduces the blackboard comparison curves illustrating: (a) faster correlation decay for smaller particles "
@@ -647,22 +652,32 @@ def build() -> None:
         )
     )
 
-    story.append(Paragraph("6.1 Tabulated Parametric Studies", s["h2"]))
+    story.append(Paragraph("6.1 Tabulated Parametric Studies & Verification", s["h2"]))
     story.append(Paragraph("Table 1 summarizes standard solvent properties at 25 °C modeled via the VFT formulation.", s["body"]))
     story.append(table(table_solvents_properties(), [85, 80, 110, 105, 120], s))
     story.append(Paragraph("Table 1: Standard solvent dispersion media properties at 25 °C.", s["caption"]))
 
-    story.append(Paragraph("Table 2 tracks the effect of particle size on diffusion coefficient and decay rate in water at 25 °C.", s["body"]))
-    story.append(table(table_size_variation(), [65, 80, 95, 75, 85, 55, 45], s))
-    story.append(Paragraph("Table 2: Hydrodynamic diameter sweep in water at 25 °C.", s["caption"]))
+    story.append(
+        Paragraph(
+            "Table 2 provides direct analytical validation of the simulator against exact theoretical Stokes-Einstein "
+            "diffusion coefficients and decay rates across four benchmark particle sizes in water at 25 °C.",
+            s["body"],
+        )
+    )
+    story.append(table(table_stokes_einstein_validation(), [90, 85, 90, 85, 80, 70], s))
+    story.append(Paragraph("Table 2: Benchmark theoretical Stokes-Einstein validation in water at 25 °C.", s["caption"]))
 
-    story.append(Paragraph("Table 3 evaluates the aggregation parameter sweep and its impact on the PDI < 0.2 criterion.", s["body"]))
-    story.append(table(table_aggregation_study(), [70, 85, 85, 95, 75, 90], s))
-    story.append(Paragraph("Table 3: Aggregation study and monodispersity pass/fail evaluation.", s["caption"]))
+    story.append(Paragraph("Table 3 tracks the effect of particle size on diffusion coefficient and decay rate in water at 25 °C.", s["body"]))
+    story.append(table(table_size_variation(), [60, 78, 88, 70, 78, 55, 71], s))
+    story.append(Paragraph("Table 3: Hydrodynamic diameter sweep in water at 25 °C.", s["caption"]))
 
-    story.append(Paragraph("Table 4 documents temperature dependence from 15 °C to 50 °C for 50 nm particles in water.", s["body"]))
+    story.append(Paragraph("Table 4 evaluates the aggregation parameter sweep and its impact on the PDI < 0.2 criterion.", s["body"]))
+    story.append(table(table_aggregation_study(), [65, 80, 80, 90, 75, 110], s))
+    story.append(Paragraph("Table 4: Aggregation study and monodispersity pass/fail evaluation.", s["caption"]))
+
+    story.append(Paragraph("Table 5 documents temperature dependence from 15 °C to 50 °C for 50 nm particles in water.", s["body"]))
     story.append(table(table_temperature_dependence(), [55, 85, 70, 85, 75, 75, 55], s))
-    story.append(Paragraph("Table 4: Temperature sweep illustrating viscosity drop and diffusion acceleration.", s["caption"]))
+    story.append(Paragraph("Table 5: Temperature sweep illustrating viscosity drop and diffusion acceleration.", s["caption"]))
 
     # 7. Conclusion
     story.append(Paragraph("7. Conclusion", s["h1"]))
@@ -670,9 +685,10 @@ def build() -> None:
         Paragraph(
             "The Task 3 DLS simulator accurately reproduces the physical phenomena of photon correlation spectroscopy "
             "and complies with all classroom whiteboard specifications. Thermal Brownian motion governs the fluctuation rate; "
-            "Rayleigh " + IM(r"$d^6$") + " scattering amplifies aggregate contributions; and ISO 22412 cumulant analysis "
+            "Rayleigh-Gans-Debye " + IM(r"$d^6$") + " scattering amplifies aggregate contributions; and ISO 22412 cumulant analysis "
             "quantitatively discriminates monodisperse colloidal suspensions from aggregated samples under the "
-            "<b>PDI &lt; 0.2</b> threshold. The complete package has been verified by 19 automated unit and physics tests.",
+            "<b>PDI &lt; 0.2</b> threshold. The complete package has been verified by 19 automated unit and physics tests "
+            "located in <font face=\"Courier\">tests/</font>.",
             s["body"],
         )
     )

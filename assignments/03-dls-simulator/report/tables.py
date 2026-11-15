@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import math
 import numpy as np
 
+from dlssim.autocorrelation import BOLTZMANN_K, stokes_einstein_diffusion
 from dlssim.simulator import DLSInputs, simulate_dls
-from dlssim.solvents import SOLVENTS
+from dlssim.solvents import SOLVENTS, get_solvent
 
 
 def table_solvents_properties() -> list[list[str]]:
@@ -25,6 +27,49 @@ def table_solvents_properties() -> list[list[str]]:
             f"{s.ri_25c:.4f}",
             f"{s.eta_25c_mpas:.3f}",
             f"{s.dn_dt:.1e}",
+        ])
+    return rows
+
+
+def table_stokes_einstein_validation() -> list[list[str]]:
+    """Validation table comparing theoretical Stokes-Einstein diffusion with simulator."""
+    header = [
+        "Nominal Size d0 (nm)",
+        "Theoretical D (um^2/s)",
+        "Theoretical Gamma (s^-1)",
+        "Simulator D_z (um^2/s)",
+        "Fitted D_z (nm)",
+        "Relative Error (%)",
+    ]
+    rows = [header]
+    water = get_solvent("water")
+    eta = water.viscosity_pa_s(298.15)
+    test_sizes = [20.0, 50.0, 100.0, 200.0]
+    for d in test_sizes:
+        d_m = d * 1e-9
+        d_theory = BOLTZMANN_K * 298.15 / (3.0 * math.pi * eta * d_m)
+        res = simulate_dls(
+            DLSInputs(
+                solvent="water",
+                particle_ri=1.590,
+                size_nm=d,
+                size_std_rel=0.04,  # near monodisperse
+                aggregation=0.0,
+                temperature_c=25.0,
+            )
+        )
+        q = res.q_m_inv
+        gamma_theory = d_theory * (q ** 2)
+        d_sim = res.cumulants.z_avg_diffusion_m2_s
+        dz_fitted = res.cumulants.z_average_nm
+        rel_err = abs(dz_fitted - d) / d * 100.0
+        rows.append([
+            f"{d:.1f}",
+            f"{d_theory * 1e12:.3f}",
+            f"{gamma_theory:.1f}",
+            f"{d_sim * 1e12:.3f}",
+            f"{dz_fitted:.2f}",
+            f"{rel_err:.2f} %",
         ])
     return rows
 
@@ -104,7 +149,7 @@ def table_aggregation_study() -> list[list[str]]:
 
 
 def table_temperature_dependence() -> list[list[str]]:
-    """Study of temperature variation T = 15 to 55 C for 50 nm particles in water."""
+    """Study of temperature variation T = 15 to 50 C for 50 nm particles in water."""
     temps = [15.0, 20.0, 25.0, 37.0, 50.0]
     header = [
         "T (C)",
