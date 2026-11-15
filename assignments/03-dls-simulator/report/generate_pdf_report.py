@@ -496,7 +496,7 @@ def section_one(story, s, n) -> None:
         "The debrief is expected to be followed by a digital version on Canvas. The report "
         "is built so that the brief can be reconciled without rebuilding the simulator. "
         "Section 6.5 lists the specific places that would change: if the digital brief names "
-        "178 deg, one constant changes and Table 10 gives the size shift; if it asks for zeta "
+        "178 deg, one constant changes and Table 9 gives the size shift; if it asks for zeta "
         "potential, that is a different instrument (electrophoretic light scattering) and is "
         "not in this model; if it names further graded items, section 7 states which of them "
         "these measurements already cover.", s["body"]))
@@ -1064,13 +1064,14 @@ def section_five(story, s, n) -> None:
         "carried by clusters, and the cluster mode is placed at 5.5 <i>d</i><sub>0</sub> - "
         "550 nm for a 100 nm primary mode. Figure 8 shows the three consequences. The "
         "correlation grows a slow tail: at a lag of about a millisecond, where the monomer "
-        "correlation has already fallen by two decades, the aggregated samples still carry "
-        "correlation from the clusters. The intensity distribution grows a second peak. And "
-        "the PDI crosses the classroom threshold.", s["body"]))
+        "correlation has already fallen by more than two decades, the aggregated samples "
+        "still carry correlation from the clusters. The intensity distribution grows a "
+        "second peak. And the PDI crosses the classroom threshold.", s["body"]))
     story.append(KeepTogether([figure("fig_aggregation.png", 168),
                                Paragraph("Figure 8: aggregation of a 100 nm mode. (a) the "
-                                         "correlation with the slow cluster tail, and the "
-                                         "same tail on a log scale in the inset; (b) the "
+                                         "correlation on log-log axes, where a single "
+                                         "exponential is a straight line and the clusters "
+                                         "leave a tail; (b) the "
                                          "second mode at 5.5 <i>d</i><sub>0</sub>, which the "
                                          "inversion also recovers (dotted); (c) the PDI "
                                          "against &#945;, with the input distribution's own "
