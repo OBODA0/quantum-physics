@@ -7,7 +7,10 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from dlssim.autocorrelation import stokes_einstein_diffusion
+from dlssim.autocorrelation import (
+    empirical_autocorrelation_from_trace,
+    stokes_einstein_diffusion,
+)
 from dlssim.cli import main as cli_main
 from dlssim.mie import optical_contrast_factor, scattering_wavevector
 from dlssim.simulator import DLSInputs, simulate_dls
@@ -35,9 +38,7 @@ def test_solvents_water_and_ethanol_at_25c() -> None:
 
 def test_optical_contrast_and_wavevector() -> None:
     """Verify Lorentz-Lorenz optical contrast and scattering wavevector q."""
-    # Index-matched particle has zero optical contrast
     assert pytest.approx(optical_contrast_factor(1.333, 1.333), abs=1e-12) == 0.0
-    # TiO2 (n=2.50) has much stronger optical contrast than silica (n=1.45) in water
     k_silica = optical_contrast_factor(1.45, 1.333)
     k_tio2 = optical_contrast_factor(2.50, 1.333)
     assert k_tio2 > 10.0 * k_silica
@@ -52,6 +53,35 @@ def test_stokes_einstein_scaling() -> None:
     d_20 = stokes_einstein_diffusion(20.0, 298.15, 0.89e-3)
     d_100 = stokes_einstein_diffusion(100.0, 298.15, 0.89e-3)
     assert pytest.approx(float(d_20) / float(d_100), rel=1e-9) == 5.0
+
+
+def test_photon_counts_trace_and_empirical_autocorrelation() -> None:
+    """Verify Photon Counts vs Time trace I(t) and empirical Siegert convergence."""
+    out = simulate_dls(
+        DLSInputs(
+            solvent="water",
+            particle_ri=1.59,
+            size_nm=50.0,
+            size_std_rel=0.05,
+            aggregation=0.0,
+            temperature_c=25.0,
+        )
+    )
+    ac = out.autocorrelation
+    assert ac.time_trace_ms.size == ac.photon_counts_kcps.size == 400
+    assert ac.photon_counts_per_bin.size == 400
+    assert ac.gate_time_us > 0.0
+    assert float(np.mean(ac.photon_counts_kcps)) > 10.0
+
+    tau_emp, g2_emp = empirical_autocorrelation_from_trace(
+        gamma_eff_s_inv=out.cumulants.gamma_bar_s_inv,
+        intercept_beta=0.85,
+        agg_fraction=0.0,
+        n_steps=80_000,
+        rng_seed=42,
+    )
+    g2_theory = 0.85 * np.exp(-2.0 * out.cumulants.gamma_bar_s_inv * tau_emp)
+    assert float(np.max(np.abs(g2_emp - g2_theory))) < 0.06
 
 
 def test_smaller_vs_larger_particles_and_aggregation() -> None:
@@ -87,16 +117,11 @@ def test_smaller_vs_larger_particles_and_aggregation() -> None:
         )
     )
 
-    # Smaller particles have larger decay rate Gamma_bar
     assert small.cumulants.gamma_bar_s_inv > large.cumulants.gamma_bar_s_inv
-
-    # Intensity mean is larger than Number mean due to d^6 weighting
     assert (
         large.distribution.intensity_mean_nm
         > large.distribution.number_mean_nm
     )
-
-    # Monodisperse baseline has PDI < 0.2, while aggregated sample has PDI >= 0.2
     assert small.cumulants.is_monodisperse is True
     assert small.cumulants.pdi < 0.20
     assert aggregated.cumulants.is_monodisperse is False
@@ -104,9 +129,10 @@ def test_smaller_vs_larger_particles_and_aggregation() -> None:
     assert aggregated.cumulants.z_average_nm > large.cumulants.z_average_nm
 
 
-def test_cli_generates_figures(tmp_path: Path) -> None:
-    """Verify CLI runs end-to-end and saves dashboard and comparison PNGs."""
+def test_cli_generates_all_figures(tmp_path: Path) -> None:
+    """Verify CLI runs end-to-end and saves dashboard, trace, and comparison PNGs."""
     dash_png = tmp_path / "dash.png"
+    trace_png = tmp_path / "trace.png"
     cmp_png = tmp_path / "cmp.png"
     rc = cli_main(
         [
@@ -124,10 +150,13 @@ def test_cli_generates_figures(tmp_path: Path) -> None:
             "25",
             "--out",
             str(dash_png),
+            "--trace-out",
+            str(trace_png),
             "--compare-out",
             str(cmp_png),
         ]
     )
     assert rc == 0
     assert dash_png.exists() and dash_png.stat().st_size > 10_000
+    assert trace_png.exists() and trace_png.stat().st_size > 10_000
     assert cmp_png.exists() and cmp_png.stat().st_size > 10_000

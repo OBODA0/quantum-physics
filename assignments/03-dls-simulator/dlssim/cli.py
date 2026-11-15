@@ -6,9 +6,14 @@ import argparse
 from typing import Sequence
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 from .gui import launch_gui
-from .plot import plot_dls_dashboard, plot_whiteboard_comparison
+from .plot import (
+    plot_dls_dashboard,
+    plot_photon_counts_comparison,
+    plot_whiteboard_comparison,
+)
 from .simulator import DLSInputs, DLSOutputs, simulate_dls
 from .solvents import SOLVENTS, list_solvents
 
@@ -16,8 +21,10 @@ from .solvents import SOLVENTS, list_solvents
 def format_terminal_report(outputs: DLSOutputs) -> str:
     """Format a structured ASCII terminal summary of DLS inputs and outputs."""
     inp = outputs.inputs
+    ac = outputs.autocorrelation
     dist = outputs.distribution
     cum = outputs.cumulants
+    mean_bin_phot = float(np.mean(ac.photon_counts_per_bin))
     lines = [
         "======================================================================",
         "  DYNAMIC LIGHT SCATTERING (DLS) NANOPARTICLE SIMULATOR (ISO 22412)   ",
@@ -40,23 +47,25 @@ def format_terminal_report(outputs: DLSOutputs) -> str:
         f"    Scattering angle theta      : {inp.angle_deg:.1f} deg",
         f"    Scattering vector q         : {outputs.q_nm_inv:.5f} nm^-1 "
         f"({outputs.q_m_inv:.3e} m^-1)",
-        f"    Mean photon count rate <I>  : {outputs.mean_count_rate_kcps:.1f} kcps",
         f"    Mean decay rate Gamma_bar   : {cum.gamma_bar_s_inv:.2f} s^-1 "
         f"(tau_c = {1e3 / max(cum.gamma_bar_s_inv, 1.0):.4f} ms)",
         f"    Z-avg diffusion coeff D_z   : "
         f"{cum.z_avg_diffusion_m2_s * 1e12:.4f} um^2/s",
         "----------------------------------------------------------------------",
         "  WHITEBOARD OUTPUTS:",
-        "    1. Auto-correlation g2(tau)-1 : computed on log tau in [1e-7, 1] s",
-        f"    2. Size distribution (log d)  : Number mean    = "
+        f"    1. Photon Counts vs Time    : <I(t)> = "
+        f"{outputs.mean_count_rate_kcps:.1f} kcps "
+        f"({mean_bin_phot:.2f} counts/bin, dt = {ac.gate_time_us:.2f} us)",
+        "    2. Auto-correlation g2-1    : computed on log tau in [1e-7, 1] s",
+        f"    3. Size distribution (log d): Number mean    = "
         f"{dist.number_mean_nm:.2f} nm (std = {dist.number_std_nm:.2f} nm)",
-        f"                                    Intensity mean = "
+        f"                                  Intensity mean = "
         f"{dist.intensity_mean_nm:.2f} nm (std = {dist.intensity_std_nm:.2f} nm)",
-        f"                                    Z-average D_z  = "
+        f"                                  Z-average D_z  = "
         f"{cum.z_average_nm:.2f} nm",
-        f"    3. Polydispersity Index (PDI) : {cum.pdi:.4f} "
+        f"    4. Polydispersity Index PDI : {cum.pdi:.4f} "
         f"(cumulant fit = {cum.pdi_fitted:.4f})",
-        f"       Criterion (If PDI < 0.2)   : {cum.quality_verdict}",
+        f"       Criterion (If PDI < 0.2) : {cum.quality_verdict}",
         "======================================================================",
     ]
     return "\n".join(lines)
@@ -67,8 +76,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="dlssim",
         description=(
-            "Simulate Dynamic Light Scattering (DLS) autocorrelation "
-            "functions, Number/Intensity size distributions, and PDI."
+            "Simulate Dynamic Light Scattering (DLS) photon count traces, "
+            "autocorrelation functions, Number/Intensity distributions, & PDI."
         ),
     )
     parser.add_argument(
@@ -106,8 +115,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--aggregation",
         type=float,
-        default=0.08,
-        help="Aggregation parameter alpha_agg in [0, 1] (default: 0.08).",
+        default=0.14,
+        help="Aggregation parameter alpha_agg in [0, 1) (default: 0.14).",
     )
     parser.add_argument(
         "--temp-c",
@@ -132,6 +141,12 @@ def build_parser() -> argparse.ArgumentParser:
         type=str,
         default="out/dls_dashboard.png",
         help="Output PNG path for the 4-panel DLS dashboard.",
+    )
+    parser.add_argument(
+        "--trace-out",
+        type=str,
+        default="",
+        help="Optional PNG path for the dedicated Photon Counts vs Time figure.",
     )
     parser.add_argument(
         "--compare-out",
@@ -162,7 +177,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         for key, model in SOLVENTS.items():
             eta = model.viscosity_mpa_s(298.15)
             ri = model.refractive_index(298.15)
-            print(f"  - {key:<8s}: {model.label:<26s} eta={eta:.3f} mPa*s, n={ri:.4f}")
+            print(
+                f"  - {key:<8s}: {model.label:<30s} "
+                f"eta={eta:.3f} mPa*s, n={ri:.4f}"
+            )
         return 0
 
     if args.gui:
@@ -187,6 +205,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         fig = plot_dls_dashboard(outputs, out_path=args.out)
         plt.close(fig)
         print(f"Saved DLS dashboard figure -> {args.out}")
+
+    if args.trace_out:
+        fig_tr = plot_photon_counts_comparison(out_path=args.trace_out)
+        plt.close(fig_tr)
+        print(f"Saved Photon Counts vs Time figure -> {args.trace_out}")
 
     if args.compare_out:
         fig_cmp = plot_whiteboard_comparison(out_path=args.compare_out)

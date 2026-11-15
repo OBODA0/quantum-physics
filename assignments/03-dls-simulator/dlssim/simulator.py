@@ -112,6 +112,8 @@ def simulate_dls(inputs: DLSInputs) -> DLSOutputs:
         q_m_inv=q_m_inv,
         intercept_beta=inputs.intercept_beta,
         mean_kcps=mean_kcps,
+        agg_fraction=inputs.aggregation,
+        agg_size_factor=inputs.agg_size_factor,
         noise_level=inputs.noise_level,
         rng_seed=inputs.rng_seed,
     )
