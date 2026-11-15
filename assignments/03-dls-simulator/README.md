@@ -66,6 +66,35 @@ python -m dlssim --gui
 pytest -q
 ```
 
+### 4. Build and Gate the Report
+```bash
+uv run python -m tools.check_all     # tests, figures, tables, PDF, gates -> "all steps passed"
+uv run python -m report.check_pdf    # one self-contained PDF, sections, reference DOI resolution
+uv run python -m report.check_numbers
+```
+
+## Report
+
+`report/Assignment_3_DLS_Simulator_Report.pdf`, 66 pages, built from this simulator by the
+scripts in `report/`. It answers the five inputs and three outputs of the in-class debrief,
+measures what each input does to the correlation, the distributions and the PDI, and states
+which parts are physics, which are choices and which are approximations.
+
+| part | pages |
+| --- | --- |
+| title, abstract, the answer in one paragraph | 2-3 |
+| §1 what was asked (the debrief verbatim, the uncertain readings) | 3-4 |
+| §2 the instrument and the physics model | 5-7 |
+| §3 the simulator and its screenshots | 8-11 |
+| §4 the analysis chain: cumulant, PDI, inversion | 11-13 |
+| §5 what each input does, with measured numbers | 14-18 |
+| §6 limits, approximations and uncertainties | 18-21 |
+| §7 conclusion, references | 21-22 |
+| Appendix A the code, B constants, C the generated tables | 23-66 |
+
+Page map in detail, the figure list and the rebuild commands: `report/README.md`. What was
+verified and what was not: `VERIFICATION.md`.
+
 ## Layout
 
 | path | contents |
@@ -76,4 +105,6 @@ pytest -q
 | `docs/model.md` | equations, assumptions and declared limits |
 | `docs/brief_intake.md` | the brief as transcribed from the class page |
 | `docs/research/reference_audit.md` | citation audit |
-| `report/` | figures, tables, numbers and PDF (pending the digital brief) |
+| `report/` | the PDF, its figures, the generated tables, and the scripts that build them |
+| `tools/check_all.py` | the close-out command: tests, figures, tables, PDF, gates |
+| `VERIFICATION.md` | what was run, what it proves, what is not verified |

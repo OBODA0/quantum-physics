@@ -20,7 +20,7 @@ class DLSSimulatorGUI:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.root.title("Dynamic Light Scattering (DLS) Simulator — Task 3")
-        self.root.geometry("1380x860")
+        self.root.geometry("1500x940")   # wide enough for the 4-panel dashboard at dpi=95
 
         self.solvent_var = tk.StringVar(value="water")
         self.ri_var = tk.DoubleVar(value=1.590)
@@ -159,9 +159,10 @@ class DLSSimulatorGUI:
         # Plot frame
         plot_frame = ttk.Frame(self.root)
         plot_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=8, pady=8)
+        self.plot_frame = plot_frame
 
         self.fig: Figure = plot_dls_dashboard(
-            simulate_dls(DLSInputs()), out_path=None, dpi=110
+            simulate_dls(DLSInputs()), out_path=None, dpi=95
         )
         self.canvas = FigureCanvasTkAgg(self.fig, master=plot_frame)
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
@@ -190,9 +191,13 @@ class DLSSimulatorGUI:
 
         import matplotlib.pyplot as plt
 
+        # Replace the whole canvas: assigning .figure on a live canvas leaves the
+        # previous drawing on the Tk widget, which shows up as two dashboards.
+        self.canvas.get_tk_widget().destroy()
         plt.close(self.fig)
-        self.fig = plot_dls_dashboard(outputs, out_path=None, dpi=110)
-        self.canvas.figure = self.fig
+        self.fig = plot_dls_dashboard(outputs, out_path=None, dpi=95)
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.plot_frame)
+        self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
         self.canvas.draw_idle()
 
 
