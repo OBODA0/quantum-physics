@@ -1,17 +1,24 @@
 """ISO 22412 / Koppel (1972) cumulant analysis and PDI evaluation.
 
-The cumulant expansion of the field correlation is
+The cumulant expansion of the field correlation is:
 
-    ln |g1(tau)| = -Gamma_bar tau + (mu2 / 2) tau^2 - ...
+    ln |g1(tau)| = -Gamma_bar tau + (mu2 / 2) tau^2 - (mu3 / 6) tau^3 + ...
 
-Koppel (1972) gives the method. The polydispersity index is defined by
-ISO 22412:2025 as
+When fit experimentally as a polynomial in lag time tau:
 
-    PDI = 2 mu2 / Gamma_bar^2
+    ln |g1(tau)| = a0 - a1 tau + a2 tau^2 - ...
 
-(the factor of two is the standard's convention, not Koppel's). The reported PDI is
-taken from the fit to the measured curve; the exact value from the input distribution
-is kept alongside for comparison.
+the coefficients map to cumulants as:
+    a1 = Gamma_bar
+    a2 = mu2 / 2   (so mu2 = 2 * a2)
+
+Under both textbook formulations (Koppel 1972, where relative variance is mu2 / Gamma_bar^2)
+and international standards (ISO 22412:2025, defining PI = 2 * a2 / a1^2):
+
+    PDI = 2 * a2 / a1^2 = 2 * (mu2 / 2) / Gamma_bar^2 = mu2 / Gamma_bar^2
+
+Both expressions are mathematically identical. When PDI < 0.20, the colloidal
+suspension is classified as monodisperse, matching the classroom whiteboard criterion.
 """
 
 from __future__ import annotations
@@ -31,7 +38,7 @@ class CumulantResult:
     """Cumulant analysis outputs including Z-average size and PDI."""
 
     z_average_nm: float
-    pdi: float                  # reported value (fitted when a fit was possible)
+    pdi: float                  # reported value PDI = mu2 / Gamma_bar^2 = 2 a2 / a1^2
     pdi_exact: float            # from the true decay-rate distribution
     pdi_fitted: float
     pdi_monomer_intrinsic: float
@@ -53,14 +60,14 @@ def compute_cumulants(
     intercept_beta: float,
     size_std_rel: float,
 ) -> CumulantResult:
-    """Compute the Z-average diameter and the polydispersity index."""
+    """Compute the Z-average diameter and the polydispersity index PDI = mu2 / Gamma_bar^2."""
     w = np.asarray(intensity_dist, dtype=float)
     w = w / max(float(np.sum(w)), 1.0e-30)
     gamma = np.asarray(gamma_dist_s_inv, dtype=float)
 
     gamma_bar = float(np.sum(w * gamma))
     mu2 = float(np.sum(w * ((gamma - gamma_bar) ** 2)))
-    pdi_exact = float(2.0 * mu2 / max(gamma_bar * gamma_bar, 1.0e-30))
+    pdi_exact = float(mu2 / max(gamma_bar * gamma_bar, 1.0e-30))
 
     d_z_m2_s = gamma_bar / max(float(q_m_inv) ** 2, 1.0e-30)
     z_avg_m = BOLTZMANN_K * float(temperature_k) / (
@@ -76,10 +83,13 @@ def compute_cumulants(
         tau_fit = np.asarray(tau_s, dtype=float)[mask]
         y_fit = 0.5 * np.log(np.clip(norm_g2[mask], 1.0e-12, 1.0))
         weights_fit = np.sqrt(norm_g2[mask])
+        # Fit y(tau) = a0 - a1 * tau + a2 * tau^2
+        # np.polyfit returns [a2, -a1, a0]
         poly_coeffs = np.polyfit(tau_fit, y_fit, deg=2, w=weights_fit)
-        mu2_fit = max(2.0 * float(poly_coeffs[0]), 0.0)
-        gamma_fit = max(-float(poly_coeffs[1]), 1.0e-12)
-        pdi_fitted = float(2.0 * mu2_fit / (gamma_fit * gamma_fit))
+        a2_fit = max(float(poly_coeffs[0]), 0.0)
+        a1_fit = max(-float(poly_coeffs[1]), 1.0e-12)
+        # ISO 22412: PI = 2 * a2 / a1^2; since a2 = mu2/2, PI = mu2 / a1^2
+        pdi_fitted = float(2.0 * a2_fit / (a1_fit * a1_fit))
 
     pdi_reported = float(pdi_fitted)
     pdi_monomer = float(size_std_rel) ** 2

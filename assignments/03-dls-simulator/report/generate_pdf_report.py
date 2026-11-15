@@ -395,16 +395,16 @@ def code_appendix(story, s) -> None:
             "<font face=\"Courier\">dlssim/</font> simulation package (including "
             "Stokes-Einstein diffusion, Siegert autocorrelation, Rayleigh-Gans-Debye "
             "optical weighting, ISO 22412 cumulants, NNLS size inversion, CLI, and GUI) "
-            "followed by the report figure and table generation scripts. Every source "
-            "line is formatted strictly to at most 94 characters to preserve layout "
-            "and prevent breaking during copying.",
+            "followed by the report table and PDF build scripts (tables.py and "
+            "generate_pdf_report.py). Every source line is formatted strictly to at "
+            "most 94 characters to preserve layout and prevent breaking during copying.",
             s["body"],
         )
     )
     for path in sorted((REPO_ROOT / "dlssim").glob("*.py")):
         story.append(Paragraph(f"dlssim/{path.name}", s["h2"]))
         story.append(Preformatted(_wrap_code(path.read_text(encoding="utf-8")), s["code"]))
-    for script_name in ["tables.py", "make_cover.py", "generate_pdf_report.py"]:
+    for script_name in ["tables.py", "generate_pdf_report.py"]:
         script_path = HERE / script_name
         if script_path.exists():
             story.append(Paragraph(f"report/{script_name}", s["h2"]))

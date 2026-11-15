@@ -1,49 +1,61 @@
-"""Regenerate assignment 3's cover page from assignment 1's approved cover page."""
+"""Generate the pristine vector cover page for Assignment 3."""
 
 from __future__ import annotations
 
-from pathlib import Path
+import pathlib
+import matplotlib
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
 
-from pypdf import PdfReader, PdfWriter
-from pypdf.generic import DecodedStreamObject, NameObject
-
-HERE = Path(__file__).resolve().parent
-SOURCE = HERE.parent.parent / "01-pl-spectrometer" / "report" / "cover.pdf"
+HERE = pathlib.Path(__file__).resolve().parent
 TARGET = HERE / "cover.pdf"
-
-OLD_DATE = "[(1)-14(8)-14(.)8(1)-14(0)-14(.)8(2)-14(0)-14(2)-14(6)] TJ"
-NEW_DATE = "[(1)-14(5)-14(.)8(1)-14(1)-14(.)8(2)-14(0)-14(2)-14(6)] TJ"
-
-OLD_STUDENTS = "[(Students:Mohamed)] TJ"
-NEW_STUDENTS = "[(Students: Mohamed)] TJ"
-
-OLD_MERT = "[(M)-25(e)-10(r)-10(t )7(S)11(O)-9(LM)-24(A)25(Z )] TJ"
-NEW_MERT = "[(Mert Solmaz)] TJ"
-
-OLD_OBODA = "[(Oboda)] TJ"
-NEW_OBODA = "[(Mohamed Oboda)] TJ"
+LOGO_PATH = HERE / "figures" / "agu_logo.png"
 
 
-def main() -> None:
-    """Write report/cover.pdf with cleaned formatting and date."""
-    writer = PdfWriter()
-    writer.add_page(PdfReader(str(SOURCE)).pages[0])
-    page = writer.pages[0]
-    content = page.get_contents().get_data().decode("latin-1")
+def generate_cover() -> None:
+    """Create a pristine cover page matching the official AGU assignment layout."""
+    ttf = pathlib.Path(matplotlib.get_data_path()) / "fonts" / "ttf"
+    pdfmetrics.registerFont(TTFont("DejaVuSans", str(ttf / "DejaVuSans.ttf")))
+    pdfmetrics.registerFont(TTFont("DejaVuSans-Bold", str(ttf / "DejaVuSans-Bold.ttf")))
 
-    if OLD_DATE in content:
-        content = content.replace(OLD_DATE, NEW_DATE)
-    if OLD_STUDENTS in content:
-        content = content.replace(OLD_STUDENTS, NEW_STUDENTS)
+    c = canvas.Canvas(str(TARGET), pagesize=letter)
+    width, _ = letter
 
-    stream = DecodedStreamObject()
-    stream.set_data(content.encode("latin-1"))
-    page[NameObject("/Contents")] = writer._add_object(stream)
+    # AGU Logo centered horizontally
+    if LOGO_PATH.exists():
+        c.drawImage(
+            str(LOGO_PATH),
+            250.0,
+            602.8,
+            width=112.2,
+            height=112.2,
+            preserveAspectRatio=True,
+            mask="auto",
+        )
 
-    with open(TARGET, "wb") as handle:
-        writer.write(handle)
-    print(f"wrote {TARGET}")
+    # Department and University headers
+    c.setFont("DejaVuSans", 22)
+    c.drawCentredString(width / 2.0, 560, "Department of")
+    c.drawCentredString(width / 2.0, 526, "Electrical & Electronics Engineering")
+
+    c.setFont("DejaVuSans-Bold", 18)
+    c.drawCentredString(width / 2.0, 485, "Abdullah Gül University")
+
+    # Date
+    c.setFont("DejaVuSans-Bold", 12)
+    c.drawCentredString(width / 2.0, 395, "Submitted on: 15.11.2026")
+
+    # Student Names & IDs
+    c.drawCentredString(width / 2.0, 305, "Students:")
+    c.drawCentredString(width / 2.0, 280, "Mohamed Oboda (2111011090)")
+    c.drawCentredString(width / 2.0, 255, "Mert Solmaz (2311011039)")
+
+    c.showPage()
+    c.save()
+    print(f"Generated clean cover page: {TARGET}")
 
 
 if __name__ == "__main__":
-    main()
+    generate_cover()

@@ -39,7 +39,7 @@ def test_form_factor_limits():
     assert large < 0.01
 
 
-def test_pdi_uses_the_iso_factor_of_two():
+def test_pdi_uses_the_iso_polynomial_convention():
     gamma = np.array([1000.0, 2000.0])
     weights = np.array([0.5, 0.5])
     tau = np.logspace(-5, -2, 120)
@@ -56,8 +56,8 @@ def test_pdi_uses_the_iso_factor_of_two():
         intercept_beta=0.9,
         size_std_rel=0.1,
     )
-    # mu2 = 250000, Gamma = 1500 -> PDI = 2 mu2 / Gamma^2 = 0.2222
-    assert result.pdi_exact == pytest.approx(0.2222, rel=0.01)
+    # mu2 = 250000, Gamma = 1500 -> PDI = mu2 / Gamma^2 = 0.1111
+    assert result.pdi_exact == pytest.approx(0.1111, rel=0.01)
     assert result.pdi_fitted == pytest.approx(result.pdi_exact, rel=0.05)
 
 
